@@ -28,6 +28,7 @@ public static class Inp {
   [DllImport("kernel32.dll")] static extern uint GetCurrentThreadId();
   [DllImport("user32.dll")] static extern bool AttachThreadInput(uint a, uint b, bool attach);
   public static void Scan(ushort sc, bool up) { INPUT[] i = new INPUT[1]; i[0].type = 1; i[0].u.ki.wScan = sc; i[0].u.ki.dwFlags = 8u | (up ? 2u : 0u); SendInput(1, i, Marshal.SizeOf(typeof(INPUT))); }
+  public static void Minimize(IntPtr h) { ShowWindow(h, 6); }
   public static void Uni(char c, bool up) { INPUT[] i = new INPUT[1]; i[0].type = 1; i[0].u.ki.wScan = (ushort)c; i[0].u.ki.dwFlags = 4u | (up ? 2u : 0u); SendInput(1, i, Marshal.SizeOf(typeof(INPUT))); }
   public static bool Focus(IntPtr h) {
     if (IsIconic(h)) { ShowWindow(h, 9); System.Threading.Thread.Sleep(1000); }
@@ -76,6 +77,13 @@ function SetPri([string]$pri) {
 # Tum mantiksal islemciler (SMT kapaliyken 0xFF, acikken 0xFFFF); sabit 0xFFFF SMT kapaliyken "Parametre hatali" veriyordu
 function FullMask { '0x{0:X}' -f (([int64]1 -shl [Environment]::ProcessorCount) - 1) }
 function Restore { if ($usedMask) { SetAff (FullMask) }; if ($usedPri) { SetPri 'N' } }
+# Baslangictaki duzene don: CS2 simge durumundaydiysa yeniden kucult, onceki on plan penceresini (terminal) one al
+function ReturnDesk {
+  $p = Get-Process cs2 -ErrorAction SilentlyContinue | Select-Object -First 1
+  if ($p -and $script:cs2WasIconic) { [Inp]::Minimize($p.MainWindowHandle); Start-Sleep -Milliseconds 500 }
+  if ($script:prevFg -and $script:prevFg -ne [IntPtr]::Zero) { [void][Inp]::Focus($script:prevFg) }
+  Say 'masaustu duzenine donuldu'
+}
 function Poll([datetime]$t0) {
   $mapSeen = $false; $vp = $null
   foreach ($line in ((ReadLog) -split "`r?`n")) {
@@ -91,35 +99,41 @@ function Poll([datetime]$t0) {
 Say ('--- run_bench basladi. Plan=' + $Plan)
 $p0 = Guard
 Say ('cs2 PID {0}, pencere {1}, affinity 0x{2:X}, simge durumu={3}' -f $p0.Id, $p0.MainWindowHandle, [int64]$p0.ProcessorAffinity, [Inp]::IsIconic($p0.MainWindowHandle))
+$script:prevFg = [Inp]::GetForegroundWindow(); $script:cs2WasIconic = [Inp]::IsIconic($p0.MainWindowHandle)
 if (-not (EnsureFocus)) { Say 'HATA: CS2 penceresi one getirilemedi'; return }
 Say 'CS2 on planda (konsol kapali varsayiliyor)'
 $usedMask = $false; $usedPri = $false
 $script:runNo = 0
-foreach ($blk in ($Plan -split ';')) {
-  $f = $blk -split ':'; $name = $f[0]; $mask = $f[1]; $n = [int]$f[2]
-  SetAff $mask; if ($mask -notmatch '^0x[fF]+$') { $usedMask = $true }
-  if ($f.Count -ge 4 -and $f[3]) { SetPri $f[3]; if ($f[3].ToUpper() -ne 'N') { $usedPri = $true } }
-  for ($r = 1; $r -le $n; $r++) {
-    $script:runNo++
-    $kind = if ($script:runNo -le $Warmups) { 'ISINMA' } else { 'KAYIT' }
-    [void](Guard)
-    $t0 = (Get-Date).AddSeconds(-1)
-    Say ("$name kosu $r/$n ($kind): komut gonderiliyor")
-    SendConsole $MapCmd
-    $res = $null; $lost = $false; $mapOk = $false; $sw = [Diagnostics.Stopwatch]::StartNew()
-    while ($sw.Elapsed.TotalSeconds -lt $TimeoutSec) {
-      Start-Sleep -Seconds 2
-      $p = Guard
-      if ([Inp]::GetForegroundWindow() -ne $p.MainWindowHandle -or [Inp]::IsIconic($p.MainWindowHandle)) { $lost = $true; Say 'UYARI: CS2 odak kaybetti, geri aliniyor'; [void][Inp]::Focus($p.MainWindowHandle) }
-      $st = Poll $t0
-      if ($st.Map -and -not $mapOk) { $mapOk = $true; Say ('harita yuklendi ({0:N0} sn)' -f $sw.Elapsed.TotalSeconds) }
-      if ($st.VProf) { $res = $st.VProf; break }
-      if (-not $mapOk -and $sw.Elapsed.TotalSeconds -gt $MapLoadTimeoutSec) { Say "HATA: komuttan sonra $MapLoadTimeoutSec sn icinde harita yuklenmedi, durduruldu"; Restore; return }
+try {
+  foreach ($blk in ($Plan -split ';')) {
+    $f = $blk -split ':'; $name = $f[0]; $mask = $f[1]; $n = [int]$f[2]
+    SetAff $mask; if ($mask -notmatch '^0x[fF]+$') { $usedMask = $true }
+    if ($f.Count -ge 4 -and $f[3]) { SetPri $f[3]; if ($f[3].ToUpper() -ne 'N') { $usedPri = $true } }
+    for ($r = 1; $r -le $n; $r++) {
+      $script:runNo++
+      $kind = if ($script:runNo -le $Warmups) { 'ISINMA' } else { 'KAYIT' }
+      [void](Guard)
+      $t0 = (Get-Date).AddSeconds(-1)
+      Say ("$name kosu $r/$n ($kind): komut gonderiliyor")
+      SendConsole $MapCmd
+      $res = $null; $lost = $false; $mapOk = $false; $sw = [Diagnostics.Stopwatch]::StartNew()
+      while ($sw.Elapsed.TotalSeconds -lt $TimeoutSec) {
+        Start-Sleep -Seconds 2
+        $p = Guard
+        if ([Inp]::GetForegroundWindow() -ne $p.MainWindowHandle -or [Inp]::IsIconic($p.MainWindowHandle)) { $lost = $true; Say 'UYARI: CS2 odak kaybetti, geri aliniyor'; [void][Inp]::Focus($p.MainWindowHandle) }
+        $st = Poll $t0
+        if ($st.Map -and -not $mapOk) { $mapOk = $true; Say ('harita yuklendi ({0:N0} sn)' -f $sw.Elapsed.TotalSeconds) }
+        if ($st.VProf) { $res = $st.VProf; break }
+        if (-not $mapOk -and $sw.Elapsed.TotalSeconds -gt $MapLoadTimeoutSec) { Say "HATA: komuttan sonra $MapLoadTimeoutSec sn icinde harita yuklenmedi, durduruldu"; Restore; return }
+      }
+      if (-not $res) { Say "HATA: $name kosu $r icin $TimeoutSec sn icinde VProf raporu gelmedi, durduruldu"; Restore; return }
+      Say ('{0} kosu {1}/{2} ({3}) bitti: rapor {4}  Avg={5} P1={6}{7}' -f $name, $r, $n, $kind, $res.Time.ToString('HH:mm:ss'), $res.Avg.ToString('0.0', $inv), $res.P1.ToString('0.0', $inv), $(if ($lost) { '  [ODAK KAYBI VAR]' } else { '' }))
+      Start-Sleep -Seconds $GapSec
     }
-    if (-not $res) { Say "HATA: $name kosu $r icin $TimeoutSec sn icinde VProf raporu gelmedi, durduruldu"; Restore; return }
-    Say ('{0} kosu {1}/{2} ({3}) bitti: rapor {4}  Avg={5} P1={6}{7}' -f $name, $r, $n, $kind, $res.Time.ToString('HH:mm:ss'), $res.Avg.ToString('0.0', $inv), $res.P1.ToString('0.0', $inv), $(if ($lost) { '  [ODAK KAYBI VAR]' } else { '' }))
-    Start-Sleep -Seconds $GapSec
   }
+  Restore
+  Say '--- run_bench bitti'
+} finally {
+  # Hata/durdurma (throw veya return) dahil her cikista
+  ReturnDesk
 }
-Restore
-Say '--- run_bench bitti'
