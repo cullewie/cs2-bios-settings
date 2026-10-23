@@ -1,4 +1,4 @@
-# CS2 BIOS ve Windows ayar rehberi
+# CS2 BIOS, Windows ve ekran kartı ayar rehberi
 
 Bu rehber, şu sistem için ölçülmüş CS2 ayarlarını açıklar:
 
@@ -7,15 +7,15 @@ Bu rehber, şu sistem için ölçülmüş CS2 ayarlarını açıklar:
 - Bellek: DDR5-8000, SK Hynix M-die
 - Ekran kartı: RTX 5070 Ti
 
-Ayarlar 132 benchmark koşusu ve 2 maç ile ölçüldü.
+BIOS ayarları 132 benchmark koşusu ve 2 maç ile ölçüldü. Windows ve ekran kartı ayarları 48 benchmark koşusu ile ölçüldü. Ekran kartı ayarları ayrıca Superposition, OCCT ve Kombustor ile sınandı.
 
 Bu rehberi üç durumda kullanın:
 
 1. Aynı sistemi kurmak için ayarları sırayla uygulayın.
 2. BIOS güncellemesinden veya CMOS sıfırlamasından sonra ayarları yeniden girin ve kontrol betiğini çalıştırın.
-3. Başka bir sistemde denemek için [bölüm 9](#9-başka-sistemlere-uyarlama) bölümünü okuyun.
+3. Başka bir sistemde denemek için [bölüm 10](#10-başka-sistemlere-uyarlama) bölümünü okuyun.
 
-> **UYARI:** RAM hız aşırtması, voltaj artışı ve PBO garanti kapsamını etkileyebilir. Sistem kararsız çalışabilir ve veri kaybı olabilir. Tüm sorumluluk size aittir. Değerler tek bir sistemde denendi.
+> **UYARI:** RAM hız aşırtması, ekran kartı hız aşırtması, voltaj artışı ve PBO garanti kapsamını etkileyebilir. Sistem kararsız çalışabilir ve veri kaybı olabilir. Tüm sorumluluk size aittir. Değerler tek bir sistemde denendi.
 
 ---
 
@@ -29,13 +29,14 @@ Bu rehberi üç durumda kullanın:
 6. [BIOS: Auto olarak kalacak ayarlar](#6-bios-auto-olarak-kalacak-ayarlar)
 7. [BIOS: FACEIT ve güvenlik](#7-bios-faceit-ve-güvenlik)
 8. [Windows ve CS2 ayarları](#8-windows-ve-cs2-ayarları)
-9. [Başka sistemlere uyarlama](#9-başka-sistemlere-uyarlama)
-10. [Kontrol](#10-kontrol)
-11. [Ölçüm yöntemi](#11-ölçüm-yöntemi)
-12. [Araçlar](#12-araçlar)
-13. [Sorun giderme](#13-sorun-giderme)
-14. [Sınırlar](#14-sınırlar)
-15. [Depo yapısı](#15-depo-yapısı)
+9. [Ekran kartı hız aşırtma](#9-ekran-kartı-hız-aşırtma)
+10. [Başka sistemlere uyarlama](#10-başka-sistemlere-uyarlama)
+11. [Kontrol](#11-kontrol)
+12. [Ölçüm yöntemi](#12-ölçüm-yöntemi)
+13. [Araçlar](#13-araçlar)
+14. [Sorun giderme](#14-sorun-giderme)
+15. [Sınırlar](#15-sınırlar)
+16. [Depo yapısı](#16-depo-yapısı)
 
 ---
 
@@ -52,14 +53,24 @@ Bu rehberi üç durumda kullanın:
 | Latency Under Load, Medium Load Boostit, LLC 6 | Sapma içinde | Auto bırakın |
 | SMT kapalı | Etki yok | Auto bırakın (açık) |
 | Yüksek işlem önceliği | Etki yok | Normal bırakın |
+| Ekran kartı hız aşırtma: çekirdek +400, bellek +2750, güç %116 | **+%2,6** | Kullanın. Günlük değer: +450 / +3000 / %116 ([bölüm 9](#9-ekran-kartı-hız-aşırtma)) |
+| Yalnızca ekran kartı belleği (+200'den +2750'ye) | +%0,2 | Zararsız. Kazancın neredeyse tamamı çekirdekten gelir. |
+| Ekran kartı maksimum voltaj %100 ve güç %116 (NVIDIA App) | Etki yok. Saat yalnızca 8 MHz arttı. | Voltajı varsayılan bırakın |
+| Ekran kartı undervolt (VF eğrisi) | Fayda yok | Kullanmayın |
+| Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
-**Toplam:** Ortalama FPS 911'den 970'e çıktı (**+%6,4**). Ortalama kare süresi 1,10 ms'den 1,03 ms'ye düştü. P99 değeri 2,99 ms'den 2,80 ms'ye düştü.
+**Toplam (BIOS ve CPU 0, 19.10):** Ortalama FPS 911'den 970'e çıktı (**+%6,4**). Ortalama kare süresi 1,10 ms'den 1,03 ms'ye düştü. P99 değeri 2,99 ms'den 2,80 ms'ye düştü.
 
-Oturumlar arası sapma ±%0,6'dır. Bu nedenle toplam kazancı **yaklaşık %6 ± 0,6** olarak okuyun.
+**Toplam (Windows ve ekran kartı, 23.10):** Aynı BIOS ayarlarıyla, CPU 0 dışlama ve ekran kartı hız aşırtması birlikte ortalama FPS'i 926,8'den 971,4'e çıkardı (**+%4,8**). Ekran kartının payı +%2,6, CPU 0 dışlamanın payı +%2,2'dir. Ölçüm iki ayrı CS2 oturumunda ters sırayla yapıldı. Dört alt karşılaştırmanın hepsi aynı yönü gösterdi.
+
+İki toplamı birbirine eklemeyin. İkisi de CPU 0 adımını içerir. Ayrıca iki ölçüm arasında CS2 güncellendi.
+
+Oturumlar arası sapma ±%0,6'dır. Bu nedenle BIOS toplamını **yaklaşık %6 ± 0,6** olarak okuyun.
 
 **Darboğaz:**
 - **İşlemci:** CS2 sırasında tüm çekirdekler 5425 MHz'de çalıştı. Güç sınırının yalnızca %7,5'ini kullandı. Sıcaklık en fazla 60 °C oldu. Bu nedenle Curve Optimizer, PBO limitleri ve sıcaklık ayarları ek kazanç sağlamadı.
-- **Ekran kartı:** GPU yük p95 değeri %96'dır. Darboğaz kısmen GPU'dadır.
+- **Ekran kartı:** GPU yük p95 değeri %96'dır. GPU saati %12 düşünce ortalama FPS %2,8 düştü. Saat 2920 MHz'in üstüne çıkınca kazanç azalır. Darboğaz kısmen GPU'dadır.
+- **P1:** Hiçbir Windows veya ekran kartı ayarı P1 değerini ölçülebilir şekilde değiştirmedi. P1 değerinin koşudan koşuya sapması ±%5'tir.
 
 ---
 
@@ -77,6 +88,9 @@ Oturumlar arası sapma ±%0,6'dır. Bu nedenle toplam kazancı **yaklaşık %6 �
 | Depolama | Samsung 980 PRO 500 GB |
 | İşletim sistemi | Windows 11 Pro, derleme 26300 |
 | Ekran kartı sürücüsü | NVIDIA 617.42 |
+| Ekran kartı ayar aracı | MSI Afterburner 4.6.6 |
+| Ağ bağdaştırıcısı | Intel I226-V, 2,5 Gbps |
+| Fare | 8000 Hz yoklama hızı, kablosuz alıcı |
 
 ---
 
@@ -100,7 +114,7 @@ Oturumlar arası sapma ±%0,6'dır. Bu nedenle toplam kazancı **yaklaşık %6 �
 
 - Adımları sırayla uygulayın: önce RAM, sonra işlemci, sonra güvenlik.
 - Her büyük adımdan sonra kaydedin ve yeniden başlatın (**F10**).
-- Son olarak kontrol betiğini çalıştırın ([bölüm 10](#10-kontrol)).
+- Son olarak kontrol betiğini çalıştırın ([bölüm 11](#11-kontrol)).
 
 ---
 
@@ -241,6 +255,10 @@ FACEIT şu ayarları denetler: Secure Boot, TPM 2.0, IOMMU ve Bellek Bütünlü�
 | İşlem önceliği | Normal | Yüksek öncelik denendi. Etkisi yok. |
 | Bellek Bütünlüğü (HVCI) | Açık | FACEIT için gerekir. |
 | Oyun Modu | Kapalı | Test edilmedi. |
+| Ethernet: Energy Efficient Ethernet | Kapalı | Aygıt Yöneticisi → ağ bağdaştırıcısı → Gelişmiş. Etkisi ölçülmedi. Bağlantı kısa bir süre kopar. |
+| Win32PrioritySeparation | Varsayılan (2) | Değiştirmeyin. Ayrıntı aşağıda. |
+| Kesme yerleşimi (Interrupt Affinity) | Varsayılan | Değiştirmeyin. GPU ve USB DPC işi zaten CPU 0'da çalışır. |
+| Güç planı | En az işlemci durumu %100, çekirdek park etme kapalı | Değişiklik ölçülmedi. |
 
 ### CS2'yi CPU 0 dışında çalıştırma
 
@@ -250,6 +268,25 @@ Bu adımı her Steam açılışında tekrarlayın.
 2. `steam.exe` satırına sağ tıklayın ve **Benzeşimi ayarla** seçin.
 3. **CPU 0** kutusunun işaretini kaldırın ve **Tamam** seçin.
 4. CS2'yi Steam'den başlatın. CS2 bu ayarı Steam'den devralır. `cs2.exe` dosyasına ayrıca dokunmanız gerekmez.
+
+CS2'yi NVIDIA App ile başlatırsanız CS2 yine `steam.exe` altında açılır ve ayarı devralır. Bu durum denendi ve doğrulandı.
+
+### CPU 0 neden önemlidir
+
+`windows/irq_sample.ps1` ile CPU başına kesme ve DPC sayısı ölçüldü:
+
+- CS2 benchmark sırasında saniyede yaklaşık 9700 DPC oluştu. Bunların %99'dan fazlası CPU 0'da çalıştı.
+- CPU 0 zamanının yaklaşık %24'ü kesme ve DPC işine gitti.
+- Fare hareket edince (8000 Hz) saniyede yaklaşık 4300 ek DPC oluştu. Bunların hepsi CPU 0'da çalıştı.
+- Diğer çekirdeklerde DPC yok denecek kadar azdı.
+
+Windows, GPU ve USB işini zaten CPU 0'da çalıştırır. Bu nedenle kesmeleri kayıt defteriyle CPU 0'a bağlamak yeni bir şey değiştirmez. CS2'yi CPU 0'dan uzak tutmak, bu işi oyundan ayırır.
+
+### Win32PrioritySeparation
+
+Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu gösterdi: Ön plandaki uygulamanın iş parçacıklarının önceliği 8'den 10'a çıkar. Aynı çekirdeği paylaşan ön plan uygulaması zamanın %99'unu alır, arka plan uygulaması %1'ini alır.
+
+İnternette önerilen 0x2A değeri sabit zaman dilimi seçer. Bu değer burada ölçülmedi. Aynı işlemci ve ekran kartıyla yapılan bir dış veri setinde (cs2kitchen/cs2FpsBoostReal) bu ayarın etkisi ölçüm sapmasının içinde kaldı. Varsayılan değeri değiştirmeyin.
 
 **Kalıcı yol (denenmedi):** Steam'i şu komutla başlatabilirsiniz:
 
@@ -294,7 +331,83 @@ Fan ayarları performans ölçümünün parçası değildir.
 
 ---
 
-## 9. Başka sistemlere uyarlama
+## 9. Ekran kartı hız aşırtma
+
+Kart: GIGABYTE RTX 5070 Ti AERO OC 16G. Her kart farklıdır. Bu değerleri doğrudan kopyalamayın. Kendi sınırınızı aşağıdaki yöntemle bulun.
+
+### Günlük ayar (MSI Afterburner, Profil 1)
+
+| Ayar | Değer |
+|---|---|
+| Core Voltage | 0. Değiştirmeyin. |
+| Power Limit | %116 (350 W, kartın en yüksek değeri) |
+| Core Clock | +450 MHz |
+| Memory Clock | +3000 MHz. Sürücünün izin verdiği en yüksek değerdir. |
+| Fan | Otomatik (kartın kendi eğrisi) |
+
+CS2 yükünde çekirdek yaklaşık 3225 MHz'de çalışır (stok 2775 MHz). Bellek 17001 MHz'de çalışır (stok 14001 MHz, 28 Gbps yerine 34 Gbps). CS2'de güç yaklaşık 150 W'tır. Güç sınırına ulaşılmaz.
+
+### Uygulama
+
+1. NVIDIA App → **Sistem → Performans** bölümünde **Otomatik Ayarlama** açıksa kapatın ve **GERİ YÜKLE** seçin. İki araç aynı anda ofset yazmamalıdır.
+2. MSI Afterburner'ı MSI'nin resmi sitesinden kurun. Kurulumda Norton seçeneğinin işaretini kaldırın. RivaTuner Statistics Server gerekmez.
+3. Power Limit, Core Clock ve Memory Clock değerlerini girin ve **Apply** seçin.
+4. **Save** seçin ve **1** yuvasına kaydedin. Kilit simgesiyle profilleri kilitleyin. Kilit yalnızca kaydetmeyi engeller. Profili yüklemeyi engellemez.
+5. Her Windows açılışında Afterburner'ı açın ve **1** seçin. Afterburner'ın kendi açılışta uygulama ayarı bu sistemde yeniden başlatmadan sonra değerleri uygulamadı. `MSIAfterburner.exe -Profile1` komutu çalışır.
+6. Kontrol: Afterburner'da +450, +3000 ve 116 görünmelidir. `nvidia-smi` güç sınırını 350 W göstermelidir.
+
+Afterburner'ın RTCore64 sürücüsü, Bellek Bütünlüğü (HVCI) açıkken yüklendi. Secure Boot, TPM ve HVCI ayarları değişmedi.
+
+### CS2 etkisi
+
+| Karşılaştırma | Ortalama FPS | Yöntem |
+|---|---|---|
+| Stok → +400 / +2750 / %116 | **+%2,6** | 2×2, iki oturum, ters sıra, hücre başına 2 koşu |
+| Bellek +200 → +2750 (çekirdek +400) | +%0,2 | Aynı oturum, ABBA |
+| Bellek −1000 MHz (çekirdek stok) | −%0,2 (sapma içinde) | Aynı oturum, MNNM |
+| Çekirdek +155 → +300 | +%0,7 | Aynı oturum, 6 koşu |
+| Çekirdek +155 → +450 | +%1,35 | Aynı oturum, tek koşular |
+| GPU saati 2930 → 2572 MHz (−%12) | −%2,8 | Aynı oturum, ABBA, `nvidia-smi -lgc` |
+| Maksimum voltaj %100 ve güç %116 | Sapma içinde (saat +8 MHz) | Aynı oturum |
+
+P1 değeri hiçbir ekran kartı ayarında ölçülebilir şekilde değişmedi.
+
+### Kendi sınırınızı bulma
+
+Yöntem, fpsheaven GPU hız aşırtma rehberinin akışını izler. Ölçüm aracı: Unigine Superposition 1.1, 1080p Extreme.
+
+1. Stok puanı 2 veya 3 koşu ile ölçün.
+2. **Çekirdek:** Bellek 0 ve Power Limit en yüksek değerde olsun. +200'den başlayın. 25 MHz adımlarla artırın.
+3. Her adımı 2 koşu ile ölçün. Bu kartta puanlar aynı saatte iki kümede çıktı (yaklaşık %4,5 fark).
+4. Çökme (TDR) veya puan düşüşü görürseniz durun. Son temiz değer sınırdır.
+5. **Bellek:** Çekirdeği sabit tutun. +1000'den başlayın. 250 veya 500 MHz adımlarla artırın.
+6. **Günlük değer:** Sınırdan çekirdekte 25–50 MHz, bellekte 100–250 MHz geri gelin.
+7. **Doğrulama:** Sırayla OCCT 3D Adaptive (Switch, %30/%100, 500 ms) 1 saat, MSI Kombustor PBR-Donut (artefakt tarayıcı açık) 1 saat, OCCT VRAM %98 ve CS2 çalıştırın.
+
+**Bu karttaki sınırlar:**
+
+| Test | Geçen en yüksek değer | Çöken değer |
+|---|---|---|
+| Superposition (sabit yük) | +500 / +3000 | +525 / +3000 |
+| OCCT 3D Adaptive Switch (yük geçişi) | +450 / +3000, 1 saat | +475 / +3000, 4. dakikada |
+| CS2 benchmark (kısa koşu) | +450 / +200 | +500 / +200, harita yüklenirken |
+
+Yük geçişi, sabit yükten daha zordur. Superposition'da geçen değer OCCT Switch testinde çökebilir. Günlük değeri OCCT Switch ile doğrulayın.
+
+**+450 / +3000 doğrulaması:** OCCT 3D Adaptive Switch 1 saat hatasız. Kombustor 1 saat, artefakt 0. OCCT VRAM %98 21 dakika hatasız. CS2 3 koşu sorunsuz. En yüksek sıcaklık 72 °C.
+
+### Notlar
+
+- **Undervolt:** VF eğrisinde 3217 MHz için 1000, 990 ve 985 mV denendi. Gerçek voltaj yine yaklaşık 1005 mV oldu. 970 mV'de güç 20 W düştü ama puan da düştü. Bu kartta undervolt fayda sağlamadı.
+- **TDR sonrası:** Sürücü güç sınırını ve ofsetleri sıfırlar. Afterburner'da profili yeniden yükleyin.
+- **NVIDIA App Otomatik Ayarlama:** Bu kartta +182 / +200 buldu. Yükte saat yaklaşık 2930 MHz oldu.
+- **Afterburner'sız yol:** NVIDIA sürücüsünün `nvml.dll` kütüphanesindeki `nvmlDeviceSetClockOffsets` işlevi ek sürücü kurmadan ofset yazar. Bellek birimi Afterburner biriminin 2 katıdır. Ayar yeniden başlatmada silinir. NVIDIA App ayarının üzerine yazar.
+- **OCCT:** Açılışta HWiNFO çekirdek sürücüsünü yükler. Sürücü, Windows yeniden başlayana kadar yüklü kalır.
+- **Kombustor:** Akıllı Uygulama Denetimi açıksa sensör DLL'si engellenir. Sensörler N/A görünür. Test ve artefakt tarayıcısı yine çalışır.
+
+---
+
+## 10. Başka sistemlere uyarlama
 
 | Durum | Yapılacak işlem |
 |---|---|
@@ -323,7 +436,7 @@ Fan ayarları performans ölçümünün parçası değildir.
 
 ---
 
-## 10. Kontrol
+## 11. Kontrol
 
 Yönetici PowerShell'de depo klasörünü açın ve şu komutları çalıştırın:
 
@@ -362,7 +475,7 @@ Ayrıntılı fark için güncelleme öncesi ve sonrası görüntüleri karşıla
 
 ---
 
-## 11. Ölçüm yöntemi
+## 12. Ölçüm yöntemi
 
 ### Benchmark
 
@@ -381,6 +494,20 @@ Ayrıntılı fark için güncelleme öncesi ve sonrası görüntüleri karşıla
 - Bu nedenle her oturumun ilk 6 koşusu **ısınma koşusu** sayıldı. Bu koşular sonuçlara alınmadı.
 - Aynı BIOS ayarı iki ayrı oturumda ölçüldüğünde fark %0,55 çıktı.
 
+### Ekran kartı ve Windows testleri
+
+- Karşılaştırılan koşullar aynı CS2 oturumunda ABBA sırasıyla çalıştırıldı. 2×2 testte ikinci oturum ters sırayla çalıştırıldı. Bu yöntem oturum içindeki doğrusal kaymayı dengeler.
+- Her koşuda `nvidia-smi` saniyede bir GPU saatini, bellek saatini, gücü ve sıcaklığı kaydetti.
+- Her koşudan sonra System günlüğünde `nvlddmkm` ve Display 4101 (TDR) olayları kontrol edildi. CS2'nin açık olduğu kontrol edildi.
+- Kesme örnekleyicisi açıkken yapılan koşular karşılaştırmaya alınmadı.
+
+### CS2 güncellemesi
+
+CS2 güncellemesi sonuçları %1 ile %2 arasında kaydırabilir. Bir ölçümde CS2 iki oturum arasında güncellendi ve aynı ayarla %1–2 fark görüldü. Bu nedenle:
+
+- Her oturumdan önce `steamapps\appmanifest_730.acf` dosyasındaki `LastUpdated` değerine bakın.
+- Ayrı oturumlardaki tek koşuları karşılaştırırken sapmayı en az %1–2 kabul edin.
+
 ### VProf çıktısı
 
 ```
@@ -393,7 +520,7 @@ VProf bazı kareleri analizden çıkarır. Bu nedenle P1 ve P99 değerleri, Pres
 
 ---
 
-## 12. Araçlar
+## 13. Araçlar
 
 Tüm betikler **Windows PowerShell 5.1** ile test edildi. Çıktılar Türkçedir. Gerekirse önce `Set-ExecutionPolicy -Scope Process Bypass` komutunu çalıştırın.
 
@@ -403,7 +530,7 @@ CS2, `-condebug` seçeneğiyle açık olmalıdır. `console.log` yolu betiklerin
 
 | Betik | Görevi |
 |---|---|
-| `run_bench.ps1` | Konsolu açar, haritayı yükler, `[VProf] FPS:` satırını bekler ve sonraki koşuya geçer. Plan biçimi: `-Plan ad:maske:koşu[:öncelik];…`. Öncelik değeri N, A veya H olabilir. `-Warmups` ısınma koşusu sayısını belirler. `bench_stop.txt` dosyası oluşturulursa betik durur. Bitince affinity ve önceliği varsayılana döndürür. |
+| `run_bench.ps1` | Konsolu açar, haritayı yükler, `[VProf] FPS:` satırını bekler ve sonraki koşuya geçer. Plan biçimi: `-Plan ad:maske:koşu[:öncelik];…`. Öncelik değeri N, A veya H olabilir. `-Warmups` ısınma koşusu sayısını belirler. `bench_stop.txt` dosyası oluşturulursa betik durur. Bitince affinity ve önceliği varsayılana döndürür. CS2 başta simge durumundaysa yeniden simge durumuna alır ve önceki pencereyi öne getirir. |
 | `vprof_stage.ps1` | Belirli bir zaman aralığındaki koşuları okur. Avg, P1, P99, ortalama kare süresi, WHEA ve Kernel-Power 41 sayısını verir. |
 | `interleave_report.ps1` | Dönüşümlü koşuları eşleştirilmiş t testi ile karşılaştırır. |
 | `snap_console.ps1` | `console.log` dosyasını yedekler. CS2 her açılışta bu dosyayı sıfırlar. |
@@ -429,7 +556,7 @@ CS2, `-condebug` seçeneğiyle açık olmalıdır. `console.log` yolu betiklerin
 
 ### `kontrol/`: ayar kontrolü
 
-`ayar_kontrol.ps1` betiğinin açıklaması [bölüm 10](#10-kontrol) bölümündedir.
+`ayar_kontrol.ps1` betiğinin açıklaması [bölüm 11](#11-kontrol) bölümündedir.
 
 ### `hwinfo/`: sensör kaydı
 
@@ -440,6 +567,28 @@ Bu betikler HWiNFO'nun paylaşılan belleğini okur. HWiNFO'da **Shared Memory S
 | `hw_sample.ps1` | Tüm sensörleri 1 saniye aralıkla CSV dosyasına yazar. |
 | `hw_report.ps1` | CSV dosyasından özet çıkarır. |
 | `hwinfo_sm_read.ps1` | Anlık değerleri listeler. |
+
+### `gpu/`: ekran kartı ölçümü
+
+Bu betikler yönetici PowerShell ister. MSI Afterburner ve `nvidia-smi` gerekir. Sonuçlar `gpu\sonuc\` klasörüne yazılır.
+
+| Betik | Görevi |
+|---|---|
+| `ab_profil_yaz.ps1` | Afterburner profil yuvasını yazar ve uygular (`-Slot 5 -Core 450 -Mem 3000 -PL 116`). Önce profil dosyasının yedeğini alır. Fan değeri verilmezse fan satırı yazmaz ve fan otomatik kalır. |
+| `cs2_gpu_ab.ps1` | Afterburner profillerini ve CPU 0 ayarını aynı CS2 oturumunda karşılaştırır. Her koşuda GPU kaydı tutar ve TDR olayını kontrol eder. Kararsızlık görürse durur. |
+| `gpu_saat_kilit_ab.ps1` | `nvidia-smi -lgc` ile GPU saatini sınırlar ve kilitsiz durumla karşılaştırır. Kilidi her durumda kaldırır. |
+
+```powershell
+# 2x2 test: Profil 5 = stok (0/0/100), Profil 1 = günlük ayar. İkinci oturumda sırayı ters çevirin.
+.\gpu\cs2_gpu_ab.ps1 -Order 'SF1:5:0xFFFF,SE1:5:0xFFFE,OF1:1:0xFFFF,OE1:1:0xFFFE' -EndProfile 1 -Tag GUN
+```
+
+### `windows/`: kesme ve çökme analizi (yalnızca okur)
+
+| Betik | Görevi |
+|---|---|
+| `irq_sample.ps1` | Her saniye CPU başına kesme ve DPC sayısını ölçer. Fare hareketli ve durgun saniyeleri ayırır. Sonuçta CPU başına farkı yazar. `-OutCsv` ile ham veriyi kaydeder. |
+| `dump_ozet.ps1` | Minidump dosyasını (`.dmp`, `.mdmp`) okur. İstisna kodunu, hatalı modülü ve yığındaki modülleri yazar. |
 
 ### `tools/`: BIOS ayar sözlüğü
 
@@ -452,7 +601,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 
 ---
 
-## 13. Sorun giderme
+## 14. Sorun giderme
 
 | Belirti | Çözüm |
 |---|---|
@@ -462,10 +611,13 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | Windows 8 mantıksal işlemci gösteriyor | SMT kapalı kalmıştır. Advanced → AMD CBS → SMT Control değerini Auto yapın ve bilgisayarı tamamen kapatıp açın. |
 | BIOS güncellemesinden sonra BitLocker anahtarı isteniyor | fTPM sıfırlanmıştır. Kurtarma anahtarını girin. Sonra fTPM'in açık olduğunu kontrol edin. |
 | Steam yeniden başlatıldıktan sonra CPU 0 ayarı kayboldu | [Bölüm 8](#cs2yi-cpu-0-dışında-çalıştırma) adımlarını tekrarlayın. |
+| Ekran bir an kararıyor, oyun kapanıyor. Olay Görüntüleyicisi'nde `nvlddmkm` 153 veya 14 var. | Ekran kartı hız aşırtması kararsızdır (TDR). Çekirdeği 25 MHz düşürün. TDR sonrası sürücü ofsetleri ve güç sınırını sıfırlar. Afterburner'da profili yeniden yükleyin. |
+| Yeniden başlatmadan sonra ekran kartı stok saatte | Afterburner'ı açın ve Profil 1'i yükleyin ([bölüm 9](#9-ekran-kartı-hız-aşırtma)). |
+| CS2 aniden kapandı. Döküm `soundsystem.dll` içinde. | Kablosuz kulaklık alıcısı oyun açıkken yeniden bağlanmıştır. CS2 ses aygıtını yeniden başlatırken çöker. CS2 açıkken alıcıyı çıkarıp takmayın. Dökümü `windows\dump_ozet.ps1` ile okuyun. |
 
 ---
 
-## 14. Sınırlar
+## 15. Sınırlar
 
 **Sınırlar:**
 - **Tek sistem:** Ölçümler tek işlemci, tek RAM kiti ve tek anakartla yapıldı. Sonuçları başka sistemlere doğrudan uygulamayın.
@@ -473,6 +625,8 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 - **BIOS karşılaştırmaları:** BIOS güncellemesi ve RAM ayarı aynı anda yapıldı. Bu nedenle FPS farkını yalnızca RAM ayarına bağlayamazsınız.
 - **Gecikme ölçülmedi:** LDAT veya Reflex Analyzer kullanılmadı. Değerlendirme kare sürelerine dayanır.
 - **Benchmark ve maç farkı:** Benchmark haritasında bot vardır, sunucu yükü yoktur. Maçta ortalama FPS, benchmarka göre yaklaşık %27 düşük ölçüldü. Benchmark sonuçları maç performansının birebir karşılığı değildir.
+- **Ekran kartı kararlılığı:** Günlük ayar sentetik testlerle (toplam yaklaşık 2 saat 20 dakika) ve kısa CS2 koşularıyla doğrulandı. Uzun oyun oturumlarında ve sıcak ortamda kararlılığı ayrıca izleyin.
+- **CS2 sürümü:** Windows ve ekran kartı testleri, BIOS testlerinden sonraki bir CS2 sürümünde yapıldı. İki gruptaki FPS değerlerini doğrudan karşılaştırmayın.
 
 **Test edilmeyen konular:**
 
@@ -486,6 +640,8 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | Thermal Limit, PBO limitleri, daha derin Curve Optimizer | İşlemci saat tavanındadır ve güç sınırından uzaktır. Kazanç beklenmez. |
 | Turbo Game Mode, Gaming Adaptive CCD Parker | Çift CCD'li işlemciler içindir. 9800X3D tek CCD'lidir. |
 | Process Lasso, PBO2 Tuner gibi çekirdek sürücüsü yükleyen araçlar | Kullanılmadı. |
+| Ekran kartı çekirdek voltajı artırma | NVIDIA App'te maksimum voltaj saati yalnızca 8 MHz artırdı. Afterburner'da denenmedi. |
+| Kesmeleri kayıt defteriyle başka çekirdeğe taşıma | Varsayılan yerleşim zaten CPU 0'dır. CS2'yi CPU 0'dan uzak tutmak daha basittir. |
 
 **Sıradaki adaylar (ölçülmedi):**
 1. **FCLK 2100, 2167 veya 2200:** Tahmini etki %0 ile %2 arasındadır. Kararsızlık WHEA 19 olarak görünür.
@@ -494,7 +650,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 
 ---
 
-## 15. Depo yapısı
+## 16. Depo yapısı
 
 | Klasör veya dosya | İçerik |
 |---|---|
@@ -505,7 +661,12 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `nvram/` | BIOS okuma, görüntü alma, karşılaştırma ve döküm betikleri |
 | `hwinfo/` | HWiNFO sensör kaydı betikleri |
 | `tools/` | BIOS ayar sözlüğü oluşturma (`BiosIfr.cs`) ve EFI açıcı (`EfiDec3b.cs`) |
-| `data/kosular.csv` | Tüm benchmark koşuları ve maçlar (134 satır) |
+| `gpu/` | Afterburner profil yazma ve ekran kartı A/B ölçüm betikleri |
+| `windows/` | CPU başına kesme/DPC ölçümü ve minidump özeti |
+| `data/kosular.csv` | BIOS testlerinin tüm benchmark koşuları ve maçlar (134 satır) |
+| `data/gpu_windows_kosular.csv` | Windows ve ekran kartı testlerinin CS2 koşuları (50 satır). GPU saati, bellek saati ve güç dahil. |
+| `data/gpu_superposition.csv` | Superposition 1080p Extreme puanları: stok, çekirdek ve bellek adımları, undervolt, çökmeler |
+| `data/gpu_kararlilik.csv` | Kararlılık testleri: OCCT, Kombustor, Superposition ve CS2. Süre, sonuç, saat, güç ve sıcaklık. |
 | `data/ozet.csv` | Test ve koşul başına medyan, en düşük ve en yüksek değerler |
 | `data/testler.csv` | Her testin BIOS durumu, değişen ayar, affinity, öncelik ve sonuç |
 | `data/bios_son_durum.csv` | Son BIOS durumunun tam dökümü. Ham baytlar ayar sözlüğüyle çözüldü. |
@@ -523,7 +684,11 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `Maks1s_P50_ms`, `Maks1s_P95_ms` | Her saniyedeki en uzun karenin medyanı ve 95. yüzdeliği. Takılmayı gösterir. |
 | `Not` | Özel durumlar |
 
-**Ölçüm sayıları:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
+**`gpu_windows_kosular.csv` sütunları:** `Oturum` (G1–G7), `Test`, `Kosul`, `GPU_ayar` (çekirdek / bellek / güç), `Benzesim` (0xFFFF tüm çekirdekler, 0xFFFE CPU 0 hariç), `Tip` (`kayit`, `isinma`, `gecersiz`, `cokme`), `Avg_FPS`, `P1_FPS`, `GPU_MHz`, `Bellek_MHz` (yük altında medyan, nvidia-smi birimi), `GPU_W`, `Not`. Boş hücre: değer kaydedilmedi.
+
+**Ölçüm sayıları:**
+- **BIOS testleri:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
+- **Windows ve ekran kartı testleri:** 7 CS2 oturumunda 48 tamamlanan koşu (40 kayıt, 7 ısınma, 1 geçersiz) ve 2 yarıda kalan koşu (1 TDR, 1 ses aygıtı çökmesi). 34 Superposition koşusu (2'si TDR ile bitti). 11 kararlılık testi.
 
 ---
 
