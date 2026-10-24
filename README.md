@@ -52,6 +52,8 @@ Bu rehberi üç durumda kullanın:
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |
 | Latency Under Load, Medium Load Boostit, LLC 6 | Sapma içinde | Auto bırakın |
 | SMT kapalı | Etki yok | Auto bırakın (açık) |
+| FCLK 2200 MHz (Ai Tweaker ve AMD Overclocking menüsünde) | +%0,23. Sapma içinde. 6 koşunun 5'inde yön aynı. | Kullanılabilir. WHEA hatası olursa 2000'e dönün. |
+| iGPU kapalı, Global C-state Enabled, Power Supply Idle Control Typical (birlikte) | Etki yok (+%0,25) | İsteğe bağlı |
 | Yüksek işlem önceliği | Etki yok | Normal bırakın |
 | Ekran kartı hız aşırtma: çekirdek +400, bellek +2750, güç %116 | **+%2,6** | Kullanın. Günlük değer: +425 / +3000 / %116 ([bölüm 9](#9-ekran-kartı-hız-aşırtma)) |
 | Ekran kartı çekirdeği +400, +425 veya +450 (3172–3225 MHz) | Fark yok (±%0,3) | +425 kullanın: aynı FPS, çökme sınırına daha fazla pay |
@@ -131,10 +133,18 @@ Bu bölümü ilk olarak uygulayın.
 |---|---|
 | Ai Overclock Tuner | Manual |
 | Memory Frequency | DDR5-8000 |
-| FCLK Frequency | 2000 MHz |
+| FCLK Frequency | 2200 MHz. AMD Overclocking menüsündeki değer de 2200 olmalıdır (aşağıdaki nota bakın). |
 | High DRAM Voltage Mode | Enabled. 1,435 V üstü DRAM voltajı için gerekir. |
 | DRAM VDD Voltage | 1.600 |
 | DRAM VDDQ Voltage | 1.600 |
+
+> **FCLK iki menüde ayarlanır:**
+> 1. **Ai Tweaker → FCLK Frequency**
+> 2. **Advanced → AMD Overclocking → DDR and Infinity Fabric Frequency/Timings → Infinity Fabric Frequency and Dividers → Infinity Fabric Frequency**
+>
+> İkinci değer sabit bir sayıdaysa Ai Tweaker değeri uygulanmaz. Bu sistemde ikinci değer, AMD Overclocking menüsünde PBO ayarlanırken 2000'e sabitlendi. Ai Tweaker 2200 olduğu halde gerçek FCLK 2000 kaldı. İki değeri aynı yapın. Gerçek değeri HWiNFO'da **Infinity Fabric Clock (FCLK)** satırında kontrol edin.
+>
+> FCLK 2000'den 2200'e çıkınca ortalama FPS +%0,23 arttı (aynı gün, aynı diğer ayarlar, 6 koşu). Bu fark oturum sapmasının içindedir. P1, CPU Busy ve GPU Busy değişmedi. WHEA hatası olmadı.
 
 **Ai Tweaker → DRAM Timing Control**
 
@@ -178,7 +188,7 @@ Bu bölümü ilk olarak uygulayın.
 | CPU VDD_MISC | 1,10 V |
 | DRAM VDD ve VDDQ | 1,60 V |
 
-**Windows'ta kontrol:** Görev Yöneticisi → Performans → Bellek bölümünde hız **8000 MT/s** olmalıdır. Olay Görüntüleyicisi'nde WHEA hatası olmamalıdır.
+**Windows'ta kontrol:** Görev Yöneticisi → Performans → Bellek bölümünde hız **8000 MT/s** olmalıdır. HWiNFO'da FCLK **2200 MHz**, UCLK **2000 MHz** olmalıdır. Olay Görüntüleyicisi'nde WHEA hatası olmamalıdır.
 
 ---
 
@@ -224,7 +234,9 @@ Bu ayarlar denendi. Fayda sağlamadılar veya zarar verdiler. Auto olarak bırak
 | Ai Tweaker → Precision Boost Overdrive | Medium Load Boostit | Auto | Ölçülebilir etki yok |
 | Ai Tweaker → DIGI + VRM | CPU Load-line Calibration | Auto | Ölçülebilir etki yok. LLC 6 ile sapma içinde kaldı. |
 | Advanced → AMD CBS | SMT Control | Auto | Kapatmanın etkisi yok. Kapatılırsa tam kapatma ve açma gerekir. |
-| Advanced → AMD CBS | Global C-state Control | Auto | Kanıt yok |
+| Advanced → AMD CBS | Global C-state Control | Auto veya Enabled | Enabled, aşağıdaki iki ayarla birlikte ölçüldü: etki yok. Bu sistemde Enabled. |
+| Advanced → AMD CBS → CPU Common Options | Power Supply Idle Control | Auto veya Typical Current Idle | Aynı ölçüm: etki yok. Bu sistemde Typical Current Idle. |
+| Advanced → NB Configuration | Integrated Graphics | Auto veya Disabled | Aynı ölçüm: etki yok. Bu sistemde Disabled. |
 | Ai Tweaker | AI Cache Boost | Auto | ASUS'a göre AI araçları içindir |
 | Ai Tweaker | Turbo Game Mode, Gaming Adaptive CCD Parker | Disabled | Çift CCD'li işlemciler içindir. 9800X3D tek CCD'lidir. |
 | Ai Tweaker → Precision Boost Overdrive | Thermal Limit | Varsayılan (Level 2, 80 °C) | İşlemci CS2'de en fazla 60 °C olur. |
@@ -633,7 +645,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | Belirti | Çözüm |
 |---|---|
 | RAM ayarından sonra açılmıyor veya bellek eğitimi bitmiyor | Bekleyin. Açılmazsa **Clear CMOS** yapın ve ayarları yeniden girin. Hâlâ açılmazsa bir kademe gevşetin (örneğin Trcd/Trp +2, Trfc1 +32). Bu gevşek değerler denenmedi. |
-| Rastgele çökme veya WHEA hatası | Önce RAM sıcaklığını kontrol edin. tREFI 65535 sıcaklığa duyarlıdır. Sonra FCLK değerini kontrol edin. Gerekirse RAM'i EXPO veya XMP profiline alın. |
+| Rastgele çökme veya WHEA hatası | Önce RAM sıcaklığını kontrol edin. tREFI 65535 sıcaklığa duyarlıdır. Sonra FCLK değerini iki menüde de 2000'e düşürün (WHEA 19 genellikle FCLK kararsızlığıdır). Gerekirse RAM'i EXPO veya XMP profiline alın. |
 | FACEIT, Secure Boot, TPM veya VBS hatası | [Bölüm 7](#7-bios-faceit-ve-güvenlik) ayarlarını kontrol edin. Windows Güvenliği → Cihaz güvenliği → Çekirdek yalıtımı → Bellek bütünlüğü açık olmalıdır. |
 | Windows 8 mantıksal işlemci gösteriyor | SMT kapalı kalmıştır. Advanced → AMD CBS → SMT Control değerini Auto yapın ve bilgisayarı tamamen kapatıp açın. |
 | BIOS güncellemesinden sonra BitLocker anahtarı isteniyor | fTPM sıfırlanmıştır. Kurtarma anahtarını girin. Sonra fTPM'in açık olduğunu kontrol edin. |
@@ -655,6 +667,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 - **Benchmark ve maç farkı:** Benchmark haritasında bot vardır, sunucu yükü yoktur. Maçta ortalama FPS, benchmarka göre yaklaşık %27 düşük ölçüldü. Benchmark sonuçları maç performansının birebir karşılığı değildir.
 - **Ekran kartı kararlılığı:** Günlük ayar sentetik testlerle (toplam yaklaşık 2 saat 20 dakika) ve kısa CS2 koşularıyla doğrulandı. Uzun oyun oturumlarında ve sıcak ortamda kararlılığı ayrıca izleyin.
 - **CS2 sürümü:** Windows ve ekran kartı testleri, BIOS testlerinden sonraki bir CS2 sürümünde yapıldı. İki gruptaki FPS değerlerini doğrudan karşılaştırmayın.
+- **FCLK 2200 kararlılığı:** Yalnızca yaklaşık 16 dakikalık CS2 testi ve açılış sonrası WHEA kontrolü yapıldı. Uzun kullanımda WHEA 19 olaylarını izleyin.
 
 **Test edilmeyen konular:**
 
@@ -662,7 +675,6 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 |---|---|
 | Secure Boot, TPM, IOMMU, HVCI, SVM, CSM | FACEIT denetler. Bu ayarlara dokunulmadı. |
 | DDR5-6000 1:1 | Bu kurulumda tercih edilmedi. |
-| iGPU kapatma | Bu kurulumda tercih edilmedi. |
 | CS2 grafik ayarları (MSAA, Reflex vb.) | Etkisi ölçülmedi. |
 | BCLK | PCIe saatini de değiştirir. Önerilmez. |
 | Thermal Limit, PBO limitleri, daha derin Curve Optimizer | İşlemci saat tavanındadır ve güç sınırından uzaktır. Kazanç beklenmez. |
@@ -673,9 +685,8 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | Kesmeleri kayıt defteriyle başka çekirdeğe taşıma | Varsayılan yerleşim zaten CPU 0'dır. CS2'yi CPU 0'dan uzak tutmak daha basittir. |
 
 **Sıradaki adaylar (ölçülmedi):**
-1. **FCLK 2100, 2167 veya 2200:** Tahmini etki %0 ile %2 arasındadır. Kararsızlık WHEA 19 olarak görünür.
-2. **NVIDIA Low Latency Mode (On veya Ultra), yalnızca `cs2.exe` profilinde:** GPU yükü p95 %96 olduğu için etkisi olabilir.
-3. **tRDRDSCL ve tWRWRSCL 8'den 6'ya, tRDWR 20'den 18'e:** Düşük riskli ikincil zamanlamalardır. Tahmini etki %0 ile %1,5 arasındadır.
+1. **NVIDIA Low Latency Mode (On veya Ultra), yalnızca `cs2.exe` profilinde:** GPU yükü p95 %96 olduğu için etkisi olabilir.
+2. **tRDRDSCL ve tWRWRSCL 8'den 6'ya, tRDWR 20'den 18'e:** Düşük riskli ikincil zamanlamalardır. Tahmini etki %0 ile %1,5 arasındadır.
 
 ---
 
@@ -684,7 +695,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | Klasör veya dosya | İçerik |
 |---|---|
 | `README.md` | Bu rehber |
-| `ayarlar/hedef_ayarlar_2503.csv` | 125 hedef ayar. Menü yolu, değer, NVRAM konumu, beklenen ham değer ve ölçülen etki. |
+| `ayarlar/hedef_ayarlar_2503.csv` | 126 hedef ayar. Menü yolu, değer, NVRAM konumu, beklenen ham değer ve ölçülen etki. |
 | `kontrol/ayar_kontrol.ps1` | Canlı BIOS ve Windows durumunu hedef listeyle karşılaştırır. Salt okunur çalışır. |
 | `bench/` | CS2 benchmark otomasyonu ve analiz betikleri |
 | `nvram/` | BIOS okuma, görüntü alma, karşılaştırma ve döküm betikleri |
@@ -693,7 +704,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `gpu/` | Afterburner profil yazma ve ekran kartı A/B ölçüm betikleri |
 | `windows/` | CPU başına kesme/DPC ölçümü ve minidump özeti |
 | `data/kosular.csv` | BIOS testlerinin tüm benchmark koşuları ve maçlar (134 satır) |
-| `data/gpu_windows_kosular.csv` | Windows ve ekran kartı testlerinin CS2 koşuları (69 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
+| `data/gpu_windows_kosular.csv` | Windows, ekran kartı ve FCLK testlerinin CS2 koşuları (81 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
 | `data/gpu_superposition.csv` | Superposition 1080p Extreme puanları: stok, çekirdek ve bellek adımları, undervolt, çökmeler |
 | `data/gpu_kararlilik.csv` | Kararlılık testleri: OCCT, Kombustor, Superposition ve CS2. Süre, sonuç, saat, güç ve sıcaklık. |
 | `data/ozet.csv` | Test ve koşul başına medyan, en düşük ve en yüksek değerler |
