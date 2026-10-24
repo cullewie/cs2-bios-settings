@@ -62,6 +62,8 @@ Bu rehberi üç durumda kullanın:
 | Ekran kartı undervolt (VF eğrisi) | Fayda yok | Kullanmayın |
 | Resizable BAR, CS2 sürücü profilinde açık | Etki yok (−%0,04) | Sürücü varsayılanı (kapalı) kalsın |
 | CS2'yi Vulkan ile çalıştırma (`-vulkan`) | **−%6** | DX11 (varsayılan) kalsın |
+| `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,24**. P1 ve gecikme aynı. | Kullanın ([bölüm 8](#tam-ekran-iyileştirmelerini-kapatma-legacy-flip)) |
+| NVIDIA Low Latency Mode | Burada ölçülmedi. Dış veride (cs2kitchen, tıklama-ekran) etkisiz. | Varsayılan (kapalı) kalsın |
 | Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
 **Toplam (BIOS ve CPU 0, 19.10):** Ortalama FPS 911'den 970'e çıktı (**+%6,4**). Ortalama kare süresi 1,10 ms'den 1,03 ms'ye düştü. P99 değeri 2,99 ms'den 2,80 ms'ye düştü.
@@ -273,6 +275,7 @@ FACEIT şu ayarları denetler: Secure Boot, TPM 2.0, IOMMU ve Bellek Bütünlü�
 | Ethernet: Energy Efficient Ethernet | Kapalı | Aygıt Yöneticisi → ağ bağdaştırıcısı → Gelişmiş. Etkisi ölçülmedi. Bağlantı kısa bir süre kopar. |
 | Win32PrioritySeparation | Varsayılan (2) | Değiştirmeyin. Ayrıntı aşağıda. |
 | Kesme yerleşimi (Interrupt Affinity) | Varsayılan | Değiştirmeyin. GPU ve USB DPC işi zaten CPU 0'da çalışır. |
+| Tam ekran iyileştirmeleri (yalnızca `cs2.exe`) | Kapalı (Legacy Flip) | Aşağıdaki adımlar. Ölçülen kazanç +%1,24. |
 | Güç planı | En az işlemci durumu %100, çekirdek park etme kapalı | Değişiklik ölçülmedi. |
 
 ### CS2'yi CPU 0 dışında çalıştırma
@@ -296,6 +299,44 @@ CS2'yi NVIDIA App ile başlatırsanız CS2 yine `steam.exe` altında açılır v
 - Diğer çekirdeklerde DPC yok denecek kadar azdı.
 
 Windows, GPU ve USB işini zaten CPU 0'da çalıştırır. Bu nedenle kesmeleri kayıt defteriyle CPU 0'a bağlamak yeni bir şey değiştirmez. CS2'yi CPU 0'dan uzak tutmak, bu işi oyundan ayırır.
+
+**DPC ve kesme süreleri** (`windows/dpc_lat.ps1`, LatencyMon'un ölçtüğü değerler, kurulum gerekmez):
+
+| Durum | DPC/sn | En uzun DPC | En uzun kesme | 500 µs üstü | CPU 0 zamanı |
+|---|---|---|---|---|---|
+| Boşta, 60 sn | 1859 | 131 µs (nvlddmkm) | 72 µs | 0 | %2,4 |
+| CS2 benchmark | 9754 | 395 µs (nvlddmkm, dxgkrnl) | 156 µs | 0 | %23,2 |
+
+- Sürücü gecikmesi temizdir. En uzun DPC 500 µs sınırının altındadır.
+- CS2 sırasında CPU 0 zamanının %23'ü ekran kartı DPC ve kesmelerine gider. Diğer çekirdeklerde bu oran ~%0'dır.
+- Kesmeleri başka bir çekirdeğe taşımayın. Bu iş o zaman CS2'nin çekirdeklerine biner.
+
+### Tam ekran iyileştirmelerini kapatma (Legacy Flip)
+
+Windows, tam ekran oyunları varsayılan olarak "Independent Flip" kipinde sunar. Tam ekran iyileştirmeleri (FSO) kapatılınca CS2 "Legacy Flip" kipine geçer (gerçek tam ekran).
+
+1. CS2'yi kapatın.
+2. `...\Counter-Strike Global Offensive\game\bin\win64\cs2.exe` dosyasına sağ tıklayın. **Özellikler → Uyumluluk** seçin.
+3. **Tam ekran iyileştirmelerini devre dışı bırak** kutusunu işaretleyin ve **Tamam** seçin.
+4. CS2'yi yeniden açın.
+
+Aynı ayar kayıt defterinde şu değerdir: `HKCU\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`, ad = `cs2.exe` dosyasının tam yolu, değer = `~ DISABLEDXMAXIMIZEDWINDOWEDMODE`. Geri almak için kutunun işaretini kaldırın.
+
+**Kontrol:** PresentMon'da `PresentMode` sütunu **Hardware: Legacy Flip** göstermelidir. Varsayılan durumda **Hardware: Independent Flip** gösterir.
+
+**Ölçüm** (iki taze CS2 oturumu, sırayla, her biri 6 koşu, GPU +425, CPU 0 hariç):
+
+| | Independent Flip (varsayılan) | Legacy Flip (FSO kapalı) |
+|---|---|---|
+| Ortalama FPS (VProf, 6 koşu) | 982,7 | 994,9 (**+%1,24**, 6 koşunun 6'sında yüksek) |
+| P1 (VProf) | 346,5 | 348,4 (aynı) |
+| Kare başlangıcından ekrana (PresentMon, ortalama / p99) | 1,94 / 3,66 ms | 1,95 / 3,57 ms (aynı) |
+| GPU meşgul süresi | 0,96 ms | 0,95 ms |
+
+- Fark oturumlar arası sapmanın (%0,3–0,55) üstündedir.
+- Independent Flip'te CPU her karede ~0,40 ms `Present` çağrısında bekler. Legacy Flip'te bu bekleme yoktur.
+- **Yan etki:** Alt-Tab sırasında ekran kipi değişir ve ekran kısa bir süre kararır. Bazı bindirmeler ve bildirimler oyunun üstünde görünmeyebilir.
+- Sonuç sisteme göre değişebilir. İki kipi kendi sisteminizde deneyin.
 
 ### Win32PrioritySeparation
 
@@ -362,7 +403,7 @@ Kart: GIGABYTE RTX 5070 Ti AERO OC 16G. Her kart farklıdır. Bu değerleri doğ
 
 CS2 yükünde çekirdek yaklaşık 3195 MHz'de çalışır (stok 2775 MHz). Bellek 17001 MHz'de çalışır (stok 14001 MHz, 28 Gbps yerine 34 Gbps). CS2'de güç yaklaşık 150 W'tır. Güç sınırına ulaşılmaz.
 
-**Neden +450 değil:** +450 de kararlıdır (aşağıdaki testlerin hepsini geçti, yaklaşık 1 saat gerçek oyunda sorun çıkmadı). Ama CS2, +400, +425 ve +450 ile aynı FPS'i verdi. +425, aynı FPS'i çökme sınırına 25 MHz daha fazla payla verir. +450 isteyenler için Profil 2'de saklanır.
+**Neden +450 değil:** +450 aşağıdaki stres testlerinin hepsini geçti ve yaklaşık 1 saat gerçek oyunda sorun çıkarmadı. Ama 24.10'da bir CS2 benchmark koşusunda sürücü hatası verdi (`nvlddmkm` 153, CS2 dondu). Ayrıca CS2, +400, +425 ve +450 ile aynı FPS'i verdi. +425, aynı FPS'i çökme sınırına 25 MHz daha fazla payla verir. +450'yi kullanmayın.
 
 **CS2'nin çalıştığı frekans stres testlerinden yüksektir.** CS2 hafif bir yüktür. Kart V/F eğrisinin en üst noktasında çalışır. +450 ile CS2'de 3225 MHz, OCCT'nin hafif fazında 3210 MHz, Kombustor'da 3172 MHz ölçüldü. Günlük değeri seçerken CS2'deki saati çökme sınırıyla karşılaştırın.
 
@@ -557,6 +598,14 @@ CS2 güncellemesi sonuçları %1 ile %2 arasında kaydırabilir. Bir ölçümde 
 
 VProf bazı kareleri analizden çıkarır. Bu nedenle P1 ve P99 değerleri, PresentMon veya CapFrameX değerleriyle birebir aynı değildir.
 
+### PresentMon
+
+- Sürüm 2.6.0, konsol uygulaması (Intel, GitHub). Kurulum gerekmez. `windows/pm_ab.ps1` CS2 oturumu boyunca kayıt alır ve her koşu için özet çıkarır.
+- **Gecikme:** "Kare başlangıcından ekrana" = (sunum zamanı − CPU kare başlangıcı) + `MsUntilDisplayed`. Fare, USB ve ekran panelinin süresi dahil değildir. Tıklamadan ekrana süre için donanım gerekir (LDAT, OSLTT veya ışık sensörlü Teensy).
+- CS2, Reflex kapalıyken PC Latency verisi göndermez (`MsPCLatency` = NA).
+- **PresentMon'un FPS değerini kullanmayın.** Bu sistemde ETW olay kaybı yüzünden kareleri eksik saydı: Independent Flip'te %3, Legacy Flip'te %10 eksik. FPS için VProf kullanıldı. Gecikme ve sunum kipi değerleri kaydedilen karelerden hesaplanır.
+- `--date_time` çıktısındaki saat bu sistemde yerel saatten 3 saat ileriydi. Betik farkı kendisi düzeltir.
+
 ---
 
 ## 13. Araçlar
@@ -628,6 +677,8 @@ Bu betikler yönetici PowerShell ister. MSI Afterburner ve `nvidia-smi` gerekir.
 |---|---|
 | `irq_sample.ps1` | Her saniye CPU başına kesme ve DPC sayısını ölçer. Fare hareketli ve durgun saniyeleri ayırır. Sonuçta CPU başına farkı yazar. `-OutCsv` ile ham veriyi kaydeder. |
 | `dump_ozet.ps1` | Minidump dosyasını (`.dmp`, `.mdmp`) okur. İstisna kodunu, hatalı modülü ve yığındaki modülleri yazar. |
+| `dpc_lat.ps1` + `DpcEtl.cs` | DPC ve kesme sürelerini Windows'un çekirdek izleme kaydıyla ölçer (LatencyMon benzeri). Sürücü bazında adet, ortalama ve en uzun süreyi yazar. `-Sec 60` boşta ölçer, `-Bench` bir CS2 koşusu sırasında ölçer. Yönetici ister. |
+| `pm_ab.ps1` + `PmRapor.cs` | PresentMon ile bir CS2 oturumunu kaydeder ve `gpu/cs2_gpu_ab.ps1` koşularını çalıştırır. Her koşu için sunum kipi, kare başlangıcından ekrana gecikme, CPU ve GPU meşgul süresini yazar. `PresentMon-2.6.0-x64.exe` dosyası aynı klasörde olmalıdır (`-PresentMon` ile değiştirilebilir). |
 
 ### `tools/`: BIOS ayar sözlüğü
 
@@ -653,6 +704,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | Ekran bir an kararıyor, oyun kapanıyor. Olay Görüntüleyicisi'nde `nvlddmkm` 153 veya 14 var. | Ekran kartı hız aşırtması kararsızdır (TDR). Çekirdeği 25 MHz düşürün. TDR sonrası sürücü ofsetleri ve güç sınırını sıfırlar. Afterburner'da profili yeniden yükleyin. |
 | Yeniden başlatmadan sonra ekran kartı stok saatte | Afterburner'ı açın ve Profil 1'i yükleyin ([bölüm 9](#9-ekran-kartı-hız-aşırtma)). |
 | CS2 oyundan çıkarken çöküyor. Olay günlüğünde `tier0.dll`, erişim ihlali. | CS2'nin kendi hatasıdır. Kapanış sırasında log sistemi kapatılırken olur. Hız aşırtmadan önce de vardı. Oyun içinde etkisi yoktur. |
+| Alt-Tab sırasında ekran kararıyor | Tam ekran iyileştirmeleri kapalıyken normaldir (gerçek tam ekran). İstemiyorsanız `cs2.exe` Uyumluluk sekmesindeki kutunun işaretini kaldırın. |
 | CS2 aniden kapandı. Döküm `soundsystem.dll` içinde. | Kablosuz kulaklık alıcısı oyun açıkken yeniden bağlanmıştır. CS2 ses aygıtını yeniden başlatırken çöker. CS2 açıkken alıcıyı çıkarıp takmayın. Dökümü `windows\dump_ozet.ps1` ile okuyun. |
 
 ---
@@ -663,7 +715,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 - **Tek sistem:** Ölçümler tek işlemci, tek RAM kiti ve tek anakartla yapıldı. Sonuçları başka sistemlere doğrudan uygulamayın.
 - **Oturum sapması:** Oturumlar arasında ±%0,6 sapma vardır. Bundan küçük farklar ayırt edilemez.
 - **BIOS karşılaştırmaları:** BIOS güncellemesi ve RAM ayarı aynı anda yapıldı. Bu nedenle FPS farkını yalnızca RAM ayarına bağlayamazsınız.
-- **Gecikme ölçülmedi:** LDAT veya Reflex Analyzer kullanılmadı. Değerlendirme kare sürelerine dayanır.
+- **Tıklamadan ekrana gecikme ölçülmedi:** LDAT veya Reflex Analyzer kullanılmadı. PresentMon ile kare başlangıcından ekrana süre ve Windows DPC/kesme süreleri ölçüldü.
 - **Benchmark ve maç farkı:** Benchmark haritasında bot vardır, sunucu yükü yoktur. Maçta ortalama FPS, benchmarka göre yaklaşık %27 düşük ölçüldü. Benchmark sonuçları maç performansının birebir karşılığı değildir.
 - **Ekran kartı kararlılığı:** Günlük ayar sentetik testlerle (toplam yaklaşık 2 saat 20 dakika) ve kısa CS2 koşularıyla doğrulandı. Uzun oyun oturumlarında ve sıcak ortamda kararlılığı ayrıca izleyin.
 - **CS2 sürümü:** Windows ve ekran kartı testleri, BIOS testlerinden sonraki bir CS2 sürümünde yapıldı. İki gruptaki FPS değerlerini doğrudan karşılaştırmayın.
@@ -685,8 +737,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | Kesmeleri kayıt defteriyle başka çekirdeğe taşıma | Varsayılan yerleşim zaten CPU 0'dır. CS2'yi CPU 0'dan uzak tutmak daha basittir. |
 
 **Sıradaki adaylar (ölçülmedi):**
-1. **NVIDIA Low Latency Mode (On veya Ultra), yalnızca `cs2.exe` profilinde:** GPU yükü p95 %96 olduğu için etkisi olabilir.
-2. **tRDRDSCL ve tWRWRSCL 8'den 6'ya, tRDWR 20'den 18'e:** Düşük riskli ikincil zamanlamalardır. Tahmini etki %0 ile %1,5 arasındadır.
+1. **tRDRDSCL ve tWRWRSCL 8'den 6'ya, tRDWR 20'den 18'e:** Düşük riskli ikincil zamanlamalardır. Tahmini etki %0 ile %1,5 arasındadır.
 
 ---
 
@@ -702,9 +753,9 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `hwinfo/` | HWiNFO sensör kaydı betikleri |
 | `tools/` | BIOS ayar sözlüğü oluşturma (`BiosIfr.cs`) ve EFI açıcı (`EfiDec3b.cs`) |
 | `gpu/` | Afterburner profil yazma ve ekran kartı A/B ölçüm betikleri |
-| `windows/` | CPU başına kesme/DPC ölçümü ve minidump özeti |
+| `windows/` | CPU başına kesme/DPC ölçümü, DPC/kesme süre ölçümü, PresentMon oturum ölçümü ve minidump özeti |
 | `data/kosular.csv` | BIOS testlerinin tüm benchmark koşuları ve maçlar (134 satır) |
-| `data/gpu_windows_kosular.csv` | Windows, ekran kartı ve FCLK testlerinin CS2 koşuları (81 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
+| `data/gpu_windows_kosular.csv` | Windows, ekran kartı, FCLK ve sunum kipi testlerinin CS2 koşuları (94 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
 | `data/gpu_superposition.csv` | Superposition 1080p Extreme puanları: stok, çekirdek ve bellek adımları, undervolt, çökmeler |
 | `data/gpu_kararlilik.csv` | Kararlılık testleri: OCCT, Kombustor, Superposition ve CS2. Süre, sonuç, saat, güç ve sıcaklık. |
 | `data/ozet.csv` | Test ve koşul başına medyan, en düşük ve en yüksek değerler |
