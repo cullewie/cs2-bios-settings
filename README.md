@@ -28,7 +28,7 @@ Bu rehber, şu sistem için ölçülmüş CS2 ayarlarını açıklar:
 - Bellek: DDR5-8000, SK Hynix M-die
 - Ekran kartı: RTX 5070 Ti
 
-BIOS ayarları 132 benchmark koşusu ve 2 maç ile ölçüldü. Windows ve ekran kartı ayarları 48 benchmark koşusu ile ölçüldü. Ekran kartı ayarları ayrıca Superposition, OCCT ve Kombustor ile sınandı.
+BIOS ayarları 132 benchmark koşusu ve 2 maç ile ölçüldü. Windows ve ekran kartı ayarları 90 benchmark koşusu ile ölçüldü. Ekran kartı ayarları ayrıca Superposition, OCCT ve Kombustor ile sınandı.
 
 Bu rehberi üç durumda kullanın:
 
@@ -82,7 +82,8 @@ Bu rehberi üç durumda kullanın:
 | Ekran kartı çekirdeği +400, +425 veya +450 (3172–3225 MHz) | Fark yok (±%0,3) | +425 aynı FPS'i çökme sınırına daha fazla payla verir |
 | Yalnızca ekran kartı belleği (+200'den +2750'ye) | +%0,2 | Zararsız. Kazancın neredeyse tamamı çekirdekten gelir. |
 | Ekran kartı Core Voltage %100 (Afterburner) | Etki yok. Saat aynı kalırken +8 W. | Voltajı 0 bırakın |
-| Ekran kartı undervolt (VF eğrisi) | Fayda yok | Kullanmayın |
+| Ekran kartı undervolt: VF eğrisi 3245 MHz @ 990 mV | FPS aynı (iki oturum ortalaması −%0,05). Voltaj −25 mV, güç −6 W. | Kullanmayın. Stres testlerini geçti, ama uzun CS2 oturumunda bir kez sürücü hatası verdi ([bölüm 9](#undervolt-vf-eğrisi)). |
+| Aynı voltajda (990 mV) daha düşük saat: 3195 veya 3145 MHz | −%0,4 ile −%0,6. Güç değişmez. | Kullanmayın |
 | Resizable BAR, CS2 sürücü profilinde açık | Etki yok (−%0,04) | Sürücü varsayılanı (kapalı) kalsın |
 | CS2'yi Vulkan ile çalıştırma (`-vulkan`) | **−%6** | DX11 (varsayılan) kalsın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** (A-B-A ile doğrulandı). P1 ve gecikme aynı. | Kullanın ([bölüm 8](#tam-ekran-iyileştirmelerini-kapatma-legacy-flip)) |
@@ -478,6 +479,42 @@ P1 değeri hiçbir ekran kartı ayarında ölçülebilir şekilde değişmedi.
 - Çökme frekansı değişmez. Superposition'da voltaj 0 ile 3225 MHz geçti, ~3250 MHz çöktü. Voltaj %100 ile 3232 MHz geçti, 3247 MHz çöktü.
 - Bu kartın frekans sınırı ~3240 MHz'dir ve voltaja bağlı değildir. Voltaj yalnızca ısı ve güç ekler.
 
+### Undervolt (VF eğrisi)
+
+Yöntem fpsheaven rehberinin "undervolt + hız aşırtma" adımıdır. Hedef frekansı seçin. Hedef voltaj noktasını bu frekansa çekin. Üstündeki noktaları aynı frekansta düzleyin. Voltajı 10 mV adımlarla düşürün. Çökmede durun ve geri gelin. `gpu/vf_egri_yaz.ps1` bu eğriyi Afterburner profil yuvasına yazar.
+
+Hedef 3245 MHz nominaldir (+425 ile aynı saat). Bu frekans eğrinin taban değerine göredir. Kart yükte daha düşük saatte çalışır: CS2'de 3187 MHz, Superposition'da 3150–3172 MHz.
+
+**Çökme sınırı (Superposition 1080p Extreme ve CS2):**
+
+| Hedef | Geçen | Çöken |
+|---|---|---|
+| 3245 MHz | 990 mV (uzun doğrulama, aşağıda). 975 mV (Superposition 2 koşu, CS2 8 koşu). | 970 mV (60. saniyede). 965 mV (yüklenirken). |
+| 3195 MHz | 965 mV (1 koşu) | 960 mV (ikinci koşunun 170. saniyesinde, ilk koşu geçti). 950 mV (anında). |
+
+- Çökme noktası rastgeledir. Aynı ayar bir koşuyu geçebilir, sonraki koşuda çökebilir. Bir veya iki temiz koşu kanıt değildir. Pay bırakın.
+- Saati 50 MHz düşürmek, voltajı yalnızca ~10 mV düşürmeye izin verdi.
+- Superposition puanı bu aralıkta saate bağlı değil. Puanlar yine iki kümede çıktı (~16050 ve ~16680).
+
+**Aynı CS2 oturumunda karşılaştırma (dengeli sıra, koşul başına 3 koşu):**
+
+| Profil | Ortalama FPS | CS2'de saat | Voltaj | Güç (HWiNFO) |
+|---|---|---|---|---|
+| +450 / +3000 / %116 | 953,9 | 3225 MHz | 1,010 V | 144 W |
+| 3245 MHz @ 990 mV | 951,2 (−%0,2) | 3187 MHz | 0,985 V | 138 W |
+| 3195 MHz @ 990 mV | 950,0 (−%0,45) | 3157 MHz | 0,985 V | 139 W |
+| 3145 MHz @ 990 mV | 948,3 (−%0,5) | 3112 MHz | 0,980 V | 136 W |
+
+- Önceki oturumda 3245 MHz @ 990 mV, +450'den +%0,11 yüksekti. İki oturumun ortalaması −%0,05'tir. Fark yoktur.
+- Aynı voltajda saati düşürmek FPS'i biraz düşürür, gücü değiştirmez. Güç voltaja bağlıdır. En iyi nokta, seçilen voltajda kararlı en yüksek saattir.
+- +450'de CS2 saati anlık 3232–3247 MHz'e çıkar. Bu, ölçülen çökme sınırıdır. 3245 MHz @ 990 mV'de anlık en yüksek değer 3195–3232 MHz'tir.
+
+**3245 MHz @ 990 mV doğrulaması:** Kombustor 1 saat, artefakt 0. OCCT 3D Adaptive Switch 1 saat hatasız. OCCT VRAM %98 20 dakika hatasız. CS2 benchmark art arda 19 koşu (49 dakika) ve 7 karşılaştırma koşusu sorunsuz. En yüksek sıcaklık 71 °C (OCCT), CS2'de 50 °C.
+
+**Sonra sürücü hatası:** Koşular bittikten sonra CS2 aynı profille açık kaldı. İlk koşudan yaklaşık 1 saat 45 dakika sonra sürücü hatası oldu (`nvlddmkm` 153, TDR). O anda yük kaydı yoktu. 990 mV, çöken 970 mV'nin yalnızca 20 mV üstündedir. Bu pay uzun oturum için yetmedi.
+
+**Sonuç:** Undervolt FPS kazandırmaz. Kazancı yaklaşık 5 W'tır. Daha fazla pay için saati düşürmek gerekir (örneğin 3195 MHz @ 990 mV), bu da FPS'i %0,4 düşürür. Undervolt kullanmayın. Günlük değer +450 / +3000 / %116 kalır. Sürücü hatası olursa +425'e düşün.
+
 ### Kendi sınırınızı bulma
 
 Yöntem, fpsheaven GPU hız aşırtma rehberinin akışını izler. Ölçüm aracı: Unigine Superposition 1.1, 1080p Extreme.
@@ -505,7 +542,7 @@ Yük geçişi, sabit yükten daha zordur. Superposition'da geçen değer OCCT Sw
 
 ### Notlar
 
-- **Undervolt:** VF eğrisinde 3217 MHz için 1000, 990 ve 985 mV denendi. Gerçek voltaj yine yaklaşık 1005 mV oldu. 970 mV'de güç 20 W düştü ama puan da düştü. Bu kartta undervolt fayda sağlamadı.
+- **Undervolt, ilk deneme:** 3217 MHz için 1000, 990 ve 985 mV hedeflerinde gerçek voltaj yaklaşık 1005 mV kaldı. Neden bulunamadı. Stok eğri şablonuyla yapılan ölçüm [Undervolt](#undervolt-vf-eğrisi) bölümündedir.
 - **TDR sonrası:** Sürücü güç sınırını ve ofsetleri sıfırlar. Afterburner'da profili yeniden yükleyin.
 - **NVIDIA App Otomatik Ayarlama:** Bu kartta +182 / +200 buldu. Yükte saat yaklaşık 2930 MHz oldu.
 - **Afterburner'sız yol:** NVIDIA sürücüsünün `nvml.dll` kütüphanesindeki `nvmlDeviceSetClockOffsets` işlevi ek sürücü kurmadan ofset yazar. Bellek birimi Afterburner biriminin 2 katıdır. Ayar yeniden başlatmada silinir. NVIDIA App ayarının üzerine yazar.
@@ -692,6 +729,7 @@ Bu betikler yönetici PowerShell ister. MSI Afterburner ve `nvidia-smi` gerekir.
 | `ab_profil_yaz.ps1` | Afterburner profil yuvasını yazar ve uygular (`-Slot 5 -Core 450 -Mem 3000 -PL 116`). Önce profil dosyasının yedeğini alır. Fan değeri verilmezse fan satırı yazmaz ve fan otomatik kalır. |
 | `cs2_gpu_ab.ps1` | Afterburner profillerini ve CPU 0 ayarını aynı CS2 oturumunda karşılaştırır. Her koşuda GPU kaydı tutar ve TDR olayını kontrol eder. Kararsızlık görürse durur. |
 | `gpu_saat_kilit_ab.ps1` | `nvidia-smi -lgc` ile GPU saatini sınırlar ve kilitsiz durumla karşılaştırır. Kilidi her durumda kaldırır. |
+| `vf_egri_yaz.ps1` | Undervolt VF eğrisini Afterburner profil yuvasına yazar ve uygular (`-TargetMv 990 -FreqMhz 3245 -Slot 2`). Şablon olarak profil dosyasındaki stok eğriyi kullanır. Önce profil dosyasının yedeğini alır. |
 
 ```powershell
 # 2x2 test: Profil 5 = stok (0/0/100), Profil 1 = günlük ayar. İkinci oturumda sırayı ters çevirin.
@@ -783,7 +821,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `gpu/` | Afterburner profil yazma ve ekran kartı A/B ölçüm betikleri |
 | `windows/` | CPU başına kesme/DPC ölçümü, DPC/kesme süre ölçümü, PresentMon oturum ölçümü ve minidump özeti |
 | `data/kosular.csv` | BIOS testlerinin tüm benchmark koşuları ve maçlar (134 satır) |
-| `data/gpu_windows_kosular.csv` | Windows, ekran kartı, FCLK ve sunum kipi testlerinin CS2 koşuları (100 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
+| `data/gpu_windows_kosular.csv` | Windows, ekran kartı, FCLK ve sunum kipi testlerinin CS2 koşuları (120 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
 | `data/gpu_superposition.csv` | Superposition 1080p Extreme puanları: stok, çekirdek ve bellek adımları, undervolt, çökmeler |
 | `data/gpu_kararlilik.csv` | Kararlılık testleri: OCCT, Kombustor, Superposition ve CS2. Süre, sonuç, saat, güç ve sıcaklık. |
 | `data/ozet.csv` | Test ve koşul başına medyan, en düşük ve en yüksek değerler |
@@ -803,11 +841,11 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `Maks1s_P50_ms`, `Maks1s_P95_ms` | Her saniyedeki en uzun karenin medyanı ve 95. yüzdeliği. Takılmayı gösterir. |
 | `Not` | Özel durumlar |
 
-**`gpu_windows_kosular.csv` sütunları:** `Oturum` (G1–G10), `Test`, `Kosul`, `GPU_ayar` (çekirdek / bellek / güç), `Benzesim` (0xFFFF tüm çekirdekler, 0xFFFE CPU 0 hariç), `Tip` (`kayit`, `isinma`, `gecersiz`, `cokme`), `Avg_FPS`, `P1_FPS`, `GPU_MHz`, `Bellek_MHz` (yük altında medyan, nvidia-smi birimi), `GPU_W`, `Not`. Boş hücre: değer kaydedilmedi.
+**`gpu_windows_kosular.csv` sütunları:** `Oturum` (G1–G18), `Test`, `Kosul`, `GPU_ayar` (çekirdek / bellek / güç), `Benzesim` (0xFFFF tüm çekirdekler, 0xFFFE CPU 0 hariç), `Tip` (`kayit`, `isinma`, `gecersiz`, `cokme`), `Avg_FPS`, `P1_FPS`, `GPU_MHz`, `Bellek_MHz` (yük altında medyan, nvidia-smi birimi), `GPU_W`, `Not`. Boş hücre: değer kaydedilmedi.
 
 **Ölçüm sayıları:**
 - **BIOS testleri:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
-- **Windows ve ekran kartı testleri:** 10 CS2 oturumunda 67 tamamlanan koşu (52 kayıt, 14 ısınma, 1 geçersiz) ve 2 yarıda kalan koşu (1 TDR, 1 ses aygıtı çökmesi). 37 Superposition koşusu (3'ü çökme ile bitti). 12 kararlılık testi.
+- **Windows ve ekran kartı testleri:** 18 CS2 oturumunda 118 tamamlanan koşu (90 kayıt, 27 ısınma, 1 geçersiz) ve 2 yarıda kalan koşu (1 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 22 kararlılık testi (11'i çökme ile bitti).
 
 ---
 
