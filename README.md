@@ -28,7 +28,7 @@ Bu rehber, şu sistem için ölçülmüş CS2 ayarlarını açıklar:
 - Bellek: DDR5-8000, SK Hynix M-die
 - Ekran kartı: RTX 5070 Ti
 
-BIOS ayarları 132 benchmark koşusu ve 2 maç ile ölçüldü. Windows ve ekran kartı ayarları 90 benchmark koşusu ile ölçüldü. Ekran kartı ayarları ayrıca Superposition, OCCT ve Kombustor ile sınandı.
+BIOS ayarları 132 benchmark koşusu ve 2 maç ile ölçüldü. Windows ve ekran kartı ayarları 99 benchmark koşusu ile ölçüldü. Ekran kartı ayarları ayrıca Superposition, OCCT ve Kombustor ile sınandı.
 
 Bu rehberi üç durumda kullanın:
 
@@ -78,15 +78,16 @@ Bu rehberi üç durumda kullanın:
 | FCLK 2200 MHz (Ai Tweaker ve AMD Overclocking menüsünde) | +%0,23. Sapma içinde. 6 koşunun 5'inde yön aynı. | Kullanılabilir. WHEA hatası olursa 2000'e dönün. |
 | iGPU kapalı, Global C-state Enabled, Power Supply Idle Control Typical (birlikte) | Etki yok (+%0,25) | İsteğe bağlı |
 | Yüksek işlem önceliği | Etki yok | Normal bırakın |
-| Ekran kartı hız aşırtma: çekirdek +400, bellek +2750, güç %116 | **+%2,6** | Kullanın. Günlük değer: +450 / +3000 / %116, çökme olursa +425 ([bölüm 9](#9-ekran-kartı-hız-aşırtma)) |
-| Ekran kartı çekirdeği +400, +425 veya +450 (3172–3225 MHz) | Fark yok (±%0,3) | +425 aynı FPS'i çökme sınırına daha fazla payla verir |
+| Ekran kartı hız aşırtma: çekirdek +400, bellek +2750, güç %116 | **+%2,6** (gölge Yüksek ile +425: **+%3,3**) | Kullanın. Günlük değer: +425 / +3000 / %116. +450 iki kez sürücü hatası verdi ([bölüm 9](#9-ekran-kartı-hız-aşırtma)) |
+| Ekran kartı çekirdeği +400, +425 veya +450 (3172–3225 MHz) | Fark yok (±%0,3) | +425 kullanın. Aynı FPS'i çökme sınırına daha fazla payla verir. |
 | Yalnızca ekran kartı belleği (+200'den +2750'ye) | +%0,2 | Zararsız. Kazancın neredeyse tamamı çekirdekten gelir. |
 | Ekran kartı Core Voltage %100 (Afterburner) | Etki yok. Saat aynı kalırken +8 W. | Voltajı 0 bırakın |
-| Ekran kartı undervolt: VF eğrisi 3245 MHz @ 990 mV | FPS aynı (iki oturum ortalaması −%0,05). Voltaj −25 mV, güç −6 W. | Kullanmayın. Stres testlerini geçti, ama uzun CS2 oturumunda bir kez sürücü hatası verdi ([bölüm 9](#undervolt-vf-eğrisi)). |
+| Ekran kartı undervolt: VF eğrisi 3245 MHz @ 990 mV | FPS aynı (iki oturum ortalaması −%0,05). Voltaj −25 mV, güç −6 W. | Kullanmayın. Stres testlerini geçti, ama uzun CS2 oturumunda bir kez sürücü hatası verdi. Gölge Yüksek ile de FPS kazancı yok ([bölüm 9](#undervolt-vf-eğrisi)). |
 | Aynı voltajda (990 mV) daha düşük saat: 3195 veya 3145 MHz | −%0,4 ile −%0,6. Güç değişmez. | Kullanmayın |
 | Resizable BAR, CS2 sürücü profilinde açık | Etki yok (−%0,04) | Sürücü varsayılanı (kapalı) kalsın |
 | CS2'yi Vulkan ile çalıştırma (`-vulkan`) | **−%6** | DX11 (varsayılan) kalsın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** (A-B-A ile doğrulandı). P1 ve gecikme aynı. | Kullanın ([bölüm 8](#tam-ekran-iyileştirmelerini-kapatma-legacy-flip)) |
+| CS2 gölge kalitesi Yüksek (Düşük yerine) | **−%5,8** (24.10'daki aynı ayarlı oturuma göre, 5 sıranın hepsinde −%5,7 ile −%6,1). P1 ~−%4, dağınık. | Oyun tercihi. 26.10'dan sonraki ölçümler Yüksek ile yapıldı ([bölüm 9](#gölge-kalitesi-yüksek-ile-2610)). |
 | NVIDIA Low Latency Mode | Burada ölçülmedi. Dış veride (cs2kitchen, tıklama-ekran) etkisiz. | Varsayılan (kapalı) kalsın |
 | Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
@@ -380,7 +381,7 @@ FACEIT'in bu yöntemle ilgili resmi bir açıklaması yoktur.
 
 ### CS2 oyun içi ayarları
 
-Ölçümler sırasında bu ayarlar sabit tutuldu. Kaynak: `cs2_video.txt`.
+Ölçümler sırasında bu ayarlar sabit tutuldu. Tek istisna gölge kalitesidir: 26.10'da Düşük'ten Yüksek'e alındı. Kaynak: `cs2_video.txt`.
 
 | Ayar | Değer |
 |---|---|
@@ -390,7 +391,8 @@ FACEIT'in bu yöntemle ilgili resmi bir açıklaması yoktur.
 | `fps_max` | 0 (sınırsız) |
 | MSAA | 2x |
 | Anizotropik filtre | 16x |
-| Gölge ve doku kalitesi | Düşük |
+| Gölge kalitesi | Yüksek (26.10'dan itibaren). Önceki ölçümler Düşük ile yapıldı. |
+| Doku kalitesi | Düşük |
 | Dinamik gölgeler | Tümü |
 | Parçacık ve ortam aydınlatması | Düşük veya kapalı |
 | FSR | Kapalı |
@@ -423,15 +425,15 @@ Kart: GIGABYTE RTX 5070 Ti AERO OC 16G. Her kart farklıdır. Bu değerleri doğ
 |---|---|
 | Core Voltage | 0. Değiştirmeyin. |
 | Power Limit | %116 (350 W, kartın en yüksek değeri) |
-| Core Clock | +450 MHz. Bir sürücü hatası daha olursa +425 yapın. |
+| Core Clock | +425 MHz. +450 iki kez sürücü hatası verdi. Bir hata daha olursa +400 yapın, FPS değişmez. |
 | Memory Clock | +3000 MHz. Sürücünün izin verdiği en yüksek değerdir. |
 | Fan | Otomatik (kartın kendi eğrisi) |
 
 Afterburner'da yalnızca bu profil vardır (yuva 1). Diğer yuvalar boştur.
 
-CS2 yükünde çekirdek yaklaşık 3225 MHz'de çalışır (stok 2775 MHz). Bellek 17001 MHz'de çalışır (stok 14001 MHz, 28 Gbps yerine 34 Gbps). CS2'de güç yaklaşık 155 W'tır. Güç sınırına ulaşılmaz.
+CS2 yükünde çekirdek yaklaşık 3195 MHz'de çalışır (stok 2775 MHz). Bellek 17001 MHz'de çalışır (stok 14001 MHz, 28 Gbps yerine 34 Gbps). CS2'de güç gölge Düşük ile yaklaşık 150 W, gölge Yüksek ile 165 W'tır. Güç sınırına ulaşılmaz.
 
-**+450 ve +425:** +450 aşağıdaki stres testlerinin hepsini geçti ve yaklaşık 2 saat CS2'de sorun çıkarmadı. Ama 24.10'da bir CS2 benchmark koşusunda bir kez sürücü hatası verdi (`nvlddmkm` 153, CS2 dondu). Bu oturum, shader önbelleği temizlendikten sonraki ilk CS2 oturumuydu. +450'de saat anlık olarak 3247–3255 MHz'e çıkar. Bu, ölçülen çökme sınırına (3247–3250 MHz) eşittir. +425'te anlık en yüksek değer 3202–3225 MHz'tir. CS2, +400, +425 ve +450 ile aynı FPS'i verdi. Sürücü hatası tekrar ederse +425'e düşün. FPS kaybı olmaz.
+**+450 ve +425:** +450 aşağıdaki stres testlerinin hepsini geçti. Ama CS2'de iki kez sürücü hatası verdi (`nvlddmkm` 153). 24.10'daki hata, shader önbelleği temizlendikten sonraki ilk oturumdaydı. 26.10'daki hata, yeni açılan CS2'nin ilk koşusundaydı. Kart soğukken (42–45 °C) ve yük hafifken (harita yüklenirken, menüde) +450'de saat 3255–3262 MHz'e çıkar. Bu, ölçülen çökme sınırının (3247–3250 MHz) üstündedir. Isınmış kartta en yüksek değer 3232–3247 MHz'tir. +425'te aynı soğuk durumda en yüksek değer 3232 MHz'tir. CS2, +400, +425 ve +450 ile aynı FPS'i verdi. Bu yüzden günlük değer +425'tir. Sürücü hatası olursa +400'e düşün. FPS kaybı olmaz.
 
 **CS2'nin çalıştığı frekans stres testlerinden yüksektir.** CS2 hafif bir yüktür. Kart V/F eğrisinin en üst noktasında çalışır. +450 ile CS2'de 3225 MHz, OCCT'nin hafif fazında 3210 MHz, Kombustor'da 3172 MHz ölçüldü. Günlük değeri seçerken CS2'deki saati çökme sınırıyla karşılaştırın.
 
@@ -442,7 +444,7 @@ CS2 yükünde çekirdek yaklaşık 3225 MHz'de çalışır (stok 2775 MHz). Bell
 3. Power Limit, Core Clock ve Memory Clock değerlerini girin ve **Apply** seçin.
 4. **Save** seçin ve **1** yuvasına kaydedin. Kilit simgesiyle profilleri kilitleyin. Kilit yalnızca kaydetmeyi engeller. Profili yüklemeyi engellemez.
 5. Her Windows açılışında Afterburner'ı açın ve **1** seçin. Afterburner'ın kendi açılışta uygulama ayarı bu sistemde yeniden başlatmadan sonra değerleri uygulamadı. `MSIAfterburner.exe -Profile1` komutu çalışır.
-6. Kontrol: Afterburner'da +450, +3000 ve 116 görünmelidir. `nvidia-smi` güç sınırını 350 W göstermelidir.
+6. Kontrol: Afterburner'da +425, +3000 ve 116 görünmelidir. `nvidia-smi` güç sınırını 350 W göstermelidir.
 
 Afterburner'ın RTCore64 sürücüsü, Bellek Bütünlüğü (HVCI) açıkken yüklendi. Secure Boot, TPM ve HVCI ayarları değişmedi.
 
@@ -513,7 +515,24 @@ Hedef 3245 MHz nominaldir (+425 ile aynı saat). Bu frekans eğrinin taban değe
 
 **Sonra sürücü hatası:** Koşular bittikten sonra CS2 aynı profille açık kaldı. İlk koşudan yaklaşık 1 saat 45 dakika sonra sürücü hatası oldu (`nvlddmkm` 153, TDR). O anda yük kaydı yoktu. 990 mV, çöken 970 mV'nin yalnızca 20 mV üstündedir. Bu pay uzun oturum için yetmedi.
 
-**Sonuç:** Undervolt FPS kazandırmaz. Kazancı yaklaşık 5 W'tır. Daha fazla pay için saati düşürmek gerekir (örneğin 3195 MHz @ 990 mV), bu da FPS'i %0,4 düşürür. Undervolt kullanmayın. Günlük değer +450 / +3000 / %116 kalır. Sürücü hatası olursa +425'e düşün.
+**Sonuç:** Undervolt FPS kazandırmaz. Kazancı yaklaşık 5 W'tır. Daha fazla pay için saati düşürmek gerekir (örneğin 3195 MHz @ 990 mV), bu da FPS'i %0,4 düşürür. Undervolt kullanmayın. Gölge Yüksek ile de sonuç aynıdır (aşağıda). Günlük değer +425 / +3000 / %116'dır.
+
+### Gölge kalitesi Yüksek ile (26.10)
+
+Gölge kalitesi Düşük'ten Yüksek'e alındıktan sonra üç profil aynı CS2 oturumunda ölçüldü. Sıra bloklu: önce 2 ısınma koşusu, sonra her profil art arda 3 koşu (A A A, B B B, C C C). CPU 0 hariç, Legacy Flip.
+
+| Profil | Ortalama FPS (3 koşu) | P1 | CS2'de saat | Güç | En yüksek sıcaklık |
+|---|---|---|---|---|---|
+| +425 / +3000 / %116 | 934,8 | 331,5 | 3187–3195 MHz | 165 W | 58 °C |
+| Stok | 902,2 | 345,7 | 2775 MHz | 152 W | 55 °C |
+| 3245 MHz @ 990 mV | 928,0 | 343,7 | 3187 MHz | 160 W | 58 °C |
+
+- Bloklu sırada FPS oturum boyunca koşu başına ~0,8 düşer. Bu kayma düzeltildiğinde +425, stoktan **+%3,3** hızlıdır (ham fark +%3,6). Gölge Düşük ile bu fark +%2,6 idi.
+- Undervolt, +425'ten %0,2 yavaştır (ham fark %0,7). Bu fark ölçüm sapmasının içindedir. Kazancı 5 W'tır.
+- Gölge Yüksek, GPU yükünü %90'dan %92–93'e, gücü ~151 W'tan 165 W'a çıkardı. Güç sınırı (350 W) ve sıcaklık sınırı yine uzaktır. Bu yüzden undervolt yine FPS kazandırmaz.
+- Undervolt, hafif yükte +425 ile aynı en yüksek saate (3232 MHz) çıkar, ama 20 mV daha düşük voltajda çalışır. Uzun oturumdaki sürücü hatası bununla açıklanabilir.
+- P1 değerleri 326 ile 357 arasında dağınıktır. Profiller arasında fark yoktur.
+- **Gölge Yüksek'in maliyeti:** 24.10'daki aynı ayarlı oturumla (+425, Legacy Flip, CPU 0 hariç, aynı CS2 sürümü ve BIOS) koşu sıraları eşleştirildi. Ortalama FPS beş sıranın hepsinde %5,7 ile %6,1 arasında düşüktür (ortalama **−%5,8**, yaklaşık 58 FPS). P1 yaklaşık %4 düşüktür, ama P1 dağınıktır.
 
 ### Kendi sınırınızı bulma
 
@@ -821,7 +840,7 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `gpu/` | Afterburner profil yazma ve ekran kartı A/B ölçüm betikleri |
 | `windows/` | CPU başına kesme/DPC ölçümü, DPC/kesme süre ölçümü, PresentMon oturum ölçümü ve minidump özeti |
 | `data/kosular.csv` | BIOS testlerinin tüm benchmark koşuları ve maçlar (134 satır) |
-| `data/gpu_windows_kosular.csv` | Windows, ekran kartı, FCLK ve sunum kipi testlerinin CS2 koşuları (120 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
+| `data/gpu_windows_kosular.csv` | Windows, ekran kartı, FCLK ve sunum kipi testlerinin CS2 koşuları (132 satır). GPU saati, bellek saati, güç ve (24.10'dan itibaren) efektif saat dahil. |
 | `data/gpu_superposition.csv` | Superposition 1080p Extreme puanları: stok, çekirdek ve bellek adımları, undervolt, çökmeler |
 | `data/gpu_kararlilik.csv` | Kararlılık testleri: OCCT, Kombustor, Superposition ve CS2. Süre, sonuç, saat, güç ve sıcaklık. |
 | `data/ozet.csv` | Test ve koşul başına medyan, en düşük ve en yüksek değerler |
@@ -841,11 +860,11 @@ Bu araç AMI Aptio BIOS kapsülünü (`.CAP`) açar. BIOS 2503 için 9304 ayar �
 | `Maks1s_P50_ms`, `Maks1s_P95_ms` | Her saniyedeki en uzun karenin medyanı ve 95. yüzdeliği. Takılmayı gösterir. |
 | `Not` | Özel durumlar |
 
-**`gpu_windows_kosular.csv` sütunları:** `Oturum` (G1–G18), `Test`, `Kosul`, `GPU_ayar` (çekirdek / bellek / güç), `Benzesim` (0xFFFF tüm çekirdekler, 0xFFFE CPU 0 hariç), `Tip` (`kayit`, `isinma`, `gecersiz`, `cokme`), `Avg_FPS`, `P1_FPS`, `GPU_MHz`, `Bellek_MHz` (yük altında medyan, nvidia-smi birimi), `GPU_W`, `Not`. Boş hücre: değer kaydedilmedi.
+**`gpu_windows_kosular.csv` sütunları:** `Oturum` (G1–G20), `Test`, `Kosul`, `GPU_ayar` (çekirdek / bellek / güç), `Benzesim` (0xFFFF tüm çekirdekler, 0xFFFE CPU 0 hariç), `Tip` (`kayit`, `isinma`, `gecersiz`, `cokme`), `Avg_FPS`, `P1_FPS`, `GPU_MHz`, `Bellek_MHz` (yük altında medyan, nvidia-smi birimi), `GPU_W`, `Not`. Boş hücre: değer kaydedilmedi.
 
 **Ölçüm sayıları:**
 - **BIOS testleri:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
-- **Windows ve ekran kartı testleri:** 18 CS2 oturumunda 118 tamamlanan koşu (90 kayıt, 27 ısınma, 1 geçersiz) ve 2 yarıda kalan koşu (1 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 22 kararlılık testi (11'i çökme ile bitti).
+- **Windows ve ekran kartı testleri:** 20 CS2 oturumunda 129 tamamlanan koşu (99 kayıt, 29 ısınma, 1 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
 
 ---
 
