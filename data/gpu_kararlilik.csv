@@ -21,3 +21,5 @@
 "2026-10-25","VF 3195 MHz @ 960 mV / +3000 / 116","Superposition 1.1","1080p Extreme","3","TDR","3150","230","61","ikinci kosunun ~170. saniyesinde; ilk kosu gecti"
 "2026-10-25","VF 3195 MHz @ 950 mV / +3000 / 116","Superposition 1.1","1080p Extreme","0","TDR","","","","kosu basinda"
 "2026-10-25","VF 3245 MHz @ 990 mV / +3000 / 116","CS2 benchmark","workshop 3240880604, 19 kosu art arda, sonra CS2 ayni profille acik kaldi","105","TDR","3187","145","50","19 kosu (49 dk) temiz; ilk kosudan ~105 dk sonra nvlddmkm 153; cokme aninda yuk kaydi yok"
+"2026-10-26","+450/+3000/116","CS2 benchmark","workshop 3240880604; yeni acilan CS2'nin ilk kosusu, golge Yuksek","1","TDR","3255","154","56","soguk kart (43-45 C) hafif yukte 3255-3262 MHz; nvlddmkm 153, CS2 coktu"
+"2026-10-26","+425/+3000/116","CS2 benchmark","workshop 3240880604; yeni acilan CS2, 5 kosu (soguk acilis dahil), golge Yuksek","13","gecti","3187-3195","165","58","hafif yukte en yuksek saat 3232 MHz; surucu olayi 0"
