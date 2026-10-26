@@ -10,7 +10,9 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 - İngilizce giriş sayfası: [README.en.md](README.en.md).
 - [Veri sözlüğü](data/README.md), [betik başvurusu](scripts/README.md) ve [hedef ayar listesi açıklaması](config/README.md).
 - [LICENSE](LICENSE) (MIT), [CITATION.cff](CITATION.cff), [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md), sorun ve pull request şablonları, `.gitattributes`, `.editorconfig` ve `.gitignore`.
-- Gölge kalitesi Yüksek ile profil karşılaştırması: +425 stoğa göre +%3,3, undervolt −%0,2 (sapma içinde). Gölge Yüksek'in maliyeti −%5,8.
+- RAM ve BCLK ölçümleri ([BIOS](docs/bios.md#ddr5-6000-11-alternatifi)): DDR5-6000 CL28 1:1 ile DDR5-8000 Gear 2 arasında ölçülebilir fark yok (+%0,2 ile +%0,4, A-B-A). 6200 1:1, 6000 ile aynı. 6400 1:1 iki açılışta mavi ekran verdi. BCLK 101 +%0,4 verdi, önerilmez. BCLK 102 açılmadı. Veri: [`data/windows-gpu-runs.csv`](data/windows-gpu-runs.csv) `G21`–`G25`.
+- Sorun giderme: RAM frekansından sonra mavi ekran ve BCLK sonrası açılmama.
+- Gölge kalitesi Yüksek ile profil karşılaştırması: +425 stoğa göre +%3,3, undervolt −%0,2 (sapma içinde). Gölge Yüksek'in maliyeti −%4,7.
 - Undervolt (VF eğrisi) ölçümleri: çökme sınırı, uzun doğrulama ve uzun CS2 oturumundaki sürücü hatası. Karar: kullanmayın.
 - Günler arasındaki FPS farklarının ölçülmüş nedenleri ([Sapma kaynakları](docs/methodology.md#sapma-kaynakları)).
 
@@ -26,6 +28,7 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 
 - Depoda lisans yoktu. MIT lisansı eklendi.
 - Güncelliğini yitirmiş notlar düzeltildi: sıradaki ölçüm, test edilmeyen konular, ekran kartı kararlılığı.
+- Gölge Yüksek'in maliyeti −%5,8 değil, **−%4,7**. İlk ölçümün yapıldığı oturum, aynı BIOS ve profilin tekrar ölçümünden %1,2 düşük çıktı. Oturumlar arası sapma notları buna göre güncellendi.
 - "Steam'i kalıcı olarak CPU 0 dışında başlatma" notu doğru bölüme (CPU 0) taşındı.
 
 ### Eski ve yeni yollar

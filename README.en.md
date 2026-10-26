@@ -59,6 +59,7 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 | GPU overclock (daily profile: +425 / +3000 / 116%) | **+2.6%** (shadows Low), **+3.3%** (shadows High) | Use |
 | Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** | Use |
 | Fullscreen optimizations off for `cs2.exe` (Legacy Flip) | **+1.13%** | Use |
+| DDR5-6000 CL28 1:1 RAM (instead of 8000 Gear 2) | +0.2% to +0.4% (within variation) | Either is fine |
 | DDR5 Nitro Mode 1-3-1 | **−1.4%** | Leave on Auto |
 | Run CS2 with Vulkan | **−6%** | Keep DX11 (default) |
 | GPU undervolt (VF curve) | Same FPS, −5 W | Do not use: driver reset in a long session |
@@ -112,9 +113,9 @@ Use the same order after a BIOS update or a CMOS reset. On a different system, r
 ## Method
 
 - **Benchmark:** Steam Workshop map `3240880604` (de_dust2), about 129 seconds. FPS values come from the CS2 VProf summary.
-- **BIOS tests:** Each setting was measured in a separate CS2 session: 6 warm-up runs and 6 recorded runs. Session-to-session variation is ±0.6%.
+- **BIOS tests:** Each setting was measured in a separate CS2 session: 6 warm-up runs and 6 recorded runs. Session-to-session variation is usually ±0.6%; once it was 1.2%. The RAM and BCLK tests were confirmed in A-B-A order.
 - **Windows and GPU tests:** Conditions were measured in the same CS2 session, in alternating or blocked order. Each run logged the GPU clock, power and driver errors.
-- **Data:** 132 runs and 2 matches in the BIOS tests. 132 runs, 53 Superposition runs and 24 stability tests in the Windows and GPU tests.
+- **Data:** 132 runs and 2 matches in the BIOS tests. 157 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM and BCLK tests.
 
 Details: [docs/methodology.md](docs/methodology.md) (Turkish).
 

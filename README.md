@@ -56,6 +56,7 @@ Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş CS2 ayarları. Ham veri, ölç�
 | Ekran kartı hız aşırtma (günlük profil: +425 / +3000 / %116) | **+%2,6** (gölge Düşük), **+%3,3** (gölge Yüksek) | Kullanın |
 | CS2'yi CPU 0 dışında çalıştırma | **+%1,8 ile +%2,5** | Kullanın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** | Kullanın |
+| RAM DDR5-6000 CL28 1:1 (8000 Gear 2 yerine) | +%0,2 ile +%0,4 (sapma içinde) | İkisi de olur |
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |
 | CS2'yi Vulkan ile çalıştırma | **−%6** | DX11 (varsayılan) kalsın |
 | Ekran kartı undervolt (VF eğrisi) | FPS aynı, güç −5 W | Kullanmayın: uzun oturumda sürücü hatası |
@@ -111,9 +112,9 @@ Tam liste: [Ölçüm yöntemi](docs/methodology.md#test-sistemi).
 ## Ölçüm yöntemi
 
 - **Benchmark:** Steam Workshop haritası `3240880604` (de_dust2), yaklaşık 129 saniye. FPS değerleri CS2'nin VProf özetinden alındı.
-- **BIOS testleri:** Her ayar ayrı bir CS2 oturumunda ölçüldü: 6 ısınma koşusu ve 6 kayıt koşusu. Oturumlar arası sapma ±%0,6'dır.
+- **BIOS testleri:** Her ayar ayrı bir CS2 oturumunda ölçüldü: 6 ısınma koşusu ve 6 kayıt koşusu. Oturumlar arası sapma genelde ±%0,6'dır, bir kez %1,2 görüldü. RAM ve BCLK testleri A-B-A sırasıyla doğrulandı.
 - **Windows ve ekran kartı testleri:** Koşullar aynı CS2 oturumunda dönüşümlü veya bloklu sırayla ölçüldü. Her koşuda GPU saati, gücü ve sürücü hataları kaydedildi.
-- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows ve ekran kartı testlerinde 132 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
+- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows, ekran kartı, RAM ve BCLK testlerinde 157 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
 
 Ayrıntı: [Ölçüm yöntemi](docs/methodology.md).
 
