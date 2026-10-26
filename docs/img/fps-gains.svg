@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="300" viewBox="0 0 720 300" role="img" aria-labelledby="t d">
+  <title id="t">Ölçülen ortalama FPS kazancı</title>
+  <desc id="d">CS2 benchmark, adım başına kesin sonuçlar: PBO ve Boost Override +200 yüzde 3,5; ekran kartı hız aşırtma yüzde 2,6; CS2'yi CPU 0 dışında çalıştırma yüzde 1,8 ile 2,5; Legacy Flip yüzde 1,1. Ölçüm sapması yüzde 0,6.</desc>
+  <style>
+    .s { fill: #fcfcfb; }
+    .bd { fill: none; stroke: rgba(11,11,11,0.10); }
+    .b { fill: #2a78d6; }
+    .t1 { fill: #0b0b0b; }
+    .t2 { fill: #52514e; }
+    .m { fill: #898781; }
+    .ax { stroke: #c3c2b7; stroke-width: 1; }
+    .ref { stroke: #898781; stroke-width: 1; stroke-dasharray: 3 3; }
+    text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .h { font-size: 16px; font-weight: 600; }
+    .sub { font-size: 13px; }
+    .lb { font-size: 13px; }
+    .v { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .sm { font-size: 12px; }
+    @media (prefers-color-scheme: dark) {
+      .s { fill: #1a1a19; }
+      .bd { stroke: rgba(255,255,255,0.10); }
+      .b { fill: #3987e5; }
+      .t1 { fill: #f0efec; }
+      .t2 { fill: #c3c2b7; }
+      .ax { stroke: #383835; }
+    }
+  </style>
+  <rect class="s" x="0.5" y="0.5" width="719" height="299" rx="8"/>
+  <rect class="bd" x="0.5" y="0.5" width="719" height="299" rx="8"/>
+
+  <text class="t1 h" x="24" y="34">Ölçülen ortalama FPS kazancı</text>
+  <text class="t2 sub" x="24" y="56">CS2 benchmark, adım başına, yalnız kesin sonuçlar · Ryzen 7 9800X3D + RTX 5070 Ti</text>
+
+  <!-- ölçüm sapması çizgisi: %0,6 -> x = 272 + 0.6*90 = 326 -->
+  <line class="ref" x1="326" y1="80" x2="326" y2="238"/>
+  <text class="m sm" x="326" y="254" text-anchor="middle">ölçüm sapması %0,6</text>
+
+  <!-- taban çizgisi -->
+  <line class="ax" x1="272" y1="80" x2="272" y2="238"/>
+
+  <!-- 1: PBO +3,5 -> 315 px -->
+  <text class="t1 lb" x="260" y="104" text-anchor="end">PBO + Boost Override +200</text>
+  <path class="b" d="M272,88 H583 A4,4 0 0 1 587,92 V106 A4,4 0 0 1 583,110 H272 Z"/>
+  <text class="t1 v" x="595" y="104">+%3,5</text>
+
+  <!-- 2: GPU OC +2,6 -> 234 px -->
+  <text class="t1 lb" x="260" y="144" text-anchor="end">Ekran kartı hız aşırtma</text>
+  <path class="b" d="M272,128 H502 A4,4 0 0 1 506,132 V146 A4,4 0 0 1 502,150 H272 Z"/>
+  <text class="t1 v" x="514" y="144">+%2,6</text>
+
+  <!-- 3: CPU 0 dışlama +1,8–2,5 (orta 2,15) -> 193.5 px -->
+  <text class="t1 lb" x="260" y="184" text-anchor="end">CS2'yi CPU 0 dışında çalıştırma</text>
+  <path class="b" d="M272,168 H461.5 A4,4 0 0 1 465.5,172 V186 A4,4 0 0 1 461.5,190 H272 Z"/>
+  <text class="t1 v" x="473.5" y="184">+%1,8–2,5</text>
+
+  <!-- 4: Legacy Flip +1,1 -> 101.7 px -->
+  <text class="t1 lb" x="260" y="224" text-anchor="end">Legacy Flip (FSO kapalı)</text>
+  <path class="b" d="M272,208 H369.7 A4,4 0 0 1 373.7,212 V226 A4,4 0 0 1 369.7,230 H272 Z"/>
+  <text class="t1 v" x="381.7" y="224">+%1,1</text>
+
+  <text class="t2 sm" x="24" y="282">Toplam ≈ +%10–11. RAM 8000: ortalama kesin değil, P1 +%4,3. Ham veri: data/</text>
+</svg>
