@@ -3,6 +3,8 @@
 | Belirti | Çözüm |
 |---|---|
 | RAM ayarından sonra açılmıyor veya bellek eğitimi bitmiyor | Bekleyin. Açılmazsa **Clear CMOS** yapın ve ayarları yeniden girin. Hâlâ açılmazsa bir kademe gevşetin (örneğin Trcd/Trp +2, Trfc1 +32). Bu gevşek değerler denenmedi. |
+| RAM frekansını artırdıktan sonra açılıştan kısa süre sonra mavi ekran (`0xA`, `IRQL_NOT_LESS_OR_EQUAL`) | Bellek kararsızdır. BIOS'ta **Tool → ASUS User Profile → Load from Profile** ile önceki ayarı yükleyin. Bu sistemde 6400 1:1, 6000 zamanlamalarıyla iki açılışta da bu hatayı verdi. |
+| BCLK değiştirdikten sonra açılmıyor veya BIOS varsayılana dönüyor | Bu anakartta BCLK, PCIe saatini de değiştirir. BCLK'yi 100 MHz yapın ve kayıtlı profili yükleyin. Bu sistemde 102 MHz açılmadı. |
 | Rastgele çökme veya WHEA hatası | Önce RAM sıcaklığını kontrol edin. tREFI 65535 sıcaklığa duyarlıdır. Sonra FCLK değerini iki menüde de 2000'e düşürün (WHEA 19 genellikle FCLK kararsızlığıdır). Gerekirse RAM'i EXPO veya XMP profiline alın. |
 | FACEIT, Secure Boot, TPM veya VBS hatası | [BIOS: FACEIT ve güvenlik](bios.md#faceit-ve-güvenlik) ayarlarını kontrol edin. Windows Güvenliği → Cihaz güvenliği → Çekirdek yalıtımı → Bellek bütünlüğü açık olmalıdır. |
 | Windows 8 mantıksal işlemci gösteriyor | SMT kapalı kalmıştır. Advanced → AMD CBS → SMT Control değerini Auto yapın ve bilgisayarı tamamen kapatıp açın. |

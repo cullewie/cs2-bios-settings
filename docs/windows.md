@@ -118,7 +118,7 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 
 `-condebug` seçeneği, VProf sonuçlarının `console.log` dosyasına yazılması için gerekir.
 
-**Gölge kalitesi Yüksek:** Ortalama FPS'i %5,8 düşürdü (ayrıntı: [Ekran kartı](gpu.md#gölge-kalitesi-yüksek-ile-2610)). Kare süresi olarak bu, kare başına yaklaşık 0,06 ms demektir. Karşılığında rakip gölgeleri daha uzaktan ve daha net çizilir.
+**Gölge kalitesi Yüksek:** Ortalama FPS'i %4,7 düşürdü (ayrıntı: [Ekran kartı](gpu.md#gölge-kalitesi-yüksek-ile-2610)). Kare süresi olarak bu, kare başına yaklaşık 0,05 ms demektir. Karşılığında rakip gölgeleri daha uzaktan ve daha net çizilir.
 
 ## FACEIT nedeniyle değiştirilmeyen ayarlar
 

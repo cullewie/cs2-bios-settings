@@ -30,13 +30,14 @@ Bu sayfa, sonuçların nasıl ölçüldüğünü ve nasıl okunacağını açık
 ## Karar kuralı
 
 - **Ayrı oturumlar (BIOS testleri):** Her ayar için 6 kayıt koşusunun medyanı ve aralığı karşılaştırıldı. Aralıklar çakışmıyorsa fark **kesin** kabul edildi. Fark %0,6'dan küçükse oturum sapmasından ayırt edilemez.
+- **Ayrı oturumlar (26.10 RAM ve BCLK testleri):** Her ayar ayrı bir oturumda 2 ısınma ve 3 kayıt koşusuyla ölçüldü. Koşular sıra numarasıyla eşleştirildi (eşleştirilmiş t testi, 5 sıra, |t| > 2,776). Aynı gün aynı BIOS ile iki oturum arasında %1,2 fark görüldü. Bu nedenle sonuçlar A-B-A sırasıyla doğrulandı: ayar A, ayar B, sonra yine ayar A.
 - **Aynı oturum (Windows testleri):** Koşullar dönüşümlü sırayla çalıştırıldı. Eşleştirilmiş t testi uygulandı. 6 turda |t| > 2,571 ve 3 turda |t| > 4,30 olduğunda fark anlamlı kabul edildi.
 
 ## Isınma koşuları ve sapma
 
 - Her yeni CS2 oturumunda ortalama FPS, ilk yaklaşık 6 koşuda %1,2 ile %1,3 düşer. Sonra değer sabitlenir.
 - Bu nedenle BIOS testlerinde her oturumun ilk 6 koşusu **ısınma koşusu** sayıldı. Bu koşular sonuçlara alınmadı.
-- Aynı BIOS ayarı iki ayrı oturumda ölçüldüğünde fark %0,55 çıktı.
+- Aynı BIOS ayarı iki ayrı oturumda ölçüldüğünde fark %0,03 ile %1,2 arasında çıktı (19.10: %0,55; 26.10: DDR5-6000 ile %0,03, DDR5-8000 ile %1,2).
 
 ## Ekran kartı ve Windows testleri
 
@@ -53,10 +54,10 @@ Aynı ayarlarla farklı günlerde farklı sonuç alınabilir. Ölçülen nedenle
 | Neden | Etki | Not |
 |---|---|---|
 | Oturum içi kayma | İlk ~6 koşuda −%1,2 ile −%1,3, sonra koşu başına ~0,8 ile 1,3 FPS | Isınma koşuları ve dengeli sıra ile giderilir |
-| Aynı ayar, iki ayrı oturum | %0,23 ile %0,55 | Bu değerden küçük farklar ayırt edilemez |
+| Aynı ayar, iki ayrı oturum | Genelde %0,03 ile %0,55. Bir kez %1,2. | 26.10'da bir gece oturumu, aynı BIOS'un öğleden sonraki ölçümünden %1,2 düşük çıktı. Nedeni bulunamadı. O oturum, bir sürücü hatasından (TDR) 3 dakika sonra yeniden başlatma yapılmadan başlamıştı. Ayrı oturum farklarını A-B-A ile doğrulayın. |
 | CS2 güncellemesi | %1 ile %2 | Her oturumdan önce `appmanifest_730.acf` içindeki `LastUpdated` değerine bakın |
 | Arka planda çalışan uygulama | Ortalama FPS ~−%3, P1 ~−%8 | 25.10: Spotify'ın görüntü işleme süreci yaklaşık 1 çekirdek kullandı. Aynı oturumdaki dönüşümlü karşılaştırmalar etkilenmedi. |
-| Oyun içi ayar | Gölge kalitesi Yüksek: ortalama FPS −%5,8 | 26.10'dan sonraki sonuçlar öncekilerle doğrudan karşılaştırılamaz |
+| Oyun içi ayar | Gölge kalitesi Yüksek: ortalama FPS −%4,7 | 26.10'dan sonraki sonuçlar öncekilerle doğrudan karşılaştırılamaz |
 
 > [!TIP]
 > Farklı günlerin sonuçlarını karşılaştırmadan önce CS2 sürümünü, oyun ayarlarını ve arka planda çalışan uygulamaları kontrol edin. En güvenilir karşılaştırma, aynı oturumda dönüşümlü sırayla yapılır.
@@ -84,7 +85,7 @@ P1 değeri tek koşuda çok değişkendir. Aynı oturumda, aynı ayarla 333 ile 
 ## Ölçüm sayıları
 
 - **BIOS testleri:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
-- **Windows ve ekran kartı testleri:** 20 CS2 oturumunda 129 tamamlanan koşu (99 kayıt, 29 ısınma, 1 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
+- **Windows, ekran kartı, RAM ve BCLK testleri:** 25 CS2 oturumunda 154 tamamlanan koşu (114 kayıt, 39 ısınma, 1 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
 
 Ham veri ve sütun açıklamaları: [data/README.md](../data/README.md).
 

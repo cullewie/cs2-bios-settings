@@ -19,6 +19,10 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 | Latency Under Load, Medium Load Boostit, LLC 6 | Sapma içinde | Auto bırakın |
 | SMT kapalı | Etki yok | Auto bırakın (açık) |
 | FCLK 2200 MHz (Ai Tweaker ve AMD Overclocking menüsünde) | +%0,23. Sapma içinde. 6 koşunun 5'inde yön aynı. | Kullanılabilir. WHEA hatası olursa 2000'e dönün. |
+| RAM DDR5-6000 CL28, UCLK = MEMCLK (1:1), 8000 Gear 2 yerine | +%0,2 ile +%0,4. Sapma içinde. P1 ve P99 aynı. | İkisi de kullanılabilir ([BIOS](bios.md#ddr5-6000-11-alternatifi)) |
+| RAM DDR5-6200 1:1 (aynı zamanlamalar) | 6000 ile aynı (−%0,2) | Kazanç yok |
+| RAM DDR5-6400 1:1 (aynı zamanlamalar) | Ölçülmedi. İki açılışta iki mavi ekran (`0xA`). | Kullanmayın |
+| BCLK 101 MHz | +%0,4 (A-B-A ile doğrulandı). P1 aynı. | 100 bırakın. PCIe saati de artar. 102 açılmadı ([BIOS](bios.md#bclk)). |
 | iGPU kapalı, Global C-state Enabled, Power Supply Idle Control Typical (birlikte) | Etki yok (+%0,25) | İsteğe bağlı |
 | Yüksek işlem önceliği | Etki yok | Normal bırakın |
 | Ekran kartı hız aşırtma: çekirdek +400, bellek +2750, güç %116 | **+%2,6** (gölge Yüksek ile +425: **+%3,3**) | Kullanın. Günlük değer: +425 / +3000 / %116 ([Ekran kartı](gpu.md#günlük-ayar-msi-afterburner-profil-1)) |
@@ -30,7 +34,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 | Resizable BAR, CS2 sürücü profilinde açık | Etki yok (−%0,04) | Sürücü varsayılanı (kapalı) kalsın |
 | CS2'yi Vulkan ile çalıştırma (`-vulkan`) | **−%6** | DX11 (varsayılan) kalsın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** (A-B-A ile doğrulandı). P1 ve gecikme aynı. | Kullanın ([Windows](windows.md#tam-ekran-iyileştirmelerini-kapatma-legacy-flip)) |
-| CS2 gölge kalitesi Yüksek (Düşük yerine) | **−%5,8** (24.10'daki aynı ayarlı oturuma göre, 5 sıranın hepsinde −%5,7 ile −%6,1). P1 ~−%4, dağınık. | Oyun tercihi ([Gölge Yüksek](gpu.md#gölge-kalitesi-yüksek-ile-2610)) |
+| CS2 gölge kalitesi Yüksek (Düşük yerine) | **−%4,7** (24.10'daki aynı ayarlı oturuma göre, 5 sıranın hepsinde −%4,4 ile −%5,0). P1 aynı. İlk ölçüm −%5,8 vermişti, ama o oturum %1,2 düşük çıktı. | Oyun tercihi ([Gölge Yüksek](gpu.md#gölge-kalitesi-yüksek-ile-2610)) |
 | NVIDIA Low Latency Mode | Burada ölçülmedi. Dış veride (cs2kitchen, tıklama-ekran) etkisiz. | Varsayılan (kapalı) kalsın |
 | Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
@@ -41,7 +45,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 **Windows ve ekran kartı (23.10):** Aynı BIOS ayarlarıyla, CPU 0 dışlama ve ekran kartı hız aşırtması birlikte ortalama FPS'i 926,8'den 971,4'e çıkardı (**+%4,8**). Ekran kartının payı +%2,6, CPU 0 dışlamanın payı +%2,2'dir. Ölçüm iki ayrı CS2 oturumunda ters sırayla yapıldı. Dört alt karşılaştırmanın hepsi aynı yönü gösterdi.
 
 > [!NOTE]
-> İki toplamı birbirine eklemeyin. İkisi de CPU 0 adımını içerir. Ayrıca iki ölçüm arasında CS2 güncellendi. Oturumlar arası sapma ±%0,6'dır. Bu nedenle BIOS toplamını **yaklaşık %6 ± 0,6** olarak okuyun.
+> İki toplamı birbirine eklemeyin. İkisi de CPU 0 adımını içerir. Ayrıca iki ölçüm arasında CS2 güncellendi. Oturumlar arası sapma genelde ±%0,6'dır, ama bir kez %1,2 görüldü. Bu nedenle BIOS toplamını **yaklaşık %6 ± 1** olarak okuyun.
 
 ## Darboğaz
 
@@ -57,9 +61,9 @@ Aynı ayarlarla ölçülen ortalama FPS günden güne değişti. Nedenler ölç�
 |---|---|---|
 | 24.10 | 989–996 | Gölge Düşük |
 | 25.10 | 950–966 | Arka planda bir uygulama yaklaşık 1 çekirdek kullandı (~−%3, P1 ~−%8) |
-| 26.10 | 935 | Gölge kalitesi Yüksek (−%5,8) |
+| 26.10 | 935–949 | Gölge kalitesi Yüksek (−%4,7). Aynı ayarlarla gece oturumu 935, öğleden sonra 946 ölçüldü (%1,2). Bu farkın nedeni bulunamadı. |
 
-BIOS, sürücü, RAM ve CS2 sürümü bu üç günde değişmedi. Ayrıntı: [Sapma kaynakları](methodology.md#sapma-kaynakları).
+BIOS, sürücü, RAM ve CS2 sürümü bu üç günde değişmedi (26.10'daki RAM testleri hariç). Ayrıntı: [Sapma kaynakları](methodology.md#sapma-kaynakları).
 
 Ham veri: [data/](../data/README.md).
 

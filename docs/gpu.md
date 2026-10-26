@@ -119,7 +119,7 @@ Gölge kalitesi Düşük'ten Yüksek'e alındıktan sonra üç profil aynı CS2 
 - Gölge Yüksek, GPU yükünü %90'dan %92–93'e, gücü ~151 W'tan 165 W'a çıkardı. Güç sınırı (350 W) ve sıcaklık sınırı yine uzaktır. Bu yüzden undervolt yine FPS kazandırmaz.
 - Undervolt, hafif yükte +425 ile aynı en yüksek saate (3232 MHz) çıkar, ama 20 mV daha düşük voltajda çalışır. Uzun oturumdaki sürücü hatası bununla açıklanabilir.
 - P1 değerleri 326 ile 357 arasında dağınıktır. Profiller arasında fark yoktur.
-- **Gölge Yüksek'in maliyeti:** 24.10'daki aynı ayarlı oturumla (+425, Legacy Flip, CPU 0 hariç, aynı CS2 sürümü ve BIOS) koşu sıraları eşleştirildi. Ortalama FPS beş sıranın hepsinde %5,7 ile %6,1 arasında düşüktür (ortalama **−%5,8**, yaklaşık 58 FPS). P1 yaklaşık %4 düşüktür, ama P1 dağınıktır.
+- **Gölge Yüksek'in maliyeti:** 24.10'daki aynı ayarlı oturumla (+425, Legacy Flip, CPU 0 hariç, aynı CS2 sürümü ve BIOS) koşu sıraları eşleştirildi. Bu oturuma göre fark −%5,8'dir. Ama aynı BIOS ve aynı profil öğleden sonra yeniden ölçüldüğünde bu oturumdan %1,2 yüksek çıktı ([Sapma kaynakları](methodology.md#sapma-kaynakları)). Tekrar ölçümle ortalama FPS beş sıranın hepsinde %4,4 ile %5,0 arasında düşüktür (ortalama **−%4,7**, yaklaşık 47 FPS). P1 değişmedi. Bu tablodaki profil karşılaştırmaları aynı oturumda yapıldığı için geçerlidir.
 
 ## Kendi sınırınızı bulma
 

@@ -5,7 +5,7 @@ Sonuçları yorumlarken bu sınırları göz önünde tutun.
 ## Ölçümün sınırları
 
 - **Tek sistem:** Ölçümler tek işlemci, tek RAM kiti, tek anakart ve tek ekran kartıyla yapıldı. Sonuçları başka sistemlere doğrudan uygulamayın.
-- **Oturum sapması:** Oturumlar arasında ±%0,6 sapma vardır. Bundan küçük farklar ayırt edilemez.
+- **Oturum sapması:** Oturumlar arasında genelde ±%0,6 sapma vardır. Bir kez, aynı BIOS ile iki oturum arasında %1,2 fark görüldü. Ayrı oturumlarda ölçülen %1'den küçük farkları A-B-A ile doğrulamadan kesin saymayın.
 - **BIOS karşılaştırmaları:** BIOS güncellemesi ve RAM ayarı aynı anda yapıldı. Bu nedenle FPS farkını yalnızca RAM ayarına bağlayamazsınız.
 - **Tıklamadan ekrana gecikme ölçülmedi:** LDAT veya Reflex Analyzer kullanılmadı. PresentMon ile kare başlangıcından ekrana süre ve Windows DPC/kesme süreleri ölçüldü.
 - **Benchmark ve maç farkı:** Benchmark haritasında bot vardır, sunucu yükü yoktur. Maçta ortalama FPS, benchmarka göre yaklaşık %27 düşük ölçüldü. Benchmark sonuçları maç performansının birebir karşılığı değildir.
@@ -19,9 +19,8 @@ Sonuçları yorumlarken bu sınırları göz önünde tutun.
 | Konu | Neden |
 |---|---|
 | Secure Boot, TPM, IOMMU, HVCI, SVM, CSM | FACEIT denetler. Bu ayarlara dokunulmadı. |
-| DDR5-6000 ve 6400, 1:1 (UCLK = MEMCLK) | Henüz ölçülmedi. Ölçüm planlandı. |
+| DDR5-6400 1:1, gevşek zamanlamalar veya yüksek SOC voltajıyla | 6000 zamanlamalarıyla iki kez mavi ekran verdi. Gevşek ayarlar denenmedi. 6000 ve 6200 zaten 8000 ile aynı FPS'i verdi. |
 | CS2 grafik ayarları (MSAA, Reflex vb.) | Gölge kalitesi dışında ölçülmedi. |
-| BCLK | PCIe saatini de değiştirir. Önerilmez. |
 | Thermal Limit, PBO limitleri, daha derin Curve Optimizer | İşlemci saat tavanındadır ve güç sınırından uzaktır. Kazanç beklenmez. |
 | Turbo Game Mode, Gaming Adaptive CCD Parker | Çift CCD'li işlemciler içindir. 9800X3D tek CCD'lidir. |
 | Process Lasso, PBO2 Tuner gibi çekirdek sürücüsü yükleyen araçlar | Kullanılmadı. |
@@ -32,7 +31,7 @@ Sonuçları yorumlarken bu sınırları göz önünde tutun.
 
 ## Sıradaki ölçüm
 
-- **DDR5-6000 CL28, 1:1:** 8000 MT/s (Gear 2) ile karşılaştırma. Temiz geçerse 6200 ve 6400 MT/s, 1:1.
+Planlanmış ölçüm yok. BIOS, RAM, Windows ve ekran kartı tarafında ölçülebilir kazanç beklenen aday kalmadı.
 
 ---
 
