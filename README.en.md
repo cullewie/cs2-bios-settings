@@ -132,10 +132,12 @@ Details: [docs/methodology.md](docs/methodology.md) (Turkish).
 │   ├── gpu/        Afterburner profiles and GPU measurement
 │   ├── hwinfo/     HWiNFO sensor logging
 │   └── windows/    Interrupt, DPC, PresentMon and dump analysis
-├── .github/        Issue templates
+├── .github/        Issue and pull request templates
 ├── CHANGELOG.md    Change log
 ├── CITATION.cff    Citation metadata
+├── CODE_OF_CONDUCT.md  Code of conduct (Turkish)
 ├── CONTRIBUTING.md Contribution guide
+├── SECURITY.md     Security policy (Turkish)
 └── LICENSE         MIT license
 ```
 

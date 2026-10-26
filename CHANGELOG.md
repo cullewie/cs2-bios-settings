@@ -9,7 +9,7 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 - Belgeler `docs/` klasöründe ayrı sayfalara bölündü: [BIOS](docs/bios.md), [Windows ve CS2](docs/windows.md), [ekran kartı](docs/gpu.md), [kontrol](docs/verification.md), [uyarlama](docs/adapting.md), [sonuçlar](docs/results.md), [ölçüm yöntemi](docs/methodology.md), [sorun giderme](docs/troubleshooting.md) ve [sınırlar](docs/limitations.md).
 - İngilizce giriş sayfası: [README.en.md](README.en.md).
 - [Veri sözlüğü](data/README.md), [betik başvurusu](scripts/README.md) ve [hedef ayar listesi açıklaması](config/README.md).
-- [LICENSE](LICENSE) (MIT), [CITATION.cff](CITATION.cff), [CONTRIBUTING.md](CONTRIBUTING.md), sorun şablonları, `.gitattributes`, `.editorconfig` ve `.gitignore`.
+- [LICENSE](LICENSE) (MIT), [CITATION.cff](CITATION.cff), [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md), sorun ve pull request şablonları, `.gitattributes`, `.editorconfig` ve `.gitignore`.
 - Gölge kalitesi Yüksek ile profil karşılaştırması: +425 stoğa göre +%3,3, undervolt −%0,2 (sapma içinde). Gölge Yüksek'in maliyeti −%5,8.
 - Undervolt (VF eğrisi) ölçümleri: çökme sınırı, uzun doğrulama ve uzun CS2 oturumundaki sürücü hatası. Karar: kullanmayın.
 - Günler arasındaki FPS farklarının ölçülmüş nedenleri ([Sapma kaynakları](docs/methodology.md#sapma-kaynakları)).

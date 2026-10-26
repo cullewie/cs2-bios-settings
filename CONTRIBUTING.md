@@ -2,6 +2,8 @@
 
 Katkılarınız memnuniyetle karşılanır. Bu rehber tek bir sistemin ölçümlerine dayanır. Başka sistemlerden gelen sonuçlar rehberi daha yararlı yapar.
 
+Katkı verirken [davranış kurallarına](CODE_OF_CONDUCT.md) uyun. Güvenlik sorunlarını [SECURITY.md](SECURITY.md) dosyasındaki yolla bildirin.
+
 ## Ölçüm sonucu paylaşma
 
 Yeni bir sorun (issue) açın ve **Ölçüm sonucu** şablonunu seçin. Şu bilgileri ekleyin:

@@ -131,10 +131,12 @@ Ayrıntı: [Ölçüm yöntemi](docs/methodology.md).
 │   ├── gpu/        Afterburner profilleri ve ekran kartı ölçümü
 │   ├── hwinfo/     HWiNFO sensör kaydı
 │   └── windows/    Kesme, DPC, PresentMon ve döküm analizi
-├── .github/        Sorun şablonları
+├── .github/        Sorun ve pull request şablonları
 ├── CHANGELOG.md    Değişiklik günlüğü
 ├── CITATION.cff    Atıf bilgisi
+├── CODE_OF_CONDUCT.md  Davranış kuralları
 ├── CONTRIBUTING.md Katkı rehberi
+├── SECURITY.md     Güvenlik politikası
 └── LICENSE         MIT lisansı
 ```
 
