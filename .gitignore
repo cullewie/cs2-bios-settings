@@ -1,0 +1,13 @@
+# Betik çıktıları
+bench_progress.txt
+bench_stop.txt
+scripts/**/sonuc/
+scripts/console_log/
+*.etl
+
+# PresentMon ayrıca indirilir
+scripts/windows/PresentMon-*.exe
+
+# Windows
+Thumbs.db
+desktop.ini

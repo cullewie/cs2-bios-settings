@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "Bu depodaki verileri veya rehberi kullanırsanız lütfen aşağıdaki bilgilerle atıf yapın."
+title: "cs2-bios-settings: CS2 BIOS, Windows ve ekran kartı ayar rehberi"
+type: dataset
+authors:
+  - name: "cullewie"
+abstract: "Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş Counter-Strike 2 ayarları: BIOS, Windows ve ekran kartı. Ham benchmark verileri, ölçüm betikleri ve ayar kontrol aracı."
+repository-code: "https://github.com/cullewie/cs2-bios-settings"
+url: "https://github.com/cullewie/cs2-bios-settings"
+license: MIT
+date-released: "2026-10-26"
+keywords:
+  - counter-strike-2
+  - benchmark
+  - bios
+  - ryzen-9800x3d
+  - rtx-5070-ti
+  - ddr5
+  - overclocking
+  - powershell

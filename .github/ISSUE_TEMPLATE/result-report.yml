@@ -1,0 +1,63 @@
+name: Ölçüm sonucu
+description: Kendi sisteminizdeki bir ayarın ölçülen etkisini paylaşın.
+title: "[Sonuç] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Teşekkürler. Ölçüm kuralları için [CONTRIBUTING.md](https://github.com/cullewie/cs2-bios-settings/blob/main/CONTRIBUTING.md) dosyasını okuyun.
+        Kişisel bilgi (kullanıcı adı, PC adı, IP adresi, seri numarası) paylaşmayın. `console.log` dosyasının tamamını değil, yalnızca `[VProf]` satırlarını ekleyin.
+  - type: input
+    id: cpu
+    attributes:
+      label: İşlemci
+      placeholder: "Ryzen 7 9800X3D"
+    validations:
+      required: true
+  - type: input
+    id: board
+    attributes:
+      label: Anakart ve BIOS sürümü
+      placeholder: "ASUS ROG STRIX X870-A GAMING WIFI, 2503"
+    validations:
+      required: true
+  - type: input
+    id: ram
+    attributes:
+      label: Bellek (kit ve ayar)
+      placeholder: "2 × 24 GB SK Hynix M-die, DDR5-8000 CL34"
+  - type: input
+    id: gpu
+    attributes:
+      label: Ekran kartı ve sürücü sürümü
+      placeholder: "RTX 5070 Ti, NVIDIA 617.42"
+  - type: input
+    id: setting
+    attributes:
+      label: Değiştirilen ayar
+      placeholder: "PBO Advanced, Boost Override +200"
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Sonuçlar
+      description: Her koşul için ortalama FPS, P1 ve koşu sayısı.
+      placeholder: |
+        Önce: Avg 911.5, P1 335.0 (6 koşu)
+        Sonra: Avg 943.3, P1 348.4 (6 koşu)
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Yöntem
+      description: Harita, ısınma koşusu sayısı, aynı oturum mu, CS2 sürümü, oyun içi ayarlar.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Kontrol
+      options:
+        - label: Ölçüm sırasında FACEIT veya başka bir hile koruması kapalıydı.
+        - label: Paylaştığım metinde ve görsellerde kişisel bilgi yok.
+          required: true

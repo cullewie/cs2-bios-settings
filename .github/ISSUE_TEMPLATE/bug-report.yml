@@ -1,0 +1,33 @@
+name: Hata veya düzeltme
+description: Yanlış bilgi, kırık bağlantı veya çalışmayan betik bildirin.
+title: "[Hata] "
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Konu
+      options:
+        - Belge (README veya docs/)
+        - Betik (scripts/)
+        - Veri (data/ veya config/)
+        - Diğer
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Dosya ve bölüm
+      placeholder: "docs/bios.md, RAM bölümü"
+  - type: textarea
+    id: description
+    attributes:
+      label: Açıklama
+      description: Ne yanlış? Doğrusu ne olmalı?
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Betik çıktısı veya hata mesajı
+      description: Kullanıcı adı, klasör yolu ve PC adı gibi kişisel bilgileri çıkarın.
+      render: text
