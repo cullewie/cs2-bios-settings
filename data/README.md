@@ -20,7 +20,7 @@ Bu klasör, rehberdeki tüm sonuçların ham verisini içerir. Dosyalar CSV biç
 | [`bios-tests.csv`](bios-tests.csv) | 14 | Her BIOS testinin durumu, değişen ayar, yöntem ve sonuç |
 | [`bios-final-state.csv`](bios-final-state.csv) | 2336 | Güncel BIOS ayarlarının tam dökümü (26.10.2026) |
 | [`bios-aod-fields.csv`](bios-aod-fields.csv) | 227 | AMD Overclocking değişkeninin (AodSetupRpl) alanları |
-| [`windows-gpu-runs.csv`](windows-gpu-runs.csv) | 222 | Windows, ekran kartı, FCLK, sunum kipi, gölge, RAM, BCLK, sürücü, Curve Optimizer ve başlatma seçeneği testlerinin CS2 koşuları |
+| [`windows-gpu-runs.csv`](windows-gpu-runs.csv) | 240 | Windows, ekran kartı, FCLK, sunum kipi, gölge, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği ve custom OS testlerinin CS2 koşuları |
 | [`gpu-superposition.csv`](gpu-superposition.csv) | 53 | Unigine Superposition 1080p Extreme puanları |
 | [`gpu-stability.csv`](gpu-stability.csv) | 24 | Ekran kartı kararlılık testleri |
 
@@ -104,10 +104,12 @@ Windows ve ekran kartı testlerinin (23.10–02.11.2026) her CS2 koşusu. `G21` 
 
 `G26` … `G38` oturumları 26.10 ve 02.11 testleridir: NVIDIA sürücüsü 621.01 ve 621.12 (`G26`, `G28`), NVIDIA App 3D ayarları (`G27`), doku süzme kalitesi (`G29`, `G30`), Curve Optimizer −10 ve Auto (`G31`, `G32`) ve CS2 başlatma seçenekleri (`G33` … `G38`). `G33` … `G38` aynı Windows oturumunda ölçüldü. Her biri yeni bir CS2 işlemidir. `G33`, `G36` ve `G38` ek seçeneksiz kontrol bloklarıdır.
 
+`G39` … `G42` oturumları 02.11 custom OS paket testidir ([Windows: Custom OS ayarları](../docs/windows.md#custom-os-ayarları-atlasos-revios-rapidos)). `G40` … `G42` aynı Windows oturumunda A-B-A sırasıyla ölçüldü. Her biri yeni bir CS2 işlemidir. `G41`'de 9 hizmet geçici olarak durduruldu, Game DVR ve arka plan uygulamaları kapatıldı. `G40` ve `G42` kontrol bloklarıdır. `G39` ilk denemedir: betik hatası yüzünden ilk kayıt koşusundan sonra durdu. Bu koşu `gecersiz` olarak işaretlendi.
+
 | Sütun | Anlamı | Birim |
 |---|---|---|
 | `Tarih` | Koşunun tarihi | |
-| `Oturum` | CS2 oturumu: `G1` … `G38` | |
+| `Oturum` | CS2 oturumu: `G1` … `G42` | |
 | `Sira` | Koşunun oturumdaki sırası | |
 | `Test` | Test adı (örnek: `2x2`, `Sunum modu`, `Undervolt`, `Golge Yuksek`) | |
 | `Kosul` | Oturumdaki koşul etiketi. `W1`, `W2` = ısınma. | |
