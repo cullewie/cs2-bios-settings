@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="300" viewBox="0 0 720 300" role="img" aria-labelledby="t d">
   <title id="t">Ölçülen ortalama FPS kazancı</title>
-  <desc id="d">CS2 benchmark, adım başına kesin sonuçlar: PBO ve Boost Override +200 yüzde 3,5; ekran kartı hız aşırtma yüzde 2,6; CS2'yi CPU 0 dışında çalıştırma yüzde 1,8 ile 2,5; Legacy Flip yüzde 1,1. Ölçüm sapması yüzde 0,6.</desc>
+  <desc id="d">CS2 benchmark, adım başına kesin sonuçlar: PBO ve Boost Override +200 yüzde 3,5; ekran kartı hız aşırtma yüzde 2,6; CS2'yi CPU 0 dışında çalıştırma yüzde 1,8 ile 2,5; Legacy Flip yüzde 1,1. Ölçüm sapması yüzde 0,6. Tek sistemde ölçüldü. PBO adımında üç ayar birlikte değişti; çekirdek bazında CPU kararlılık testi yapılmadı.</desc>
   <style>
     .s { fill: #fcfcfb; }
     .bd { fill: none; stroke: rgba(11,11,11,0.10); }
@@ -58,5 +58,5 @@
   <path class="b" d="M272,208 H369.7 A4,4 0 0 1 373.7,212 V226 A4,4 0 0 1 369.7,230 H272 Z"/>
   <text class="t1 v" x="381.7" y="224">+%1,1</text>
 
-  <text class="t2 sm" x="24" y="282">Toplam ≈ +%10–11. RAM 8000: ortalama kesin değil, P1 +%4,3. Ham veri: data/</text>
+  <text class="t2 sm" x="24" y="282">Tek sistem. PBO: 3 ayar birlikte; çekirdek bazında kararlılık testi yok. Ham veri: data/</text>
 </svg>
