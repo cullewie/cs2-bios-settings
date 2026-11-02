@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Light WPR profile for PresentMon 2.6.0 offline analysis (cs2-bios-settings, scripts/windows).
+     Providers and keywords are the ones PresentMon enables in its real-time session, except Microsoft-Windows-Win32k
+     (input events; with an 8000 Hz mouse they overflow the real-time session). The system collector records process and
+     thread rundown only, so PresentMon etl_file mode can resolve process names. DxgKrnl and Kernel-Process need NonPagedMemory.
+     Use: wpr -start presentmon-light.wprp!PMLight -filemode, then wpr -stop trace.etl, then PresentMon etl_file trace.etl.
+     XML comments must not contain two hyphens in a row. -->
+<WindowsPerformanceRecorder Version="1.0">
+  <Profiles>
+    <SystemCollector Id="SC_PM" Name="NT Kernel Logger">
+      <BufferSize Value="1024"/>
+      <Buffers Value="64"/>
+    </SystemCollector>
+    <EventCollector Id="EC_PM" Name="PMLight Event Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="256"/>
+    </EventCollector>
+    <SystemProvider Id="SP_PM">
+      <Keywords>
+        <Keyword Value="ProcessThread"/>
+      </Keywords>
+    </SystemProvider>
+    <EventProvider Id="EP_D3D9" Name="783ACA0A-790E-4D7F-8451-AA850511C6B9" Level="255">
+      <Keywords><Keyword Value="0x8000000000000002"/></Keywords>
+    </EventProvider>
+    <EventProvider Id="EP_KernelProcess" Name="22FB2CD6-0E7B-422B-A0C7-2FAD1FD0E716" Level="4" NonPagedMemory="true">
+      <Keywords><Keyword Value="0x8000000000000010"/></Keywords>
+    </EventProvider>
+    <EventProvider Id="EP_DxgKrnl" Name="802EC45A-1E99-4B83-9920-87C98277BA9D" Level="4" NonPagedMemory="true">
+      <Keywords><Keyword Value="0x8000841"/></Keywords>
+    </EventProvider>
+    <EventProvider Id="EP_DwmCore" Name="9E9BBA3C-2E38-40CB-99F4-9E8281425164" Level="5">
+      <Keywords><Keyword Value="0x8000000000000081"/></Keywords>
+    </EventProvider>
+    <EventProvider Id="EP_P8C9D" Name="8C9DD1AD-E6E5-4B07-B455-684A9D879900" Level="5"/>
+    <EventProvider Id="EP_PAE4F" Name="AE4F8626-8265-40D1-A70B-11B64240E8E9" Level="4">
+      <Keywords><Keyword Value="0x1000000000000000"/></Keywords>
+    </EventProvider>
+    <EventProvider Id="EP_P65CD" Name="65CD4C8A-0848-4583-92A0-31C0FBAF00C0" Level="4"/>
+    <EventProvider Id="EP_DXGI" Name="CA11C036-0102-4A2D-A6AD-F03CFED5D3C9" Level="255">
+      <Keywords><Keyword Value="0x8000000000000002"/></Keywords>
+    </EventProvider>
+    <EventProvider Id="EP_PCL" Name="0D216F06-82A6-4D49-BC4F-8F38AE56EFAB" Level="5"/>
+    <Profile Id="PMLight.Verbose.File" Name="PMLight" Description="PresentMon light (no Win32k)" LoggingMode="File" DetailLevel="Verbose">
+      <Collectors>
+        <SystemCollectorId Value="SC_PM">
+          <SystemProviderId Value="SP_PM"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EC_PM">
+          <EventProviders>
+            <EventProviderId Value="EP_D3D9"/>
+            <EventProviderId Value="EP_KernelProcess"/>
+            <EventProviderId Value="EP_DxgKrnl"/>
+            <EventProviderId Value="EP_DwmCore"/>
+            <EventProviderId Value="EP_P8C9D"/>
+            <EventProviderId Value="EP_PAE4F"/>
+            <EventProviderId Value="EP_P65CD"/>
+            <EventProviderId Value="EP_DXGI"/>
+            <EventProviderId Value="EP_PCL"/>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+  </Profiles>
+</WindowsPerformanceRecorder>
