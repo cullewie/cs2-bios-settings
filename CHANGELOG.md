@@ -13,6 +13,10 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 
 - [`Measure-FrameLatency.ps1`](scripts/windows/Measure-FrameLatency.ps1): Plan alanı `L` ve `-BgPriority` eklendi. Koşu boyunca oturumdaki arka plan uygulamalarının önceliğini düşürür, sonra özgün öncelikleri geri yükler.
 
+### Düzeltildi
+
+- CPU 0 dışlamasının P1 etkisi: [Sonuçlar](docs/results.md) sayfası aynı anda "P1 +%7" ve "hiçbir Windows ayarı P1'i değiştirmedi" diyordu. 02.11 ölçümünde P1 koşuları örtüşüyor ve sonuç tek oturuma dayanıyor. P1 artışı artık "kesin değil" olarak yazılıyor ([Gecikme ve akıcılık](docs/windows.md#gecikme-ve-akıcılık)). README özetinde P1 yerine kare süresi p99'u (−%3, her koşuda ayrışıyor) yer alıyor.
+
 ## 2026-11-02
 
 ### Eklendi

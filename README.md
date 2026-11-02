@@ -54,7 +54,7 @@ Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş CS2 ayarları. Ham veri, ölç�
 |---|---|---|
 | PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanılabilir. CPU kararlılığını test edin. |
 | Ekran kartı hız aşırtma (günlük profil: +425 / +3000 / %116) | **+%2,6** (gölge Düşük), **+%3,3** (gölge Yüksek) | Kullanın |
-| CS2'yi CPU 0 dışında çalıştırma | **+%1,8 ile +%2,5** (P1 +%7, PC gecikmesi −0,07 ms) | Kullanın |
+| CS2'yi CPU 0 dışında çalıştırma | **+%1,8 ile +%2,5** (kare süresi p99 −%3, PC gecikmesi −0,07 ms) | Kullanın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** | Kullanın |
 | Elle RAM: DDR5-6000 CL28 1:1 (elle DDR5-8000 CL34 Gear 2 yerine) | +%0,2 ile +%0,4 (sapma içinde) | Güvenilir fark gösterilmedi. İkisi de bellek testi gerektirir. |
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |

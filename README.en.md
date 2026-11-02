@@ -57,7 +57,7 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 |---|---|---|
 | PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+3.5%** | Can be used. Test CPU stability. |
 | GPU overclock (daily profile: +425 / +3000 / 116%) | **+2.6%** (shadows Low), **+3.3%** (shadows High) | Use |
-| Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** (P1 +7%, PC latency −0.07 ms) | Use |
+| Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** (frame time p99 −3%, PC latency −0.07 ms) | Use |
 | Fullscreen optimizations off for `cs2.exe` (Legacy Flip) | **+1.13%** | Use |
 | Manual RAM: DDR5-6000 CL28 1:1 (instead of manual DDR5-8000 CL34 Gear 2) | +0.2% to +0.4% (within variation) | No reliable difference shown. Both need a memory test. |
 | DDR5 Nitro Mode 1-3-1 | **−1.4%** | Leave on Auto |
