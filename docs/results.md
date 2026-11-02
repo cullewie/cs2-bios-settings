@@ -10,17 +10,18 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 
 | Adım | Ortalama FPS | Karar |
 |---|---|---|
-| RAM 8000 (BIOS 2402'den 2503'e geçişle birlikte) | +%1,2. Sonuç kesin değil. P1 +%4,3 ve P99 −%4,0 kesin. | Kullanın |
-| PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanın |
+| RAM 8000 (BIOS 2402'den 2503'e geçişle birlikte) | +%1,2. Sonuç kesin değil. P1 +%4,3 ve P99 −%4,0 kesin. | Varsayılan değildir. İleri düzey seçenek. Bellek kararlılık testi gerektirir ([BIOS](bios.md#ddr5-8000-ileri-düzey)). |
+| PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanılabilir. Tek sistemde ölçüldü. Üç ayar birlikte değişti. Çekirdek bazında CPU kararlılık testi yok. Kendi sisteminizde test edin. |
 | CS2'yi CPU 0 dışında çalıştırma (Windows affinity) | **+%1,8 ile +%2,5** | Kullanın ([Windows](windows.md#cs2yi-cpu-0-dışında-çalıştırma)) |
-| Curve Optimizer All Cores −10 | −%0,3. Etki yok. | Açık bırakın (zararsız) |
-| Core Tuning Config for Gaming Level 2 | Doğrulanmadı | Açık bırakın (zararsız) |
+| Curve Optimizer All Cores −10 | −%0,3. Etki yok. 02.11'de Auto ile taze oturumlarda: −10 %0,33 yüksek, aynı gün sapma %0,32. Ağır tüm çekirdek yükte saat +%2,6. | Auto bırakın ([BIOS, İşlemci](bios.md)). Çekirdek bazında kararlılık testi yapılmadı. |
+| Core Tuning Config for Gaming Level 2 | Doğrulanmadı | Auto bırakın. Çekirdek bazında kararlılık testi yapılmadı. |
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |
 | Latency Under Load, Medium Load Boostit, LLC 6 | Sapma içinde | Auto bırakın |
 | SMT kapalı | Etki yok | Auto bırakın (açık) |
 | FCLK 2200 MHz (Ai Tweaker ve AMD Overclocking menüsünde) | +%0,23. Sapma içinde. 6 koşunun 5'inde yön aynı. | Kullanılabilir. WHEA hatası olursa 2000'e dönün. |
-| RAM DDR5-6000 CL28, UCLK = MEMCLK (1:1), 8000 Gear 2 yerine | +%0,2 ile +%0,4. Sapma içinde. P1 ve P99 aynı. | İkisi de kullanılabilir ([BIOS](bios.md#ddr5-6000-11-alternatifi)) |
-| RAM DDR5-6200 1:1 (aynı zamanlamalar) | 6000 ile aynı (−%0,2) | Kazanç yok |
+| Kitin kendi EXPO/XMP profili | Ölçülmedi | Varsayılan öneri. Açtıktan sonra bellek testi yapın ([BIOS](bios.md#varsayılan-kitin-expo-veya-xmp-profili)). |
+| RAM DDR5-6000 CL28, UCLK = MEMCLK (1:1), 8000 Gear 2 yerine | +%0,2 ile +%0,4. Sapma içinde. 6000 iki oturumla, 8000 tek oturumla karşılaştırıldı. Mevcut ölçümler güvenilir bir fark veya eşdeğerlik göstermiyor. P1 ve P99'da da güvenilir fark görülmedi. | Alternatif. Bellek kararlılık testi gerektirir ([BIOS](bios.md#ddr5-6000-11-alternatifi)). |
+| RAM DDR5-6200 1:1 (aynı zamanlamalar) | 6000'e göre −%0,2 (tek oturum, sapma içinde) | Kazanç gösterilmedi |
 | RAM DDR5-6400 1:1 (aynı zamanlamalar) | Ölçülmedi. İki açılışta iki mavi ekran (`0xA`). | Kullanmayın |
 | BCLK 101 MHz | +%0,4 (A-B-A ile doğrulandı). P1 aynı. | 100 bırakın. PCIe saati de artar. 102 açılmadı ([BIOS](bios.md#bclk)). |
 | iGPU kapalı, Global C-state Enabled, Power Supply Idle Control Typical (birlikte) | Etki yok (+%0,25) | İsteğe bağlı |
@@ -36,6 +37,12 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** (A-B-A ile doğrulandı). P1 ve gecikme aynı. | Kullanın ([Windows](windows.md#tam-ekran-iyileştirmelerini-kapatma-legacy-flip)) |
 | CS2 gölge kalitesi Yüksek (Düşük yerine) | **−%4,7** (24.10'daki aynı ayarlı oturuma göre, 5 sıranın hepsinde −%4,4 ile −%5,0). P1 aynı. İlk ölçüm −%5,8 vermişti, ama o oturum %1,2 düşük çıktı. | Oyun tercihi ([Gölge Yüksek](gpu.md#gölge-kalitesi-yüksek-ile-2610)) |
 | NVIDIA Low Latency Mode | Burada ölçülmedi. Dış veride (cs2kitchen, tıklama-ekran) etkisiz. | Varsayılan (kapalı) kalsın |
+| NVIDIA sürücüsü 621.01 ve 621.12 (617.42 yerine) | −%0,8 ile −%1,3 (üç oturum). P1 ve P99 aynı. Aynı dönemde CS2 ve Windows da güncellendi. Sürücüye atfedilemez. | Kesin değil ([Windows](windows.md#nvidia-sürücüsü-ve-sürücü-ayarları)) |
+| NVIDIA App genel 3D ayarları (güç maks. performans, V-Sync zorla kapalı, doku süzme yüksek performans, anizotropik kapalı) | Etki yok (−%0,28) | İsteğe bağlı |
+| Doku süzme kalitesi: Kalite (Performans yerine) | −%0,36. Aynı ayarın iki oturumu arasında −%0,32. P1 ve P99 aynı. | Kesin değil. Kalite daha iyi değil. |
+| CS2 başlatma seçeneği `-threads 9` | Etki yok (+%0,06, kontrol bloklarına göre) | Eklemeyin ([Windows](windows.md#cs2-başlatma-seçenekleri)) |
+| `-threads 9 -mainthreadpriority 2` | Etki yok (−%0,04) | Eklemeyin |
+| `-nojoy +violence_hblood 0 +engine_low_latency_sleep_after_client_tick true` | Etki yok (+%0,12). P1 −%2,4, sapma içinde. | Gerek yok. `violence_hblood` yalnızca görseldir. |
 | Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
 ## Toplam
@@ -46,6 +53,8 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 
 > [!NOTE]
 > İki toplamı birbirine eklemeyin. İkisi de CPU 0 adımını içerir. Ayrıca iki ölçüm arasında CS2 güncellendi. Oturumlar arası sapma genelde ±%0,6'dır, ama bir kez %1,2 görüldü. Bu nedenle BIOS toplamını **yaklaşık %6 ± 1** olarak okuyun.
+>
+> Her iki toplamda RAM elle DDR5-8000 profilindeydi. BIOS toplamı Curve Optimizer −10 ve Core Tuning Level 2 adımlarını da içerir. Bu ayarlar artık varsayılan öneri değildir ([BIOS](bios.md#ram)).
 
 ## Darboğaz
 
@@ -62,8 +71,9 @@ Aynı ayarlarla ölçülen ortalama FPS günden güne değişti. Nedenler ölç�
 | 24.10 | 989–996 | Gölge Düşük |
 | 25.10 | 950–966 | Arka planda bir uygulama yaklaşık 1 çekirdek kullandı (~−%3, P1 ~−%8) |
 | 26.10 | 935–949 | Gölge kalitesi Yüksek (−%4,7). Aynı ayarlarla gece oturumu 935, öğleden sonra 946 ölçüldü (%1,2). Bu farkın nedeni bulunamadı. |
+| 02.11 | 927–939 (kayıt) | NVIDIA 621.12, yeni CS2 ve Windows sürümü (26.10'a göre −%0,8). Aynı Windows oturumunda ilk ~40 dakikada %1'e varan düşüş. |
 
-BIOS, sürücü, RAM ve CS2 sürümü bu üç günde değişmedi (26.10'daki RAM testleri hariç). Ayrıntı: [Sapma kaynakları](methodology.md#sapma-kaynakları).
+BIOS, sürücü, RAM ve CS2 sürümü 24–26.10 arasında değişmedi (26.10'daki RAM testleri hariç). Ayrıntı: [Sapma kaynakları](methodology.md#sapma-kaynakları).
 
 Ham veri: [data/](../data/README.md).
 
