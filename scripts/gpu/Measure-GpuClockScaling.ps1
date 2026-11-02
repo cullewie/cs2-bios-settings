@@ -23,7 +23,7 @@ try {
     Start-Sleep -Seconds 3
     $s = DispSig
     if ($s -ne $sig0) { "[$(T)] EKRAN DEGISTI ($s), durdu"; return }
-    & $runBench -Plan ('G{0}:{1}:1' -f $name, $Mask) -Warmups 0 -Progress (Join-Path $OutDir 'bench_progress.txt')
+    & $runBench -Plan ('G{0}:{1}:1' -f $name, $Mask) -Warmups 0 -Progress (Join-Path $OutDir 'bench_progress.txt') 6>&1 | ForEach-Object { "$_" }
     $s = DispSig
     if ($s -ne $sig0) { "[$(T)] EKRAN KOSU SIRASINDA DEGISTI ($s), $name GECERSIZ"; return }
   }

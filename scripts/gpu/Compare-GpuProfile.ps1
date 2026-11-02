@@ -64,7 +64,8 @@ try {
     $csv = Join-Path $OutDir ('gpu_{0}_{1}_{2}.csv' -f $Tag, $name, $day)
     $smi = Start-Process nvidia-smi -ArgumentList '--query-gpu=timestamp,utilization.gpu,clocks.gr,clocks.mem,power.draw,temperature.gpu,clocks_event_reasons.active', '--format=csv', '-lms', '1000', '-f', $csv -WindowStyle Hidden -PassThru
     $ts = Get-Date
-    try { & $runBench -Plan ('{0}:{1}:1' -f $name, $mask) -Warmups 0 -Progress (Join-Path $OutDir 'bench_progress.txt') | ForEach-Object { Add-Content -Path $out -Value $_ -Encoding UTF8; $_ } } catch { Log "run_bench hata: $($_.Exception.Message)" }
+    # Invoke-Cs2Benchmark satirlari bilgi akisinda (Write-Host): 6>&1 ile yakalanir, bu gunluge ve ciktiya yazilir
+    try { & $runBench -Plan ('{0}:{1}:1' -f $name, $mask) -Warmups 0 -Progress (Join-Path $OutDir 'bench_progress.txt') 6>&1 | ForEach-Object { $s = "$_"; Add-Content -Path $out -Value $s -Encoding UTF8; $s } } catch { Log "run_bench hata: $($_.Exception.Message)" }
     Stop-Process -Id $smi.Id -ErrorAction SilentlyContinue; $smi = $null; Start-Sleep -Milliseconds 500
     Log ("{0} GPU: {1}" -f $name, (RunStats $csv))
     $ev = GpuEvents $ts
