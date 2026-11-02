@@ -88,7 +88,7 @@ P1 değeri tek koşuda çok değişkendir. Aynı oturumda, aynı ayarla 333 ile 
 ## Ölçüm sayıları
 
 - **BIOS testleri:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
-- **Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği ve custom OS testleri:** 42 CS2 oturumunda 237 tamamlanan koşu (162 kayıt, 73 ısınma, 2 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
+- **Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS ve Oyun Modu testleri:** 46 CS2 oturumunda 257 tamamlanan koşu (174 kayıt, 81 ısınma, 2 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
 
 Ham veri ve sütun açıklamaları: [data/README.md](../data/README.md).
 

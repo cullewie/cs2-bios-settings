@@ -10,7 +10,8 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 - [CS2 başlatma seçenekleri](docs/windows.md#cs2-başlatma-seçenekleri): `-threads 9`, `-mainthreadpriority 2` ve `-nojoy +violence_hblood 0 +engine_low_latency_sleep_after_client_tick true` aynı Windows oturumunda üç kontrol bloğuyla ölçüldü. Hiçbiri ölçülebilir kazanç vermedi.
 - [NVIDIA sürücüsü ve sürücü ayarları](docs/windows.md#nvidia-sürücüsü-ve-sürücü-ayarları): 621.01 ve 621.12 oturumları (617.42'ye göre −%0,8 ile −%1,3; CS2 ve Windows da güncellendi, sürücüye atfedilemez), NVIDIA App genel 3D ayarları (etki yok) ve doku süzme Kalite/Performans (fark sapma içinde).
 - [Custom OS ayarları](docs/windows.md#custom-os-ayarları-atlasos-revios-rapidos): AtlasOS 0.5.0, ReviOS 26.10 ve RapidOS 1.3'ün kaynak kodu incelendi. FACEIT'e dokunmayan ve yeniden başlatma gerektirmeyen ortak kalemler (9 hizmet geçici durduruldu, Game DVR ve arka plan uygulamaları kapatıldı) A-B-A ile ölçüldü: −%0,05, etki yok. Oyun içi arka plan yükü de ölçüldü: paketin payı 0,0046 çekirdek.
-- Veri: [`windows-gpu-runs.csv`](data/windows-gpu-runs.csv) dosyasına `G26` … `G42` oturumları eklendi (83 koşu, toplam 240).
+- [Oyun Modu](docs/windows.md#oyun-modu) ölçüldü: açıkken −%0,21 (P1 −%1,4), sapma içinde. Aynı oturumda custom OS paketinin ikinci ölçümü +%0,11 verdi.
+- Veri: [`windows-gpu-runs.csv`](data/windows-gpu-runs.csv) dosyasına `G26` … `G46` oturumları eklendi (103 koşu, toplam 260).
 - Betik: [`Compare-LaunchOption.ps1`](scripts/windows/Compare-LaunchOption.ps1). CS2 başlatma seçeneklerini kontrol bloklarıyla karşılaştırır.
 - [Sapma kaynakları](docs/methodology.md#sapma-kaynakları): Windows oturumunun ilk ~40 dakikasında %1'e varan düşüş ve sürücü/CS2/Windows güncellemesi satırları.
 
@@ -18,7 +19,7 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 
 - Kontrol listesi ([`bios-target-2503.csv`](config/bios-target-2503.csv)): Curve Optimizer hedefi Disabled (Auto) oldu. All Cores işaret ve büyüklük satırları kaldırıldı. Satır sayısı 126'dan 124'e indi (70 ayar ve 54 fan noktası). Core Tuning satırındaki "zararsız" notu kaldırıldı.
 - Test sistemi bilgisi: NVIDIA sürücüsü 621.12.
-- [Sınırlar](docs/limitations.md): Bloklu ölçümde kontrol bloğu uyarısı, sürücü güncellemesi ve gecikme ölçümü satırları güncellendi.
+- [Sınırlar](docs/limitations.md): Bloklu ölçümde kontrol bloğu uyarısı, sürücü güncellemesi ve gecikme ölçümü satırları güncellendi. PresentMon canlı yakalamasının bu sistemde ETW olay kaybı nedeniyle kare kaydetmediği eklendi.
 
 ### Düzeltildi
 
