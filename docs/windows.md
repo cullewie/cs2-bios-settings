@@ -10,7 +10,7 @@ Windows 11 Pro (derleme 26300) ve CS2 için uygulanan ayarlar. BIOS ayarlarında
 | CS2'yi CPU 0 dışında çalıştırma | Uygulayın | Aşağıdaki adımlar. Ölçülen kazanç +%1,8 ile +%2,5. |
 | İşlem önceliği | Normal | Yüksek öncelik denendi. Etkisi yok. |
 | Bellek Bütünlüğü (HVCI) | Açık | FACEIT için gerekir. |
-| Oyun Modu | Kapalı | Test edilmedi. |
+| Oyun Modu | Kapalı | Açıkken −%0,21 ölçüldü, sapma içinde ([Oyun Modu](#oyun-modu)). |
 | Ethernet: Energy Efficient Ethernet | Kapalı | Aygıt Yöneticisi → ağ bağdaştırıcısı → Gelişmiş. Etkisi ölçülmedi. Bağlantı kısa bir süre kopar. |
 | Win32PrioritySeparation | Varsayılan (2) | Değiştirmeyin. Ayrıntı aşağıda. |
 | Kesme yerleşimi (Interrupt Affinity) | Varsayılan | Değiştirmeyin. GPU ve USB DPC işi zaten CPU 0'da çalışır. |
@@ -197,8 +197,25 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 - B2, kontrol bloklarının ortalamasından %0,05 düşüktür. İki kontrol bloğu arasındaki kayma %0,01'dir. Etki yoktur.
 - Paketin kapattığı hizmetler oyun sırasında 0,0046 çekirdek kullanıyordu (en çok DiagTrack). CS2 ise ~4,1 çekirdek kullanır. B2'deki arka plan düşüşünün büyük kısmı NVIDIA hizmetlerinin dalgalanmasıdır.
 - Dış testlerdeki kazançlar (PCGH, Mart 2024: AtlasOS 0.3.2, Ryzen 5 5600X, ortalama +%2–8) eski işlemcilerde ve güvenlik korumaları kapatılarak ölçüldü. Bu depoda bunlar FACEIT nedeniyle uygulanmaz.
+- İkinci ölçüm (aynı gün, [Oyun Modu](#oyun-modu) testiyle aynı oturumda): kontrol bloklarına göre +%0,11. İki ölçümün ortalaması sıfıra yakındır.
 - **Karar:** Bu ayarlar ve custom OS kurulumu bu sistemde FPS kazandırmaz.
-- Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G40` … `G42`. `G39` ilk denemedir: betik hatası yüzünden ilk kayıt koşusundan sonra durdu ve analize alınmadı.
+- Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G40` … `G42` ve `G45`. `G39` ilk denemedir: betik hatası yüzünden ilk kayıt koşusundan sonra durdu ve analize alınmadı.
+
+## Oyun Modu
+
+02.11'de Oyun Modu (Ayarlar → Oyun → Oyun Modu) bloklu olarak ölçüldü. `cs2.exe` Windows'un oyun listesinde kayıtlıdır, bu yüzden Oyun Modu açıkken CS2'ye uygulanır. Aynı oturumda custom OS paketi ikinci kez ölçüldü. Bloklar aynı Windows oturumunda A, G, B, A sırasıyla ölçüldü. Her blok yeni bir CS2 işlemidir: 2 ısınma ve 3 kayıt koşusu.
+
+| Blok | Durum | 3 kayıt koşusu ortalaması | P1 (kayıt ortalaması) | P99 medyanı | Oyun içi arka plan yükü |
+|---|---|---|---|---|---|
+| A1 | Mevcut, Oyun Modu kapalı (kontrol 1) | 926,57 | 347,1 | 2,84 ms | 0,116 çekirdek |
+| G2 | Oyun Modu açık | 924,73 | 343,3 | 2,93 ms | 0,144 çekirdek |
+| B3 | Custom OS paketi (ikinci ölçüm) | 927,83 | 344,4 | 2,84 ms | 0,111 çekirdek |
+| A4 | Mevcut, Oyun Modu kapalı (kontrol 2) | 927,00 | 350,7 | 2,87 ms | 0,109 çekirdek |
+
+- Kontrol bloklarının doğrusal ara değerine göre: Oyun Modu −%0,21 (P1 −%1,4), custom OS paketi +%0,11. Kontrol blokları arasındaki kayma %0,05'tir. İkisi de sapma içindedir.
+- **Karar:** Oyun Modu bu sistemde FPS, P1 veya P99 kazancı vermedi. Kapalı kalabilir.
+- **Gecikme:** Her blokta PresentMon açıktı, ama canlı yakalama hiç kare kaydetmedi. PresentMon saniyede ~7.900 ETW olayı kaybetti. Bu sayı farenin 8000 Hz raporlama hızına yakındır. Olayları önce WPR ile dosyaya yazıp sonra `PresentMon --etl_file` ile işlemek çalışır. Bu yöntem bu testte kullanılmadı.
+- Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G43` … `G46`.
 
 ## FACEIT nedeniyle değiştirilmeyen ayarlar
 
