@@ -9,7 +9,8 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 - [Curve Optimizer −10 ile Auto](docs/bios.md) karşılaştırması: CS2'de fark %0,33, aynı günkü oturum sapması (%0,32) kadar. Ağır tüm çekirdek yükte Auto ile saat %2,6 düşük. Bu sistem artık Curve Optimizer Auto kullanır.
 - [CS2 başlatma seçenekleri](docs/windows.md#cs2-başlatma-seçenekleri): `-threads 9`, `-mainthreadpriority 2` ve `-nojoy +violence_hblood 0 +engine_low_latency_sleep_after_client_tick true` aynı Windows oturumunda üç kontrol bloğuyla ölçüldü. Hiçbiri ölçülebilir kazanç vermedi.
 - [NVIDIA sürücüsü ve sürücü ayarları](docs/windows.md#nvidia-sürücüsü-ve-sürücü-ayarları): 621.01 ve 621.12 oturumları (617.42'ye göre −%0,8 ile −%1,3; CS2 ve Windows da güncellendi, sürücüye atfedilemez), NVIDIA App genel 3D ayarları (etki yok) ve doku süzme Kalite/Performans (fark sapma içinde).
-- Veri: [`windows-gpu-runs.csv`](data/windows-gpu-runs.csv) dosyasına `G26` … `G38` oturumları eklendi (65 koşu, toplam 222).
+- [Custom OS ayarları](docs/windows.md#custom-os-ayarları-atlasos-revios-rapidos): AtlasOS 0.5.0, ReviOS 26.10 ve RapidOS 1.3'ün kaynak kodu incelendi. FACEIT'e dokunmayan ve yeniden başlatma gerektirmeyen ortak kalemler (9 hizmet geçici durduruldu, Game DVR ve arka plan uygulamaları kapatıldı) A-B-A ile ölçüldü: −%0,05, etki yok. Oyun içi arka plan yükü de ölçüldü: paketin payı 0,0046 çekirdek.
+- Veri: [`windows-gpu-runs.csv`](data/windows-gpu-runs.csv) dosyasına `G26` … `G42` oturumları eklendi (83 koşu, toplam 240).
 - Betik: [`Compare-LaunchOption.ps1`](scripts/windows/Compare-LaunchOption.ps1). CS2 başlatma seçeneklerini kontrol bloklarıyla karşılaştırır.
 - [Sapma kaynakları](docs/methodology.md#sapma-kaynakları): Windows oturumunun ilk ~40 dakikasında %1'e varan düşüş ve sürücü/CS2/Windows güncellemesi satırları.
 
@@ -32,6 +33,7 @@ Bulut kod incelemesinin (PR #2) bulduğu beş sorun:
 Eski bir sorun daha düzeltildi:
 
 - [`Invoke-Cs2Benchmark.ps1`](scripts/bench/Invoke-Cs2Benchmark.ps1) çıktı satırlarını doğrudan konsola yazıyordu (`[Console]::WriteLine`). Bu yüzden onu çağıran betikler koşu satırlarını yakalayamıyordu. [`Measure-DpcLatency.ps1`](scripts/windows/Measure-DpcLatency.ps1) `-Bench` raporunda koşu sonucu boş kalıyordu. [`Compare-GpuProfile.ps1`](scripts/gpu/Compare-GpuProfile.ps1) günlüğünde koşu satırları yoktu. Satırlar artık `Write-Host` ile yazılır. Çağıran üç betik (bu ikisi ve [`Measure-GpuClockScaling.ps1`](scripts/gpu/Measure-GpuClockScaling.ps1)) satırları `6>&1` ile yakalar. Ölçüm değerleri etkilenmedi.
+- [`Compare-GpuProfile.ps1`](scripts/gpu/Compare-GpuProfile.ps1): NVIDIA 621.x sürücüsü GPU sıcaklığını ondalıklı yazıyor (`56.47`). Betik bu değeri yanlış okuyup günlüğe `5647 C` yazıyordu. Sıcaklık artık ondalıklı okunur. FPS, saat ve güç değerleri etkilenmedi.
 
 ## 2026-10-27
 
