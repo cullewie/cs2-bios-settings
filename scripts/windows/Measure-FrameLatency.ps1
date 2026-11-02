@@ -1,15 +1,19 @@
 param(
   [string]$Plan = 'W1:0xFFFE:0,W2:0xFFFE:0,A1:0xFFFE:1,A2:0xFFFE:1,A3:0xFFFE:1,B1:0xFFFF:1,B2:0xFFFF:1,B3:0xFFFF:1,C1:0xFFFE:1,C2:0xFFFE:1,C3:0xFFFE:1',
   [string]$Tag = 'CPU0',
+  [string]$BgPriority = 'Idle',
   [string]$OutDir = (Join-Path $PSScriptRoot 'sonuc'),
   [string]$EtlDir = (Join-Path $env:TEMP 'frame_latency'),
   [string]$Repo = (Split-Path (Split-Path $PSScriptRoot)),
   [string]$PmExe = (Join-Path $PSScriptRoot 'PresentMon-2.6.0-x64.exe'),
   [switch]$KeepEtl
 )
-# Gecikme + akicilik bloklu testi (docs/windows.md, CPU 0 bolumu). AYAR DEGISTIRMEZ: yalniz cs2 surecinin calisma anindaki CPU maskesi kosu basina
+# Gecikme + akicilik bloklu testi (docs/windows.md). AYAR DEGISTIRMEZ: yalniz cs2 surecinin calisma anindaki CPU maskesi kosu basina
 # Invoke-Cs2Benchmark ile ayarlanir (sonda baslangic maskesine doner). Ayni CS2 oturumu, yeniden baslatma yok.
-# Plan: 'ad:maske:kayit' virgulle; kayit=1 ise kosu boyunca WPR (presentmon-light.wprp!PMLight, dosya modu, kayipsiz) calisir.
+# Plan: 'ad:maske:kayit[:L]' virgulle; kayit=1 ise kosu boyunca WPR (presentmon-light.wprp!PMLight, dosya modu, kayipsiz) calisir.
+# L: kosu boyunca oturumdaki arka plan uygulamalarinin onceligi -BgPriority (varsayilan Idle) yapilir (Process Lasso benzeri; CS2, Windows kabugu,
+# svchost, Defender, NVIDIA/Broadcast, ses ve test araclari haric). L olmayan kosudan once ve sonda ozgun oncelikler geri yuklenir.
+# Ornek: -Tag ONCELIK -Plan 'W1:0xFFFE:0,W2:0xFFFE:0,A1:0xFFFE:1,A2:0xFFFE:1,A3:0xFFFE:1,B1:0xFFFE:1:L,B2:0xFFFE:1:L,B3:0xFFFE:1:L,C1:0xFFFE:1,C2:0xFFFE:1,C3:0xFFFE:1'
 # Kosulardan sonra her ETL PresentMon --etl_file ile islenir; VProf penceresi (rapor-125 .. rapor-3 sn) icin FrameLatencyStats.cs:
 # kare suresi p50/p99/p99.9, kare > 2x medyan (CS2'de ~%5 olagan, takilma olcutu degil), kare > 4 ms (takilma), kare baslangici->ekran ve PC gecikmesi (Reflex isaretleri) ort/p50/p99.
 # CS2 acik olmali (-condebug). FACEIT kapali olmali. Yonetici gerekir (WPR). PresentMon-2.6.0-x64.exe bu klasorde olmali (-PmExe ile degisir).
@@ -31,10 +35,37 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 if (Get-Process | Where-Object { $_.Name -match 'faceit' }) { $pre += 'FACEIT calisiyor' }
 if (-not (Get-Process cs2 -ErrorAction SilentlyContinue)) { $pre += 'cs2 calismiyor' }
 foreach ($f in $bench, $backup, $prof, $PmExe, (Join-Path $PSScriptRoot 'FrameLatencyStats.cs')) { if (-not (Test-Path $f)) { $pre += "yok: $f" } }
-$items = @(foreach ($it in ($Plan -split ',' | Where-Object { $_.Trim() })) { $p = $it.Trim() -split ':'; [pscustomobject]@{ Name = $p[0]; Mask = $p[1]; Cap = ($p[2] -eq '1') } })
+$items = @(foreach ($it in ($Plan -split ',' | Where-Object { $_.Trim() })) { $p = $it.Trim() -split ':'; [pscustomobject]@{ Name = $p[0]; Mask = $p[1]; Cap = ($p[2] -eq '1'); Low = ($p.Count -gt 3 -and $p[3] -eq 'L') } })
 Log ('--- Measure-FrameLatency basladi | {0} | plan {1}' -f $Tag, (($items | ForEach-Object { '{0}:{1}{2}' -f $_.Name, $_.Mask, $(if ($_.Cap) { '*' } else { '' }) }) -join ' '))
 if ($pre.Count) { foreach ($p in $pre) { Log "ON KOSUL: $p" }; Log 'durdu'; return }
 Add-Type -Path (Join-Path $PSScriptRoot 'FrameLatencyStats.cs') -ReferencedAssemblies System.Core
+
+# ---------- arka plan onceligi (Process Lasso benzeri, calisma aninda; sonda geri) ----------
+$ExcludeNames = @('cs2','explorer','dwm','csrss','winlogon','fontdrvhost','sihost','ctfmon','TextInputHost','ShellExperienceHost','StartMenuExperienceHost','SearchHost','SearchApp','RuntimeBroker','audiodg','powershell','pwsh','claude','node','WindowsTerminal','OpenConsole','conhost','lsass','services','smss','wininit','System','Idle','Registry','Memory Compression','ApplicationFrameHost','SystemSettings','LockApp','dllhost','taskhostw','backgroundTaskHost','smartscreen','SecurityHealthSystray','wpr','PresentMon-2.6.0-x64','WmiPrvSE','cmd','UserOOBEBroker','Widgets','WidgetService','PhoneExperienceHost','CrossDeviceResume','svchost','ShellHost','DefenderSessionHelper','MsMpEng','SecurityHealthService','MpDefenderCoreService')
+$script:origPri = @{}
+function LowerBg {
+  $sid = (Get-Process -Id $PID).SessionId; $done = New-Object System.Collections.Generic.List[string]
+  foreach ($p in (Get-Process)) {
+    if ($p.SessionId -ne $sid -or $p.Id -eq $PID) { continue }
+    if ($p.ProcessName -in $ExcludeNames -or $p.ProcessName -match '(?i)nvidia|broadcast|nvcontainer|nvdisplay|faceit|audio|lghub') { continue }
+    try {
+      if (-not $script:origPri.ContainsKey($p.Id)) { $script:origPri[$p.Id] = [pscustomobject]@{ Name = $p.ProcessName; Pri = $p.PriorityClass; Start = $p.StartTime } }
+      if ($p.PriorityClass -ne $BgPriority) { $p.PriorityClass = $BgPriority }
+      $done.Add($p.ProcessName)
+    } catch { }
+  }
+  Log ('arka plan onceligi {0}: {1} surec ({2})' -f $BgPriority, $done.Count, (($done | Group-Object | ForEach-Object { if ($_.Count -gt 1) { '{0} x{1}' -f $_.Name, $_.Count } else { $_.Name } }) -join ', '))
+}
+function RestoreBg {
+  if (-not $script:origPri.Count) { return }
+  $n = 0; $miss = 0
+  foreach ($id in @($script:origPri.Keys)) {
+    $o = $script:origPri[$id]; $p = Get-Process -Id $id -ErrorAction SilentlyContinue
+    if ($p) { try { if ($p.StartTime -eq $o.Start) { $p.PriorityClass = $o.Pri; $n++ } } catch { $miss++ } } else { $miss++ }
+  }
+  $script:origPri.Clear()
+  Log ('arka plan onceligi geri yuklendi: {0} surec{1}' -f $n, $(if ($miss) { " ($miss surec kapanmis veya erisilemedi)" } else { '' }))
+}
 
 $runs = New-Object System.Collections.Generic.List[object]
 $wprOn = $false
@@ -42,6 +73,7 @@ try {
   foreach ($it in $items) {
     if (Test-Path $stopFile) { Log 'bench_stop.txt var, durdu'; break }
     if (-not (Get-Process cs2 -ErrorAction SilentlyContinue)) { Log 'cs2 kapali, durdu'; break }
+    if ($it.Low) { LowerBg } else { RestoreBg }
     $etl = Join-Path $EtlDir ('{0}_{1}_{2}.etl' -f $Tag, $it.Name, $stamp)
     if ($it.Cap) {
       & wpr -cancel 2>&1 | Out-Null
@@ -66,6 +98,7 @@ try {
   Log ('HATA (betik): {0} | satir {1}' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber)
 } finally {
   if ($wprOn) { & wpr -cancel 2>&1 | Out-Null; Log 'wpr iptal edildi' }
+  RestoreBg
   & $backup -Label ('LAT_' + $Tag) | ForEach-Object { Log $_ }
 }
 
