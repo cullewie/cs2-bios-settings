@@ -19,6 +19,16 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 - Test sistemi bilgisi: NVIDIA sürücüsü 621.12.
 - [Sınırlar](docs/limitations.md): Bloklu ölçümde kontrol bloğu uyarısı, sürücü güncellemesi ve gecikme ölçümü satırları güncellendi.
 
+### Düzeltildi
+
+Bulut kod incelemesinin (PR #2) bulduğu beş sorun:
+
+- [`Invoke-Cs2Benchmark.ps1`](scripts/bench/Invoke-Cs2Benchmark.ps1): FACEIT çalışıyorsa çıkıştaki geri yükleme artık `cs2.exe`'ye dokunmaz ve uyarı yazar. 27.10 sürümü bu durumda da geri yükleme yapıyordu. Bu, "hile koruması açıkken CS2'ye dokunmayın" kuralına aykırıydı. Test maskesi ve önceliği CS2 yeniden başlayınca sıfırlanır.
+- Aynı betik: Plan alanlarının başındaki ve sonundaki boşluk atılır. Addaki boşluklar `_` olur (`'oyun ici'` → `oyun_ici`). 27.10 sürümü boşluklu adları reddediyordu. Bu yüzden `Measure-DpcLatency.ps1 -Bench -Name 'oyun ici'` ve `'N1, L1'` gibi listeler çalışmıyordu. Sondaki `;` artık hata vermez.
+- [`Compare-LaunchOption.ps1`](scripts/windows/Compare-LaunchOption.ps1): CPU maskesi artık sabit `0xFFFE` değildir. `-Mask` parametresi eklendi. Varsayılan değer, işlemci sayısından hesaplanan "CPU 0 hariç tüm mantıksal işlemciler" maskesidir. 8 veya 12 iş parçacıklı işlemcilerde her koşu reddediliyordu. 24 veya 32 iş parçacıklı işlemcilerde CS2 yalnızca 1–15 numaralı işlemcileri kullanıyordu.
+- Aynı betik: `Compare-GpuProfile.ps1` çıktısının tamamı günlüğe yazılır. Hata veya durma satırı olan bloklar sonda hatalı olarak listelenir. Önceden bu satırlar süzülüyordu ve yarım kalan bir blok normal görünüyordu.
+- Aynı betik: Durdurma dosyası açıklaması düzeltildi. Çalışan koşuyu durdurmak için `sonuc\bench_stop.txt` gerekir. `scripts\bench\bench_stop.txt` de bloklar arasında kontrol edilir.
+
 ## 2026-10-27
 
 ### Değişti
