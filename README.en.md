@@ -57,7 +57,7 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 |---|---|---|
 | PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+3.5%** | Can be used. Test CPU stability. |
 | GPU overclock (daily profile: +425 / +3000 / 116%) | **+2.6%** (shadows Low), **+3.3%** (shadows High) | Use |
-| Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** | Use |
+| Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** (P1 +7%, PC latency −0.07 ms) | Use |
 | Fullscreen optimizations off for `cs2.exe` (Legacy Flip) | **+1.13%** | Use |
 | Manual RAM: DDR5-6000 CL28 1:1 (instead of manual DDR5-8000 CL34 Gear 2) | +0.2% to +0.4% (within variation) | No reliable difference shown. Both need a memory test. |
 | DDR5 Nitro Mode 1-3-1 | **−1.4%** | Leave on Auto |
@@ -122,7 +122,7 @@ Use the same order after a BIOS update or a CMOS reset. On a different system, r
 - **Benchmark:** Steam Workshop map `3240880604` (de_dust2), about 129 seconds. FPS values come from the CS2 VProf summary.
 - **BIOS tests:** Each setting was measured in a separate CS2 session: 6 warm-up runs and 6 recorded runs. Session-to-session variation is usually ±0.6%; once it was 1.2%. The RAM and BCLK tests used 2 warm-up runs and 3 recorded runs, in A-B-A order. The A-B-A check held for DDR5-6000 and BCLK. It did not hold for DDR5-8000: two sessions with the same setting differed by 1.2%.
 - **Windows and GPU tests:** Conditions were measured in the same CS2 session, in alternating or blocked order. Each run logged the GPU clock, power and driver errors.
-- **Data:** 132 runs and 2 matches in the BIOS tests. 260 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM, BCLK, driver, Curve Optimizer, launch option, custom OS and Game Mode tests.
+- **Data:** 132 runs and 2 matches in the BIOS tests. 271 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM, BCLK, driver, Curve Optimizer, launch option, custom OS, Game Mode and latency tests.
 
 Details: [docs/methodology.md](docs/methodology.md) (Turkish).
 

@@ -20,7 +20,8 @@ Bu klasör, rehberdeki tüm sonuçların ham verisini içerir. Dosyalar CSV biç
 | [`bios-tests.csv`](bios-tests.csv) | 14 | Her BIOS testinin durumu, değişen ayar, yöntem ve sonuç |
 | [`bios-final-state.csv`](bios-final-state.csv) | 2336 | Güncel BIOS ayarlarının tam dökümü (26.10.2026) |
 | [`bios-aod-fields.csv`](bios-aod-fields.csv) | 227 | AMD Overclocking değişkeninin (AodSetupRpl) alanları |
-| [`windows-gpu-runs.csv`](windows-gpu-runs.csv) | 260 | Windows, ekran kartı, FCLK, sunum kipi, gölge, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS ve Oyun Modu testlerinin CS2 koşuları |
+| [`windows-gpu-runs.csv`](windows-gpu-runs.csv) | 271 | Windows, ekran kartı, FCLK, sunum kipi, gölge, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu ve gecikme testlerinin CS2 koşuları |
+| [`latency-runs.csv`](latency-runs.csv) | 9 | Gecikme testinin kayıt koşuları: kare süresi yüzdelikleri, kare başlangıcından ekrana süre ve PC gecikmesi |
 | [`gpu-superposition.csv`](gpu-superposition.csv) | 53 | Unigine Superposition 1080p Extreme puanları |
 | [`gpu-stability.csv`](gpu-stability.csv) | 24 | Ekran kartı kararlılık testleri |
 
@@ -108,10 +109,12 @@ Windows ve ekran kartı testlerinin (23.10–02.11.2026) her CS2 koşusu. `G21` 
 
 `G43` … `G46` oturumları 02.11 Oyun Modu testidir ([Windows: Oyun Modu](../docs/windows.md#oyun-modu)). Aynı Windows oturumunda A, G, B, A sırasıyla ölçüldü. `G44`'te Oyun Modu açıktı. `G45` custom OS paketinin ikinci ölçümüdür. `G43` ve `G46` kontrol bloklarıdır.
 
+`G47` 02.11 gecikme testidir ([Windows: Gecikme ve akıcılık](../docs/windows.md#gecikme-ve-akıcılık)). Tek bir CS2 oturumunda A (CPU 0 hariç), B (tüm çekirdekler) ve C (CPU 0 hariç) blokları ölçüldü. Bu oturumda GPU kaydı tutulmadı, GPU sütunları boştur. Gecikme değerleri `latency-runs.csv` dosyasındadır.
+
 | Sütun | Anlamı | Birim |
 |---|---|---|
 | `Tarih` | Koşunun tarihi | |
-| `Oturum` | CS2 oturumu: `G1` … `G46` | |
+| `Oturum` | CS2 oturumu: `G1` … `G47` | |
 | `Sira` | Koşunun oturumdaki sırası | |
 | `Test` | Test adı (örnek: `2x2`, `Sunum modu`, `Undervolt`, `Golge Yuksek`) | |
 | `Kosul` | Oturumdaki koşul etiketi. `W1`, `W2` = ısınma. | |
@@ -122,6 +125,22 @@ Windows ve ekran kartı testlerinin (23.10–02.11.2026) her CS2 koşusu. `G21` 
 | `GPU_MHz` | Yük altında GPU çekirdek saatinin medyanı (`nvidia-smi`) | MHz |
 | `Bellek_MHz` | Yük altında bellek saatinin medyanı (`nvidia-smi` birimi) | MHz |
 | `GPU_W` | Yük altında ortalama kart gücü (`nvidia-smi`) | W |
+| `Not` | Özel durumlar | |
+
+## latency-runs.csv
+
+02.11 gecikme testinin (`G47`) kayıt koşuları. Değerler her koşunun VProf penceresinden (raporun 125 ile 3 saniye öncesi arası) hesaplandı. Kaynak: WPR ile dosyaya alınan kayıt ve `PresentMon --etl_file` ([yöntem](../docs/methodology.md#presentmon)).
+
+| Sütun | Anlamı | Birim |
+|---|---|---|
+| `Tarih`, `Oturum`, `Kosu` | Tarih, CS2 oturumu ve koşu adı (`A1` … `C3`) | |
+| `Benzesim` | CS2 affinity maskesi: `0xFFFE` CPU 0 hariç, `0xFFFF` tüm mantıksal işlemciler | |
+| `Avg_FPS`, `P1_FPS` | VProf ortalama FPS ve %1 düşük FPS | FPS |
+| `Kare` | PresentMon'un penceredeki kare sayısı | |
+| `Kare_p50_ms`, `Kare_p99_ms`, `Kare_p999_ms` | Kare süresinin medyanı, 99. ve 99,9. yüzdeliği | ms |
+| `Kare_4ms_ustu` | 4 ms'den uzun kare sayısı (takılma) | |
+| `Ekran_gecikmesi_ort_ms`, `Ekran_gecikmesi_p99_ms` | Kare başlangıcından ekrana süre: ortalama ve 99. yüzdelik | ms |
+| `PC_gecikmesi_ort_ms`, `PC_gecikmesi_p99_ms` | Girdinin okunmasından ekrana süre (Reflex PCLStats işaretleri): ortalama ve 99. yüzdelik | ms |
 | `Not` | Özel durumlar | |
 
 ## gpu-superposition.csv

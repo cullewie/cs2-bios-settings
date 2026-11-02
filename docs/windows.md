@@ -61,6 +61,25 @@ Windows, GPU ve USB işini zaten CPU 0'da çalıştırır. Bu nedenle kesmeleri 
 - CS2 sırasında CPU 0 zamanının %23'ü ekran kartı DPC ve kesmelerine gider. Diğer çekirdeklerde bu oran ~%0'dır.
 - Kesmeleri başka bir çekirdeğe taşımayın. Bu iş o zaman CS2'nin çekirdeklerine biner.
 
+### Gecikme ve akıcılık
+
+02.11'de aynı CS2 oturumunda A (CPU 0 hariç), B (tüm çekirdekler) ve C (CPU 0 hariç, kontrol) blokları 3'er koşuyla ölçüldü. Her koşuda kare süreleri ve gecikme [`Measure-FrameLatency.ps1`](../scripts/windows/Measure-FrameLatency.ps1) ile kaydedildi ([yöntem](methodology.md#presentmon)). Yalnızca `cs2.exe` işleminin çalışma anındaki işlemci maskesi değişti.
+
+| Blok ortalaması | A: CPU 0 hariç | B: tüm çekirdekler | C: CPU 0 hariç |
+|---|---|---|---|
+| Ortalama FPS (VProf) | 924,3 | 901,8 | 922,1 |
+| P1 (VProf) | 356,3 | 328,9 | 350,1 |
+| Kare süresi p99 / p99,9 | 2,72 / 3,21 ms | 2,83 / 3,34 ms | 2,77 / 3,24 ms |
+| 4 ms'den uzun kare (koşu başına) | 14,7 | 18,0 | 17,7 |
+| Kare başlangıcından ekrana (ortalama / p99) | 1,968 / 3,528 ms | 1,983 / 3,574 ms | 1,964 / 3,539 ms |
+| PC gecikmesi (ortalama / p99) | 3,331 / 5,972 ms | 3,412 / 5,918 ms | 3,360 / 5,960 ms |
+
+- B, A ve C'nin ortalamasına göre: FPS −%2,3, P1 −%6,9, kare süresi p99 +%3,1, p99,9 +%3,5. B'nin üç koşusunun da p99 değeri, A ve C'nin bütün koşularından yüksektir.
+- PC gecikmesi B'de ortalama 0,07 ms (%2) daha uzundur. p99 farkı yoktur. 4 ms'den uzun kare sayısı kontrol blokları arasında da 14,7 ile 17,7 arasında oynar. Bu fark ayırt edilemez.
+- **Karar:** CPU 0 hariç tutmak FPS'in yanında P1'i ve kare süresi tutarlılığını da iyileştirir.
+- PC gecikmesi, CS2'nin girdiyi okuduğu andan karenin ekrana çıktığı ana kadar geçen süredir (Reflex PCLStats işaretleri). Fare ve ekran panelinin süresi dahil değildir. Reflex bu testte kapalıydı.
+- Ham veri: [`latency-runs.csv`](../data/latency-runs.csv) ve [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G47`.
+
 ## Tam ekran iyileştirmelerini kapatma (Legacy Flip)
 
 Windows, tam ekran oyunları varsayılan olarak "Independent Flip" kipinde sunar. Tam ekran iyileştirmeleri (FSO) kapatılınca CS2 "Legacy Flip" kipine geçer (gerçek tam ekran).
@@ -198,6 +217,7 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 - Paketin kapattığı hizmetler oyun sırasında 0,0046 çekirdek kullanıyordu (en çok DiagTrack). CS2 ise ~4,1 çekirdek kullanır. B2'deki arka plan düşüşünün büyük kısmı NVIDIA hizmetlerinin dalgalanmasıdır.
 - Dış testlerdeki kazançlar (PCGH, Mart 2024: AtlasOS 0.3.2, Ryzen 5 5600X, ortalama +%2–8) eski işlemcilerde ve güvenlik korumaları kapatılarak ölçüldü. Bu depoda bunlar FACEIT nedeniyle uygulanmaz.
 - İkinci ölçüm (aynı gün, [Oyun Modu](#oyun-modu) testiyle aynı oturumda): kontrol bloklarına göre +%0,11. İki ölçümün ortalaması sıfıra yakındır.
+- **Akıcılık:** İki ölçümün 6 koşusunda P1, P99 ve tipik saniyedeki en uzun kare kontrol bloklarıyla aynıdır. Her saniyenin en uzun karesinin 95. yüzdeliği 6 koşudan birinde 5,62 ms'ye çıktı. Kontrol bloklarının 12 koşusunda en yüksek değer 4,36 ms'dir. Paket akıcılığı iyileştirmedi.
 - **Karar:** Bu ayarlar ve custom OS kurulumu bu sistemde FPS kazandırmaz.
 - Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G40` … `G42` ve `G45`. `G39` ilk denemedir: betik hatası yüzünden ilk kayıt koşusundan sonra durdu ve analize alınmadı.
 
@@ -213,8 +233,9 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 | A4 | Mevcut, Oyun Modu kapalı (kontrol 2) | 927,00 | 350,7 | 2,87 ms | 0,109 çekirdek |
 
 - Kontrol bloklarının doğrusal ara değerine göre: Oyun Modu −%0,21 (P1 −%1,4), custom OS paketi +%0,11. Kontrol blokları arasındaki kayma %0,05'tir. İkisi de sapma içindedir.
-- **Karar:** Oyun Modu bu sistemde FPS, P1 veya P99 kazancı vermedi. Kapalı kalabilir.
-- **Gecikme:** Her blokta PresentMon açıktı, ama canlı yakalama hiç kare kaydetmedi. PresentMon saniyede ~7.900 ETW olayı kaybetti. Bu sayı farenin 8000 Hz raporlama hızına yakındır. Olayları önce WPR ile dosyaya yazıp sonra `PresentMon --etl_file` ile işlemek çalışır. Bu yöntem bu testte kullanılmadı.
+- **Akıcılık:** Oyun Modu açıkken her saniyenin en uzun karesinin 95. yüzdeliği 4,38 ms, kontrol bloklarında 4,14 ms oldu. Fark, 3 koşudan birindeki 4,79 ms'lik tek değerden gelir. Tipik saniyedeki en uzun kare aynıdır (3,23 ve 3,21 ms).
+- **Karar:** Oyun Modu bu sistemde FPS, P1, P99 veya akıcılık kazancı vermedi. Kapalı kalabilir.
+- **Gecikme:** Her blokta PresentMon açıktı, ama canlı yakalama hiç kare kaydetmedi. PresentMon saniyede ~7.900 ETW olayı kaybetti. Bu sayı farenin 8000 Hz raporlama hızına yakındır. Bu yüzden Oyun Modu'nun gecikmesi ölçülemedi. Sonradan kurulan dosya kaydı yöntemi için bkz. [CPU 0: Gecikme ve akıcılık](#gecikme-ve-akıcılık).
 - Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G43` … `G46`.
 
 ## FACEIT nedeniyle değiştirilmeyen ayarlar

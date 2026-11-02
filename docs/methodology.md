@@ -79,16 +79,17 @@ P1 değeri tek koşuda çok değişkendir. Aynı oturumda, aynı ayarla 333 ile 
 
 ## PresentMon
 
-- Sürüm 2.6.0, konsol uygulaması (Intel, GitHub). Kurulum gerekmez. [`Compare-PresentMode.ps1`](../scripts/windows/Compare-PresentMode.ps1) CS2 oturumu boyunca kayıt alır ve her koşu için özet çıkarır.
-- **Gecikme:** "Kare başlangıcından ekrana" = (sunum zamanı − CPU kare başlangıcı) + `MsUntilDisplayed`. Fare, USB ve ekran panelinin süresi dahil değildir. Tıklamadan ekrana süre için donanım gerekir (LDAT, OSLTT veya ışık sensörlü Teensy).
-- CS2, Reflex kapalıyken PC Latency verisi göndermez (`MsPCLatency` = NA).
+- Sürüm 2.6.0, konsol uygulaması (Intel, GitHub). Kurulum gerekmez. [`Compare-PresentMode.ps1`](../scripts/windows/Compare-PresentMode.ps1) CS2 oturumu boyunca canlı kayıt alır ve her koşu için özet çıkarır.
+- **Canlı kayıt 02.11'den beri çalışmıyor:** PresentMon'un canlı oturumu saniyede ~7.900 ETW olayı kaybediyor ve hiç kare yazmıyor. Kaynak Win32k girdi olaylarıdır (8000 Hz fare). [`Measure-FrameLatency.ps1`](../scripts/windows/Measure-FrameLatency.ps1) bu yüzden olayları önce dosyaya yazar: WPR, [`presentmon-light.wprp`](../scripts/windows/presentmon-light.wprp) profilini kullanır. Profilde PresentMon'un kendi sağlayıcıları vardır, Win32k yoktur. Kayıp sıfırdır. Kayıt sonra `PresentMon --etl_file` ile işlenir. Bir benchmark koşusu ~1 GB tutar. Dosya işlendikten sonra silinir. Kayıt açıkken FPS değişmedi.
+- **Gecikme:** "Kare başlangıcından ekrana" = (sunum zamanı − CPU kare başlangıcı) + `MsUntilDisplayed`. "PC gecikmesi" (`MsPCLatency`) CS2'nin Reflex PCLStats işaretlerinden hesaplanır: girdinin okunmasından ekrana kadar. CS2 bu işaretleri Reflex kapalıyken de gönderir, ancak yalnızca `--track_pc_latency` ile kayda geçer. İkisinde de fare, USB ve ekran panelinin süresi dahil değildir. Tıklamadan ekrana süre için donanım gerekir (LDAT, OSLTT veya ışık sensörlü Teensy).
+- **Takılma:** 4 ms'den uzun kare sayısı kullanılır. "Medyanın iki katından uzun kare" ölçütü CS2'de anlamlı değildir: her koşuda karelerin ~%5'i bu sınırı aşar.
 - **PresentMon'un FPS değerini kullanmayın.** Bu sistemde ETW olay kaybı yüzünden kareleri eksik saydı: Independent Flip'te %3, Legacy Flip'te %10 eksik. FPS için VProf kullanıldı. Gecikme ve sunum kipi değerleri kaydedilen karelerden hesaplanır.
 - `--date_time` çıktısındaki saat bu sistemde yerel saatten 3 saat ileriydi. Betik farkı kendisi düzeltir.
 
 ## Ölçüm sayıları
 
 - **BIOS testleri:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
-- **Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS ve Oyun Modu testleri:** 46 CS2 oturumunda 257 tamamlanan koşu (174 kayıt, 81 ısınma, 2 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
+- **Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu ve gecikme testleri:** 47 CS2 oturumunda 268 tamamlanan koşu (183 kayıt, 83 ısınma, 2 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
 
 Ham veri ve sütun açıklamaları: [data/README.md](../data/README.md).
 
