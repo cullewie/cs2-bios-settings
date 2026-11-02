@@ -168,6 +168,38 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 - Aynı ayarın iki oturumu arasındaki fark %0,32'dir. Fark bu sapma kadardır. Kalite daha iyi değildir.
 - Genel profil Performans olarak kaldı. CS2 profilindeki değişiklik silindi.
 
+## Custom OS ayarları (AtlasOS, ReviOS, RapidOS)
+
+02.11'de açık kaynaklı Windows playbook'larının kaynak kodu incelendi: AtlasOS 0.5.0, ReviOS 26.10 (Revision Tool ile) ve RapidOS 1.3. Tiny11 yalnızca Windows imajını küçültür. Performans ayarı yoktur. AtlasOS 0.5.0 ve RapidOS 1.3 bu sistemin Windows sürümünü (build 26300) desteklemez.
+
+**FACEIT nedeniyle test edilmedi:** ReviOS ve RapidOS VBS/HVCI'yi varsayılan olarak kapatır. AtlasOS kurulumunda otomatik Windows Update kapatma varsayılan olarak seçilidir. Defender, Spectre ve CFG korumaları, Smart App Control ve AMD PSP aygıtı da test edilmedi.
+
+**Bu sistemde zaten uygulananlar:** Güç planı (minimum işlemci %100, EPP 0, çekirdek park etme kapalı, USB ve PCIe güç tasarrufu kapalı), Win32PrioritySeparation (2, 0x26 ile aynı davranış), fare ivmesi kapalı, MSI kesme modu, EEE kapalı, `cs2.exe` için tam ekran iyileştirmeleri kapalı.
+
+**Bu sistemde etki mekanizması olmayanlar (salt okunur ölçüm):**
+
+- **MMCSS** (SystemResponsiveness 10, "Games" görevi, NetworkThrottlingIndex): Yalnızca kendini MMCSS'e kaydeden iş parçacıklarını etkiler. CS2'de bunu yalnızca SDL3 kütüphanesi (ses) yapar.
+- **HPET aygıtı:** QPC frekansı 10 MHz'dir. Zaman kaynağı TSC'dir. HPET kullanılmaz.
+- **Zamanlayıcı çözünürlüğü:** CS2 1 ms çözünürlüğü kendisi ister (`tier0.dll`, `timeBeginPeriod`). `fps_max 0` ile kareler arasında bekleme yoktur.
+- **Bellek sıkıştırma:** Sıkıştırılmış bellek ~1 MB'tır. 48 GB'ın 38 GB'ı boştur.
+- **Fault Tolerant Heap:** CS2'ye uygulanmamış (`FTH\State` boş).
+- **MPO:** Legacy Flip ile kullanılmaz.
+- **TCP ayarları:** CS2 oyun trafiği UDP kullanır. Benchmark çevrimdışıdır.
+
+**Paket testi (A-B-A):** B bloğunda üç playbook'un FACEIT'e dokunmayan ve yeniden başlatma gerektirmeyen ortak kalemleri uygulandı. Çalışan 9 hizmet geçici olarak durduruldu: SysMain, DiagTrack, PcaSvc, TrkWks, WSearch, DPS, WdiSystemHost, SSDPSRV ve lfsvc. Başlangıç türleri değişmedi. Game DVR, uygulama yakalama ve arka plan uygulamaları kapatıldı. Windows Update hizmetlerine dokunulmadı. Bloklar aynı Windows oturumunda ölçüldü. Her blok yeni bir CS2 işlemidir: 2 ısınma ve 3 kayıt koşusu. Arka plan yükü, blok boyunca bütün işlemlerin işlemci süresinden hesaplandı.
+
+| Blok | Durum | 3 kayıt koşusu ortalaması | P1 (kayıt ortalaması) | P99 medyanı | Oyun içi arka plan yükü |
+|---|---|---|---|---|---|
+| A1 | Mevcut (kontrol 1) | 926,83 | 345,0 | 2,89 ms | 0,137 çekirdek |
+| B2 | Custom OS paketi | 926,43 | 347,8 | 2,88 ms | 0,106 çekirdek |
+| A3 | Mevcut (kontrol 2) | 926,93 | 338,5 | 2,99 ms | 0,138 çekirdek |
+
+- B2, kontrol bloklarının ortalamasından %0,05 düşüktür. İki kontrol bloğu arasındaki kayma %0,01'dir. Etki yoktur.
+- Paketin kapattığı hizmetler oyun sırasında 0,0046 çekirdek kullanıyordu (en çok DiagTrack). CS2 ise ~4,1 çekirdek kullanır. B2'deki arka plan düşüşünün büyük kısmı NVIDIA hizmetlerinin dalgalanmasıdır.
+- Dış testlerdeki kazançlar (PCGH, Mart 2024: AtlasOS 0.3.2, Ryzen 5 5600X, ortalama +%2–8) eski işlemcilerde ve güvenlik korumaları kapatılarak ölçüldü. Bu depoda bunlar FACEIT nedeniyle uygulanmaz.
+- **Karar:** Bu ayarlar ve custom OS kurulumu bu sistemde FPS kazandırmaz.
+- Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G40` … `G42`. `G39` ilk denemedir: betik hatası yüzünden ilk kayıt koşusundan sonra durdu ve analize alınmadı.
+
 ## FACEIT nedeniyle değiştirilmeyen ayarlar
 
 Ölçüm sırasında bu ayarlara dokunulmadı: Secure Boot, CSM, Firmware TPM, IOMMU, SVM, DMA koruması, Pluton, VBS/HVCI ve Windows Update.
