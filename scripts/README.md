@@ -22,11 +22,11 @@ Betiklerin ürettiği dosyalar (`bench_progress.txt`, `sonuc\`, `console_log\`) 
 
 ## bench: CS2 ölçümü
 
-CS2, `-condebug` seçeneğiyle açık olmalıdır. `console.log` yolu betiklerin başında tanımlıdır. Steam farklı bir klasördeyse yolu değiştirin.
+CS2, `-condebug` seçeneğiyle açık olmalıdır. Steam farklı bir klasördeyse `console.log` yolunu `-Log` parametresiyle verin (`Invoke-Cs2Benchmark.ps1`, `Get-VProfReport.ps1`, `Compare-InterleavedRun.ps1`). `Backup-ConsoleLog.ps1` betiğinde yol, betiğin başında tanımlıdır.
 
 | Betik | Görevi |
 |---|---|
-| [`Invoke-Cs2Benchmark.ps1`](bench/Invoke-Cs2Benchmark.ps1) | Konsolu açar, haritayı yükler, `[VProf] FPS:` satırını bekler ve sonraki koşuya geçer. Plan biçimi: `-Plan ad:maske:koşu[:öncelik];…`. Öncelik değeri N, A veya H olabilir. `-Warmups` ısınma koşusu sayısını belirler. `bench_stop.txt` dosyası oluşturulursa betik durur. Bitince affinity ve önceliği varsayılana döndürür. CS2 başta simge durumundaysa yeniden simge durumuna alır ve önceki pencereyi öne getirir. |
+| [`Invoke-Cs2Benchmark.ps1`](bench/Invoke-Cs2Benchmark.ps1) | Konsolu açar, haritayı yükler, `[VProf] FPS:` satırını bekler ve sonraki koşuya geçer. Her koşuda yalnızca komuttan sonra `console.log` dosyasına eklenen satırları okur. VProf satırını ancak yeni harita satırından sonra gelirse o koşunun sonucu sayar. Plan biçimi: `-Plan ad:maske:koşu[:öncelik];…`. Öncelik değeri N, A veya H olabilir. Plan (maske, koşu sayısı, öncelik) ve `console.log` yolu çalıştırmadan önce doğrulanır. Hata varsa betik hiçbir şeyi değiştirmeden durur. `-Warmups N`: planın ilk N koşusu ısınma sayılır. Sayaç bloklar arasında sürer, her blok için ayrı ısınma yoktur ([Ölçüm yöntemi](../docs/methodology.md#isınma-koşuları-ve-sapma)). `bench_stop.txt` dosyası oluşturulursa betik durur. Başlangıçtaki affinity ve önceliği kaydeder. Bitişte, hatada, durdurma dosyasında ve Ctrl+C ile durdurulduğunda bu değerlere döner. CS2 kapanırsa veya işlem kimliği (PID) başka bir işleme geçerse o işleme dokunmaz. CS2 başta simge durumundaysa yeniden simge durumuna alır ve önceki pencereyi öne getirir. |
 | [`Get-VProfReport.ps1`](bench/Get-VProfReport.ps1) | Belirli bir zaman aralığındaki koşuları okur. Avg, P1, P99, ortalama kare süresi, WHEA ve Kernel-Power 41 sayısını verir. |
 | [`Compare-InterleavedRun.ps1`](bench/Compare-InterleavedRun.ps1) | Dönüşümlü koşuları eşleştirilmiş t testi ile karşılaştırır. |
 | [`Backup-ConsoleLog.ps1`](bench/Backup-ConsoleLog.ps1) | `console.log` dosyasını yedekler. CS2 her açılışta bu dosyayı sıfırlar. |
@@ -40,7 +40,7 @@ CS2, `-condebug` seçeneğiyle açık olmalıdır. `console.log` yolu betiklerin
 
 **Notlar:**
 - `Start-Process` ile `-Plan` değeri geçirirken tek tırnak kullanmayın. Tek tırnak değeri olduğu gibi iletir ve hiçbir koşu çalışmaz.
-- Tarihler `console.log` biçimindedir: `MM/dd HH:mm`. Yıl betiklerde 2026 olarak sabittir.
+- Tarihler `console.log` biçimindedir: `MM/dd HH:mm`. `console.log` satırlarında yıl yoktur. `Invoke-Cs2Benchmark.ps1` yılı çalıştırma tarihinden alır. `Get-VProfReport.ps1` yılı 2026 varsayar.
 
 ## bios: BIOS okuma (yalnızca okur)
 
@@ -102,6 +102,11 @@ Bu betikler HWiNFO'nun paylaşılan belleğini okur. HWiNFO'da **Shared Memory S
 | [`Get-DumpSummary.ps1`](windows/Get-DumpSummary.ps1) | Minidump dosyasını (`.dmp`, `.mdmp`) okur. İstisna kodunu, hatalı modülü ve yığındaki modülleri yazar. | Hayır |
 | [`Measure-DpcLatency.ps1`](windows/Measure-DpcLatency.ps1) + [`DpcEtl.cs`](windows/DpcEtl.cs) | DPC ve kesme sürelerini Windows'un çekirdek izleme kaydıyla ölçer (LatencyMon benzeri). Sürücü bazında adet, ortalama ve en uzun süreyi yazar. `-Sec 60` boşta ölçer, `-Bench` bir CS2 koşusu sırasında ölçer. | Evet |
 | [`Compare-PresentMode.ps1`](windows/Compare-PresentMode.ps1) + [`PresentMonReport.cs`](windows/PresentMonReport.cs) | PresentMon ile bir CS2 oturumunu kaydeder ve `Compare-GpuProfile.ps1` koşularını çalıştırır. Her koşu için sunum kipi, kare başlangıcından ekrana gecikme, CPU ve GPU meşgul süresini yazar. `PresentMon-2.6.0-x64.exe` dosyası aynı klasörde olmalıdır (`-PresentMon` ile değiştirilebilir). | Evet |
+| [`Compare-LaunchOption.ps1`](windows/Compare-LaunchOption.ps1) | CS2 başlatma seçeneklerini bloklar halinde karşılaştırır. Her blokta CS2'yi kapatır, `steam -applaunch 730 <seçenekler>` ile yeniden açar, komut satırını doğrular, `Compare-GpuProfile.ps1` ile 2 ısınma ve 3 kayıt koşusu çalıştırır ve `console.log` yedeğini alır. Steam'deki kayıtlı seçenekleri değiştirmez. Boş blok (`A=`) ek seçeneksiz kontrol bloğudur. Ortaya ve sona kontrol bloğu koyun. | Evet |
+
+```powershell
+.\scripts\windows\Compare-LaunchOption.ps1 -Plan 'A=;B=-threads 9;C=-threads 9 -mainthreadpriority 2;D=' -Tag LAUNCH
+```
 
 ## Katkı
 

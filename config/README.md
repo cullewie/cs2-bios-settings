@@ -3,7 +3,7 @@
 [`bios-target-2503.csv`](bios-target-2503.csv), bu rehberin BIOS ayarlarını makine tarafından okunabilir biçimde içerir. [`Test-Configuration.ps1`](../scripts/check/Test-Configuration.ps1) canlı BIOS değerlerini bu listeyle karşılaştırır ([Kontrol](../docs/verification.md)).
 
 - **BIOS sürümü:** ASUS ROG STRIX X870-A GAMING WIFI, 2503
-- **Satır sayısı:** 126 (72 ayar + 54 fan ve pompa eğrisi noktası). Fan satırları yalnızca `-Fan` seçeneğiyle kontrol edilir.
+- **Satır sayısı:** 124 (70 ayar + 54 fan ve pompa eğrisi noktası). Fan satırları yalnızca `-Fan` seçeneğiyle kontrol edilir.
 
 ## Sütunlar
 

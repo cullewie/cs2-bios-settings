@@ -107,18 +107,66 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 | V-Sync | Kapalı |
 | `fps_max` | 0 (sınırsız) |
 | MSAA | 2x |
-| Anizotropik filtre | 16x |
+| Anizotropik filtre | 16x. 26.10'dan beri NVIDIA genel 3D ayarında anizotropik filtre kapalıdır. Bu ayar oyun içi 16x değerini geçersiz kılar. |
 | Gölge kalitesi | Yüksek (26.10'dan itibaren). Önceki ölçümler Düşük ile yapıldı. |
 | Doku kalitesi | Düşük |
 | Dinamik gölgeler | Tümü |
 | Parçacık ve ortam aydınlatması | Düşük veya kapalı |
 | FSR | Kapalı |
 | NVIDIA Reflex | Kapalı |
-| Başlatma seçenekleri | `+exec crosshair.cfg -condebug` |
+| Başlatma seçenekleri | `+exec crosshair.cfg -condebug` ([test edilen ek seçenekler](#cs2-başlatma-seçenekleri)) |
 
 `-condebug` seçeneği, VProf sonuçlarının `console.log` dosyasına yazılması için gerekir.
 
 **Gölge kalitesi Yüksek:** Ortalama FPS'i %4,7 düşürdü (ayrıntı: [Ekran kartı](gpu.md#gölge-kalitesi-yüksek-ile-2610)). Kare süresi olarak bu, kare başına yaklaşık 0,05 ms demektir. Karşılığında rakip gölgeleri daha uzaktan ve daha net çizilir.
+
+## CS2 başlatma seçenekleri
+
+02.11'de ek başlatma seçenekleri aynı Windows oturumunda bloklar halinde ölçüldü. Her blok yeni bir CS2 işlemidir: 2 ısınma ve 3 kayıt koşusu. Seçenekler `steam -applaunch 730 <seçenekler>` ile verildi. Steam'deki kayıtlı seçenekler değişmedi. Komut satırı her blokta doğrulandı. Bloklar A, B, C, D, E, F sırasıyla ölçüldü. A, D ve F ek seçeneksiz kontrol bloklarıdır.
+
+| Blok | Ek seçenek | 3 kayıt koşusu ortalaması | P1 (5 koşu ortalaması) | P99 medyanı |
+|---|---|---|---|---|
+| A | yok (kontrol 1) | 936,73 | 340,8 | 2,95 ms |
+| B | `-threads 9` | 927,80 | 341,6 | 2,90 ms |
+| C | `-threads 9 -mainthreadpriority 2` | 926,93 | 345,8 | 2,87 ms |
+| D | yok (kontrol 2) | 927,27 | 346,5 | 2,87 ms |
+| E | `-nojoy +violence_hblood 0 +engine_low_latency_sleep_after_client_tick true` | 929,10 | 338,3 | 2,97 ms |
+| F | yok (kontrol 3) | 928,77 | 347,0 | 2,91 ms |
+
+- Kontrol bloklarında FPS A'dan D'ye %1,0 düştü, D'den F'ye değişmedi. Düşüş, oturumun ilk ~40 dakikasında oldu. Yalnızca A ile karşılaştırılsaydı her seçenek ~%1 kayıp gibi görünürdü.
+- En yakın kontrol bloklarına göre: B +%0,06, C −%0,04, E +%0,12. Hepsi sapma içindedir.
+- E'de P1 %2,4 düşük, P99 biraz yüksek çıktı. P1 koşudan koşuya ~10 FPS oynar. Fark anlamlı değildir.
+- CS2, E'deki komutları hatasız kabul etti (`console.log` içinde "Unknown command" yok).
+- `violence_hblood 0` yalnızca kanı kapatır. Benchmark haritasında hasar olmadığı için bu testte etkisi görülemez.
+- `engine_low_latency_sleep_after_client_tick` giriş gecikmesiyle ilgilidir. Bu depoda gecikme ölçüm donanımı yoktur. FPS ve kare süresinde fayda görülmedi.
+- **Karar:** Bu seçeneklerin hiçbiri bu sistemde ölçülebilir kazanç vermedi. Eklemeyin.
+- Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G33` … `G38`.
+
+## NVIDIA sürücüsü ve sürücü ayarları
+
+**Sürücü sürümü:** 26.10'a kadar NVIDIA 617.42 kullanıldı. Sonra 621.01 (26.10), ardından 621.12 (02.11 itibarıyla) kuruldu.
+
+| Oturum | Sürücü | 3 kayıt koşusu ortalaması | Not |
+|---|---|---|---|
+| `G25` (26.10) | 617.42 | 946,23 | Son 617.42 oturumu |
+| `G26` (26.10) | 621.01 | 936,97 | Yeniden başlatmadan kuruldu. `G25`'e göre −%0,98. |
+| `G28` (02.11) | 621.12 | 938,70 | Taze açılış. `G25`'e göre −%0,8 (5 sıranın 5'inde düşük). |
+
+- P1, P99, GPU saati (3195 MHz) ve güç değişmedi.
+- 621.x ile ölçülen üç oturumun hepsi 617.42 oturumlarından %0,8 ile %1,3 düşüktür. Aynı dönemde CS2 ve Windows da güncellendi. Fark sürücüye atfedilemez.
+
+**NVIDIA App genel 3D ayarları (26.10, `G27`):** Güç yönetimi maksimum performans, V-Sync zorla kapalı, doku süzme yüksek performans, anizotropik filtre kapalı. `G26`'ya göre −%0,28. Etki yok.
+
+**Doku süzme kalitesi (02.11, `G29` ve `G30`):** Yalnızca CS2 sürücü profilinde "Texture filtering - Quality" Kalite yapıldı. Aynı Windows oturumunda Performans ile karşılaştırıldı.
+
+| | Kalite | Performans |
+|---|---|---|
+| 3 kayıt koşusu ortalaması | 932,27 | 935,67 |
+| P1 / P99 (kayıt medyanı) | 348,1 / 2,87 ms | 353,8 / 2,86 ms |
+
+- Kalite, Performans'tan %0,36 düşüktür (5 sıranın 5'inde).
+- Aynı ayarın iki oturumu arasındaki fark %0,32'dir. Fark bu sapma kadardır. Kalite daha iyi değildir.
+- Genel profil Performans olarak kaldı. CS2 profilindeki değişiklik silindi.
 
 ## FACEIT nedeniyle değiştirilmeyen ayarlar
 
