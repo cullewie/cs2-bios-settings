@@ -49,7 +49,9 @@ public static class Inp {
 }
 '@
 Add-Type -TypeDefinition $src
-function Say([string]$m) { $l = '[{0}] {1}' -f (Get-Date -Format 'HH:mm:ss'), $m; [Console]::WriteLine($l); Add-Content -Path $Progress -Value $l -Encoding UTF8 }
+# Cikti satirlari Write-Host (bilgi akisi, 6) ile yazilir: ekranda gorunur, fonksiyon donus degerlerine karismaz, cagiran betik `6>&1` ile yakalayabilir.
+# Ayni satirlar -Progress dosyasina da yazilir.
+function Say([string]$m) { $l = '[{0}] {1}' -f (Get-Date -Format 'HH:mm:ss'), $m; Write-Host $l; Add-Content -Path $Progress -Value $l -Encoding UTF8 }
 # console.log paylasimli okunur (CS2 yazarken de). Dosya yoksa $null: silinip yeniden olusturulurken kisa sure yok olabilir.
 function OpenLog { try { return [IO.File]::Open($Log, 'Open', 'Read', 'ReadWrite') } catch [IO.FileNotFoundException] { return $null } }
 # Kosu basindaki konum: dosya uzunlugu ve ilk (en fazla 256) bayti. Poll yalniz bu konumdan sonra eklenenleri okur.
@@ -223,6 +225,6 @@ try {
   Say '--- run_bench bitti'
 } finally {
   # Her cikista (bitis, HATA + return, throw, bench_stop.txt, CS2 kapanmasi, odak hatasi, Ctrl+C): once ozgun affinity ve oncelik, sonra masaustu duzeni
-  try { Restore } catch { [Console]::WriteLine('HATA: geri yukleme tamamlanamadi: ' + $_.Exception.Message) }
-  try { ReturnDesk } catch { [Console]::WriteLine('HATA: masaustu duzenine donulemedi: ' + $_.Exception.Message) }
+  try { Restore } catch { Write-Host ('HATA: geri yukleme tamamlanamadi: ' + $_.Exception.Message) }
+  try { ReturnDesk } catch { Write-Host ('HATA: masaustu duzenine donulemedi: ' + $_.Exception.Message) }
 }
