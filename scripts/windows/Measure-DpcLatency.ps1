@@ -25,7 +25,8 @@ $benchOut = @()
 try {
   if ($Bench) {
     $bt = Join-Path (Split-Path $wt) 'bench'
-    $benchOut = & (Join-Path $bt 'Invoke-Cs2Benchmark.ps1') -Plan "$Name`:0xFFFE:1" -Warmups 0 | Select-String 'bitti: rapor|HATA|hata' | ForEach-Object { $_.Line }
+    # Invoke-Cs2Benchmark satirlari bilgi akisinda (Write-Host): 6>&1 ile yakalanir, ekranda da gosterilir
+    $benchOut = @(& (Join-Path $bt 'Invoke-Cs2Benchmark.ps1') -Plan "$Name`:0xFFFE:1" -Warmups 0 6>&1 | ForEach-Object { $s = "$_"; Write-Host $s; $s } | Where-Object { $_ -match 'bitti: rapor|HATA|hata' })
   } elseif ($Mouse) {
     $tot = 0; $mov = 0; $last = [System.Windows.Forms.Cursor]::Position; $end = (Get-Date).AddSeconds($Sec)
     while ((Get-Date) -lt $end) {
