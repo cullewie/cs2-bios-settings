@@ -2,6 +2,17 @@
 
 Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) kurallarına uyar. Bu depo sürüm numarası yerine yayın tarihini kullanır (`YYYY-AA-GG`).
 
+## 2026-11-03
+
+### Eklendi
+
+- [Arka plan uygulamalarının önceliği](docs/windows.md#arka-plan-uygulamalarının-önceliği-process-lasso-benzeri) (Process Lasso benzeri, Idle) ölçüldü: FPS −%0,07, P1, takılma ve ortalama gecikme aynı. Etki yok.
+- Veri: [`windows-gpu-runs.csv`](data/windows-gpu-runs.csv) dosyasına `G48` eklendi (11 koşu, toplam 282). [`latency-runs.csv`](data/latency-runs.csv) dosyasına `G48`'in 9 kayıt koşusu ve `Kosul` sütunu eklendi (toplam 18).
+
+### Değişti
+
+- [`Measure-FrameLatency.ps1`](scripts/windows/Measure-FrameLatency.ps1): Plan alanı `L` ve `-BgPriority` eklendi. Koşu boyunca oturumdaki arka plan uygulamalarının önceliğini düşürür, sonra özgün öncelikleri geri yükler.
+
 ## 2026-11-02
 
 ### Eklendi

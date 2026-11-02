@@ -66,6 +66,7 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 | CS2 launch options (`-threads 9`, `-mainthreadpriority 2`, `-nojoy`, `engine_low_latency_sleep_after_client_tick`) | No effect (±0.1%) | Do not add |
 | Custom OS settings (AtlasOS, ReviOS, RapidOS; only those that do not affect FACEIT) | No effect (−0.05% and +0.11%) | Not needed |
 | Windows Game Mode | No effect (−0.21%) | Can stay off |
+| Background apps at lowest priority (Process Lasso style) | No effect (−0.07%) | Not needed |
 
 **RAM:** The default recommendation is the kit's own EXPO/XMP profile. This profile was not measured in this repository. Manual DDR5-6000 1:1 is an alternative. Manual DDR5-8000 (1.60 V, tREFI 65535) is an advanced option. The comparison used two sessions for 6000 and only one session for 8000. The first 8000 session was 1.2% lower than the repeat with the same settings and was not used in the comparison. The current measurements do not show a reliable performance difference. The data is not sufficient to show that one profile is better or that the two are equivalent. This repository has no memory stability test for the 8000 profile. The absence of WHEA errors does not prove memory stability. Details: [BIOS: RAM](docs/bios.md#ram) (Turkish).
 
@@ -122,7 +123,7 @@ Use the same order after a BIOS update or a CMOS reset. On a different system, r
 - **Benchmark:** Steam Workshop map `3240880604` (de_dust2), about 129 seconds. FPS values come from the CS2 VProf summary.
 - **BIOS tests:** Each setting was measured in a separate CS2 session: 6 warm-up runs and 6 recorded runs. Session-to-session variation is usually ±0.6%; once it was 1.2%. The RAM and BCLK tests used 2 warm-up runs and 3 recorded runs, in A-B-A order. The A-B-A check held for DDR5-6000 and BCLK. It did not hold for DDR5-8000: two sessions with the same setting differed by 1.2%.
 - **Windows and GPU tests:** Conditions were measured in the same CS2 session, in alternating or blocked order. Each run logged the GPU clock, power and driver errors.
-- **Data:** 132 runs and 2 matches in the BIOS tests. 271 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM, BCLK, driver, Curve Optimizer, launch option, custom OS, Game Mode and latency tests.
+- **Data:** 132 runs and 2 matches in the BIOS tests. 282 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM, BCLK, driver, Curve Optimizer, launch option, custom OS, Game Mode, latency and priority tests.
 
 Details: [docs/methodology.md](docs/methodology.md) (Turkish).
 

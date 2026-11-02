@@ -63,6 +63,7 @@ Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş CS2 ayarları. Ham veri, ölç�
 | CS2 başlatma seçenekleri (`-threads 9`, `-mainthreadpriority 2`, `-nojoy`, `engine_low_latency_sleep_after_client_tick`) | Etki yok (±%0,1) | Eklemeyin |
 | Custom OS ayarları (AtlasOS, ReviOS, RapidOS; FACEIT'e dokunmayanlar) | Etki yok (−%0,05 ve +%0,11) | Gerek yok |
 | Windows Oyun Modu | Etki yok (−%0,21) | Kapalı kalabilir |
+| Arka plan uygulamalarını düşük önceliğe çekmek (Process Lasso benzeri) | Etki yok (−%0,07) | Gerek yok |
 
 **RAM:** Varsayılan öneri, kitin kendi EXPO/XMP profilidir. Bu profil bu depoda ölçülmedi. Elle DDR5-6000 1:1 bir alternatiftir. Elle DDR5-8000 (1,60 V, tREFI 65535) ileri düzey bir seçenektir. Karşılaştırmada 6000 için iki oturum, 8000 için yalnızca bir oturum kullanıldı. İlk 8000 oturumu, aynı ayarların tekrar ölçümünden %1,2 düşük çıktı ve karşılaştırmaya alınmadı. Mevcut ölçümler güvenilir bir performans farkı ortaya koymuyor. Veriler bir üstünlüğü veya eşdeğerliği göstermek için yetersizdir. Bu depoda 8000 profili için bellek kararlılık testi yoktur. WHEA hatası olmaması bellek kararlılığını kanıtlamaz. Ayrıntı: [BIOS: RAM](docs/bios.md#ram).
 
@@ -121,7 +122,7 @@ Tam liste: [Ölçüm yöntemi](docs/methodology.md#test-sistemi).
 - **Benchmark:** Steam Workshop haritası `3240880604` (de_dust2), yaklaşık 129 saniye. FPS değerleri CS2'nin VProf özetinden alındı.
 - **BIOS testleri:** Her ayar ayrı bir CS2 oturumunda ölçüldü: 6 ısınma koşusu ve 6 kayıt koşusu. Oturumlar arası sapma genelde ±%0,6'dır, bir kez %1,2 görüldü. RAM ve BCLK testleri ise 2 ısınma ve 3 kayıt koşusuyla, A-B-A sırasıyla ölçüldü. A-B-A kontrolü DDR5-6000 ve BCLK için tuttu. DDR5-8000 için tutmadı: aynı ayarın iki oturumu arasında %1,2 fark çıktı.
 - **Windows ve ekran kartı testleri:** Koşullar aynı CS2 oturumunda dönüşümlü veya bloklu sırayla ölçüldü. Her koşuda GPU saati, gücü ve sürücü hataları kaydedildi.
-- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu ve gecikme testlerinde 271 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
+- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu, gecikme ve öncelik testlerinde 282 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
 
 Ayrıntı: [Ölçüm yöntemi](docs/methodology.md).
 
