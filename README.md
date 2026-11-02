@@ -32,7 +32,7 @@ Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş CS2 ayarları. Ham veri, ölç�
 **Türkçe** · [English](README.en.md)
 
 > [!WARNING]
-> RAM ve ekran kartı hız aşırtması, voltaj artışı ve PBO garanti kapsamını etkileyebilir. Sistem kararsız çalışabilir ve veri kaybı olabilir. Tüm sorumluluk size aittir. Değerler tek bir sistemde ölçüldü.
+> RAM ve ekran kartı hız aşırtması, voltaj artışı ve PBO garanti kapsamını etkileyebilir. Sistem kararsız çalışabilir ve veri kaybı olabilir. Tüm sorumluluk size aittir. Değerler tek bir sistemde ölçüldü. Bu depoda uzun bellek testi ve çekirdek bazında CPU kararlılık testi sonucu yoktur.
 
 ## İçindekiler
 
@@ -52,14 +52,19 @@ Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş CS2 ayarları. Ham veri, ölç�
 
 | Ayar | Ortalama FPS | Karar |
 |---|---|---|
-| PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanın |
+| PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanılabilir. CPU kararlılığını test edin. |
 | Ekran kartı hız aşırtma (günlük profil: +425 / +3000 / %116) | **+%2,6** (gölge Düşük), **+%3,3** (gölge Yüksek) | Kullanın |
 | CS2'yi CPU 0 dışında çalıştırma | **+%1,8 ile +%2,5** | Kullanın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** | Kullanın |
-| RAM DDR5-6000 CL28 1:1 (8000 Gear 2 yerine) | +%0,2 ile +%0,4 (sapma içinde) | İkisi de olur |
+| Elle RAM: DDR5-6000 CL28 1:1 (elle DDR5-8000 CL34 Gear 2 yerine) | +%0,2 ile +%0,4 (sapma içinde) | Güvenilir fark gösterilmedi. İkisi de bellek testi gerektirir. |
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |
 | CS2'yi Vulkan ile çalıştırma | **−%6** | DX11 (varsayılan) kalsın |
 | Ekran kartı undervolt (VF eğrisi) | FPS aynı, güç −5 W | Kullanmayın: uzun oturumda sürücü hatası |
+| CS2 başlatma seçenekleri (`-threads 9`, `-mainthreadpriority 2`, `-nojoy`, `engine_low_latency_sleep_after_client_tick`) | Etki yok (±%0,1) | Eklemeyin |
+
+**RAM:** Varsayılan öneri, kitin kendi EXPO/XMP profilidir. Bu profil bu depoda ölçülmedi. Elle DDR5-6000 1:1 bir alternatiftir. Elle DDR5-8000 (1,60 V, tREFI 65535) ileri düzey bir seçenektir. Karşılaştırmada 6000 için iki oturum, 8000 için yalnızca bir oturum kullanıldı. İlk 8000 oturumu, aynı ayarların tekrar ölçümünden %1,2 düşük çıktı ve karşılaştırmaya alınmadı. Mevcut ölçümler güvenilir bir performans farkı ortaya koymuyor. Veriler bir üstünlüğü veya eşdeğerliği göstermek için yetersizdir. Bu depoda 8000 profili için bellek kararlılık testi yoktur. WHEA hatası olmaması bellek kararlılığını kanıtlamaz. Ayrıntı: [BIOS: RAM](docs/bios.md#ram).
+
+**PBO:** Tek bir 9800X3D ile ölçüldü. Üç ayar birlikte değişti ve her ayarın payı ayrı ölçülmedi. Bu depoda çekirdek bazında CPU kararlılık testi yoktur. Değerleri başka bir işlemciye kopyalamayın.
 
 **Toplam:** BIOS ayarları ve CPU 0 dışlama ile ortalama FPS 911'den 970'e çıktı (+%6,4). Aynı BIOS ile CPU 0 dışlama ve ekran kartı hız aşırtması 926,8'den 971,4'e çıkardı (+%4,8). İki toplam CPU 0 adımını ortak içerir. Bu nedenle toplamları birbirine eklemeyin.
 
@@ -69,7 +74,7 @@ Tüm ayarlar ve kararlar: [docs/results.md](docs/results.md).
 
 Ayarları bu sırayla uygulayın:
 
-1. **[BIOS](docs/bios.md):** RAM, işlemci, Auto kalacak ayarlar, FACEIT ve güvenlik.
+1. **[BIOS](docs/bios.md):** RAM (varsayılan: kitin EXPO/XMP profili), işlemci, Auto kalacak ayarlar, FACEIT ve güvenlik.
 2. **[Windows ve CS2](docs/windows.md):** CPU 0 dışlama, Legacy Flip, oyun içi ayarlar.
 3. **[Ekran kartı](docs/gpu.md):** MSI Afterburner profili.
 4. **[Kontrol](docs/verification.md):** Tüm ayarları tek komutla doğrulayın.
@@ -103,7 +108,7 @@ BIOS güncellemesinden veya CMOS sıfırlamasından sonra aynı sırayı izleyin
 | İşlemci | AMD Ryzen 7 9800X3D |
 | Anakart | ASUS ROG STRIX X870-A GAMING WIFI, BIOS 2503 |
 | Bellek | 2 × 24 GB DDR5-8000, SK Hynix M-die |
-| Ekran kartı | GIGABYTE GeForce RTX 5070 Ti AERO OC 16G, NVIDIA 617.42 |
+| Ekran kartı | GIGABYTE GeForce RTX 5070 Ti AERO OC 16G, NVIDIA 617.42 (26.10'a kadar), 621.12 (02.11) |
 | Ekran | 1920×1080, 360 Hz |
 | İşletim sistemi | Windows 11 Pro, derleme 26300 |
 
@@ -112,9 +117,9 @@ Tam liste: [Ölçüm yöntemi](docs/methodology.md#test-sistemi).
 ## Ölçüm yöntemi
 
 - **Benchmark:** Steam Workshop haritası `3240880604` (de_dust2), yaklaşık 129 saniye. FPS değerleri CS2'nin VProf özetinden alındı.
-- **BIOS testleri:** Her ayar ayrı bir CS2 oturumunda ölçüldü: 6 ısınma koşusu ve 6 kayıt koşusu. Oturumlar arası sapma genelde ±%0,6'dır, bir kez %1,2 görüldü. RAM ve BCLK testleri A-B-A sırasıyla doğrulandı.
+- **BIOS testleri:** Her ayar ayrı bir CS2 oturumunda ölçüldü: 6 ısınma koşusu ve 6 kayıt koşusu. Oturumlar arası sapma genelde ±%0,6'dır, bir kez %1,2 görüldü. RAM ve BCLK testleri ise 2 ısınma ve 3 kayıt koşusuyla, A-B-A sırasıyla ölçüldü. A-B-A kontrolü DDR5-6000 ve BCLK için tuttu. DDR5-8000 için tutmadı: aynı ayarın iki oturumu arasında %1,2 fark çıktı.
 - **Windows ve ekran kartı testleri:** Koşullar aynı CS2 oturumunda dönüşümlü veya bloklu sırayla ölçüldü. Her koşuda GPU saati, gücü ve sürücü hataları kaydedildi.
-- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows, ekran kartı, RAM ve BCLK testlerinde 157 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
+- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer ve başlatma seçeneği testlerinde 222 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
 
 Ayrıntı: [Ölçüm yöntemi](docs/methodology.md).
 

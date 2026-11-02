@@ -35,7 +35,7 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 > This page is an English summary. The detailed guides in [`docs/`](docs/README.md) are in Turkish. Tables, values, BIOS menu paths and commands are the same in both languages.
 
 > [!WARNING]
-> RAM and GPU overclocking, voltage increases and PBO can affect your warranty. The system can become unstable and you can lose data. You are responsible for any changes you make. All values were measured on a single system.
+> RAM and GPU overclocking, voltage increases and PBO can affect your warranty. The system can become unstable and you can lose data. You are responsible for any changes you make. All values were measured on a single system. This repository has no long memory test results and no per-core CPU stability test results.
 
 ## Contents
 
@@ -55,14 +55,19 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 
 | Setting | Average FPS | Decision |
 |---|---|---|
-| PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+3.5%** | Use |
+| PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+3.5%** | Can be used. Test CPU stability. |
 | GPU overclock (daily profile: +425 / +3000 / 116%) | **+2.6%** (shadows Low), **+3.3%** (shadows High) | Use |
 | Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** | Use |
 | Fullscreen optimizations off for `cs2.exe` (Legacy Flip) | **+1.13%** | Use |
-| DDR5-6000 CL28 1:1 RAM (instead of 8000 Gear 2) | +0.2% to +0.4% (within variation) | Either is fine |
+| Manual RAM: DDR5-6000 CL28 1:1 (instead of manual DDR5-8000 CL34 Gear 2) | +0.2% to +0.4% (within variation) | No reliable difference shown. Both need a memory test. |
 | DDR5 Nitro Mode 1-3-1 | **−1.4%** | Leave on Auto |
 | Run CS2 with Vulkan | **−6%** | Keep DX11 (default) |
 | GPU undervolt (VF curve) | Same FPS, −5 W | Do not use: driver reset in a long session |
+| CS2 launch options (`-threads 9`, `-mainthreadpriority 2`, `-nojoy`, `engine_low_latency_sleep_after_client_tick`) | No effect (±0.1%) | Do not add |
+
+**RAM:** The default recommendation is the kit's own EXPO/XMP profile. This profile was not measured in this repository. Manual DDR5-6000 1:1 is an alternative. Manual DDR5-8000 (1.60 V, tREFI 65535) is an advanced option. The comparison used two sessions for 6000 and only one session for 8000. The first 8000 session was 1.2% lower than the repeat with the same settings and was not used in the comparison. The current measurements do not show a reliable performance difference. The data is not sufficient to show that one profile is better or that the two are equivalent. This repository has no memory stability test for the 8000 profile. The absence of WHEA errors does not prove memory stability. Details: [BIOS: RAM](docs/bios.md#ram) (Turkish).
+
+**PBO:** Measured with one 9800X3D. Three settings changed together, and the share of each setting was not measured. This repository has no per-core CPU stability test. Do not copy the values to another CPU.
 
 **Total:** BIOS settings and the CPU 0 exclusion raised the average FPS from 911 to 970 (+6.4%). With the same BIOS, the CPU 0 exclusion and the GPU overclock raised it from 926.8 to 971.4 (+4.8%). Both totals include the CPU 0 step, so do not add them together.
 
@@ -72,7 +77,7 @@ All settings and decisions: [docs/results.md](docs/results.md) (Turkish).
 
 Apply the settings in this order:
 
-1. **[BIOS](docs/bios.md):** RAM, CPU, settings that stay on Auto, FACEIT and security.
+1. **[BIOS](docs/bios.md):** RAM (default: the kit's EXPO/XMP profile), CPU, settings that stay on Auto, FACEIT and security.
 2. **[Windows and CS2](docs/windows.md):** CPU 0 exclusion, Legacy Flip, in-game settings.
 3. **[GPU](docs/gpu.md):** MSI Afterburner profile.
 4. **[Check](docs/verification.md):** Verify all settings with one command.
@@ -106,16 +111,16 @@ Use the same order after a BIOS update or a CMOS reset. On a different system, r
 | CPU | AMD Ryzen 7 9800X3D |
 | Motherboard | ASUS ROG STRIX X870-A GAMING WIFI, BIOS 2503 |
 | Memory | 2 × 24 GB DDR5-8000, SK Hynix M-die |
-| GPU | GIGABYTE GeForce RTX 5070 Ti AERO OC 16G, NVIDIA 617.42 |
+| GPU | GIGABYTE GeForce RTX 5070 Ti AERO OC 16G, NVIDIA 617.42 (until 26.10), 621.12 (02.11) |
 | Monitor | 1920×1080, 360 Hz |
 | Operating system | Windows 11 Pro, build 26300 |
 
 ## Method
 
 - **Benchmark:** Steam Workshop map `3240880604` (de_dust2), about 129 seconds. FPS values come from the CS2 VProf summary.
-- **BIOS tests:** Each setting was measured in a separate CS2 session: 6 warm-up runs and 6 recorded runs. Session-to-session variation is usually ±0.6%; once it was 1.2%. The RAM and BCLK tests were confirmed in A-B-A order.
+- **BIOS tests:** Each setting was measured in a separate CS2 session: 6 warm-up runs and 6 recorded runs. Session-to-session variation is usually ±0.6%; once it was 1.2%. The RAM and BCLK tests used 2 warm-up runs and 3 recorded runs, in A-B-A order. The A-B-A check held for DDR5-6000 and BCLK. It did not hold for DDR5-8000: two sessions with the same setting differed by 1.2%.
 - **Windows and GPU tests:** Conditions were measured in the same CS2 session, in alternating or blocked order. Each run logged the GPU clock, power and driver errors.
-- **Data:** 132 runs and 2 matches in the BIOS tests. 157 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM and BCLK tests.
+- **Data:** 132 runs and 2 matches in the BIOS tests. 222 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM, BCLK, driver, Curve Optimizer and launch option tests.
 
 Details: [docs/methodology.md](docs/methodology.md) (Turkish).
 
