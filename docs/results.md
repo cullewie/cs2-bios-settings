@@ -45,6 +45,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 | `-nojoy +violence_hblood 0 +engine_low_latency_sleep_after_client_tick true` | Etki yok (+%0,12). P1 −%2,4, sapma içinde. | Gerek yok. `violence_hblood` yalnızca görseldir. |
 | Custom OS paketi (AtlasOS, ReviOS, RapidOS): 9 hizmet geçici durduruldu, Game DVR ve arka plan uygulamaları kapalı | Etki yok (iki ölçüm: −%0,05 ve +%0,11, kontrol bloklarına göre). P1 ve P99 aynı. Oyun içi arka plan yükü 0,0046 çekirdek azaldı. | Gerek yok ([Windows](windows.md#custom-os-ayarları-atlasos-revios-rapidos)) |
 | Oyun Modu açık | Etki yok (−%0,21, P1 −%1,4; sapma içinde) | Kapalı kalabilir ([Windows](windows.md#oyun-modu)) |
+| Arka plan uygulamaları en düşük öncelikte (Process Lasso benzeri) | Etki yok (−%0,07). P1, takılma ve ortalama gecikme aynı. | Gerek yok ([Windows](windows.md#arka-plan-uygulamalarının-önceliği-process-lasso-benzeri)) |
 | Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
 ## Toplam
