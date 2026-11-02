@@ -75,8 +75,9 @@ Windows, GPU ve USB işini zaten CPU 0'da çalıştırır. Bu nedenle kesmeleri 
 | PC gecikmesi (ortalama / p99) | 3,331 / 5,972 ms | 3,412 / 5,918 ms | 3,360 / 5,960 ms |
 
 - B, A ve C'nin ortalamasına göre: FPS −%2,3, P1 −%6,9, kare süresi p99 +%3,1, p99,9 +%3,5. B'nin üç koşusunun da p99 değeri, A ve C'nin bütün koşularından yüksektir.
+- P1'de koşular kısmen örtüşür. B'nin iki koşusu A ve C'nin bütün koşularından düşüktür. Üçüncü koşusu (345,0) ise A ve C'nin iki koşusundan (340,0 ve 343,8) yüksektir. P1 farkı tek oturumda ölçüldü.
 - PC gecikmesi B'de ortalama 0,07 ms (%2) daha uzundur. p99 farkı yoktur. 4 ms'den uzun kare sayısı kontrol blokları arasında da 14,7 ile 17,7 arasında oynar. Bu fark ayırt edilemez.
-- **Karar:** CPU 0 hariç tutmak FPS'in yanında P1'i ve kare süresi tutarlılığını da iyileştirir.
+- **Karar:** CPU 0 hariç tutmak FPS'in yanında kare süresi tutarlılığını da iyileştirir. P1 artışı kesin değil.
 - PC gecikmesi, CS2'nin girdiyi okuduğu andan karenin ekrana çıktığı ana kadar geçen süredir (Reflex PCLStats işaretleri). Fare ve ekran panelinin süresi dahil değildir. Reflex bu testte kapalıydı.
 - Ham veri: [`latency-runs.csv`](../data/latency-runs.csv) ve [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G47`.
 

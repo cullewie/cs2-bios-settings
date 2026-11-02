@@ -12,7 +12,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 |---|---|---|
 | RAM 8000 (BIOS 2402'den 2503'e geçişle birlikte) | +%1,2. Sonuç kesin değil. P1 +%4,3 ve P99 −%4,0 kesin. | Varsayılan değildir. İleri düzey seçenek. Bellek kararlılık testi gerektirir ([BIOS](bios.md#ddr5-8000-ileri-düzey)). |
 | PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanılabilir. Tek sistemde ölçüldü. Üç ayar birlikte değişti. Çekirdek bazında CPU kararlılık testi yok. Kendi sisteminizde test edin. |
-| CS2'yi CPU 0 dışında çalıştırma (Windows affinity) | **+%1,8 ile +%2,5**. Aynı oturumda tüm çekirdeklere göre P1 +%7, kare süresi p99 −%3, PC gecikmesi −0,07 ms. | Kullanın ([Windows](windows.md#cs2yi-cpu-0-dışında-çalıştırma), [gecikme](windows.md#gecikme-ve-akıcılık)) |
+| CS2'yi CPU 0 dışında çalıştırma (Windows affinity) | **+%1,8 ile +%2,5**. Aynı oturumda tüm çekirdeklere göre kare süresi p99 −%3, PC gecikmesi −0,07 ms. P1 +%7, ama kesin değil. | Kullanın ([Windows](windows.md#cs2yi-cpu-0-dışında-çalıştırma), [gecikme](windows.md#gecikme-ve-akıcılık)) |
 | Curve Optimizer All Cores −10 | −%0,3. Etki yok. 02.11'de Auto ile taze oturumlarda: −10 %0,33 yüksek, aynı gün sapma %0,32. Ağır tüm çekirdek yükte saat +%2,6. | Auto bırakın ([BIOS, İşlemci](bios.md)). Çekirdek bazında kararlılık testi yapılmadı. |
 | Core Tuning Config for Gaming Level 2 | Doğrulanmadı | Auto bırakın. Çekirdek bazında kararlılık testi yapılmadı. |
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |
@@ -63,7 +63,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 
 - **İşlemci:** CS2 sırasında tüm çekirdekler 5425 MHz'de çalıştı. Güç sınırının yalnızca %7,5'ini kullandı. Sıcaklık en fazla 60 °C oldu. Bu nedenle Curve Optimizer, PBO limitleri ve sıcaklık ayarları ek kazanç sağlamadı.
 - **Ekran kartı:** PresentMon'a göre kare süresinin (~1,07 ms) ~0,98 ms'inde GPU meşguldür. CPU, kare başına ~0,37 ms GPU'yu bekler. Ama GPU süresinin yalnızca ~%20'si çekirdek saatiyle ölçeklenir: GPU saati %12 düşünce FPS %2,8 düştü, 3170 MHz'in üstünde kazanç ölçülemez. Bellek saati, Core Voltage, Resizable BAR ve Vulkan da bu sabit kısmı küçültmedi.
-- **P1:** Hiçbir Windows veya ekran kartı ayarı P1 değerini ölçülebilir şekilde değiştirmedi. P1 değerinin koşudan koşuya sapması ±%5'tir.
+- **P1:** CPU 0 dışlaması dışında hiçbir Windows veya ekran kartı ayarı P1 değerini ölçülebilir şekilde değiştirmedi. CPU 0 dışlamasında 02.11'deki oturumda P1 %7 yüksek çıktı, ama koşular örtüşüyor ve sonuç tek oturuma dayanıyor. P1 değerinin koşudan koşuya sapması ±%5'tir.
 
 ## Günler arasındaki farklar
 
