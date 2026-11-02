@@ -238,6 +238,25 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 - **Gecikme:** Her blokta PresentMon açıktı, ama canlı yakalama hiç kare kaydetmedi. PresentMon saniyede ~7.900 ETW olayı kaybetti. Bu sayı farenin 8000 Hz raporlama hızına yakındır. Bu yüzden Oyun Modu'nun gecikmesi ölçülemedi. Sonradan kurulan dosya kaydı yöntemi için bkz. [CPU 0: Gecikme ve akıcılık](#gecikme-ve-akıcılık).
 - Ham veri: [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G43` … `G46`.
 
+## Arka plan uygulamalarının önceliği (Process Lasso benzeri)
+
+Bazı rehberler Process Lasso ile CS2 dışındaki uygulamaların önceliğini düşürmeyi önerir. 02.11'de bu, Process Lasso kurulmadan ölçüldü. B bloğunda oturumdaki arka plan uygulamalarının önceliği çalışma anında en düşük seviyeye (Idle) çekildi: Chrome, Steam ve tarayıcı bileşenleri, WebView2, Afterburner ve Görev Yöneticisi (29–30 süreç). CS2, Windows kabuğu, sistem hizmetleri, Defender, NVIDIA ve ses süreçlerine dokunulmadı. Aynı CS2 oturumunda A, B ve C blokları 3'er koşuyla ölçüldü ([`Measure-FrameLatency.ps1`](../scripts/windows/Measure-FrameLatency.ps1), plan alanı `L`).
+
+| Blok ortalaması | A: normal | B: arka plan Idle | C: normal |
+|---|---|---|---|
+| Ortalama FPS (VProf) | 911,4 | 910,2 | 910,4 |
+| P1 (VProf) | 337,0 | 333,5 | 332,2 |
+| Kare süresi p99 / p99,9 | 2,71 / 3,17 ms | 2,72 / 3,22 ms | 2,71 / 3,19 ms |
+| 4 ms'den uzun kare (koşu başına) | 17,0 | 18,0 | 14,0 |
+| Kare başlangıcından ekrana (ortalama) | 2,012 ms | 2,011 ms | 2,015 ms |
+| PC gecikmesi (ortalama / p99) | 3,43 / 6,02 ms | 3,44 / 5,90 ms | 3,48 / 6,00 ms |
+
+- FPS −%0,07, P1, takılma ve ortalama gecikme aynı.
+- PC gecikmesinin p99 değeri B'de ~0,1 ms düşüktür. Buna karşılık kare süresi p99,9 değeri 0,03 ms yüksektir.
+- Neden: CS2 öndeyken Windows zaten onun iş parçacıklarına öncelik verir. Oyun sırasında arka plan yükü 0,11–0,14 çekirdektir ve CS2 ile aynı çekirdek için yarışmaz.
+- **Karar:** Gerek yok. CS2 için gerçek kazanç CPU 0'ı hariç tutmaktır ([yukarıda](#cs2yi-cpu-0-dışında-çalıştırma)).
+- Ham veri: [`latency-runs.csv`](../data/latency-runs.csv) ve [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G48`.
+
 ## FACEIT nedeniyle değiştirilmeyen ayarlar
 
 Ölçüm sırasında bu ayarlara dokunulmadı: Secure Boot, CSM, Firmware TPM, IOMMU, SVM, DMA koruması, Pluton, VBS/HVCI ve Windows Update.
