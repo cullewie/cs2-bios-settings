@@ -11,6 +11,7 @@ param(
 # Plan bicimi: 'ad:maske:kosuSayisi[:oncelik];ad2:maske2:n2' (oncelik istege bagli: N Normal, A AboveNormal, H High; verilmezse degistirilmez). Anti-cheat kapaliyken kullanilir.
 # Plan ve console.log yolu (-Log) hicbir sey degismeden once dogrulanir. CS2'nin baslangictaki affinity ve onceligi kaydedilir ve her cikista
 # (bitis, HATA, throw, bench_stop.txt, Ctrl+C) finally icinde geri yuklenir. CS2 PID + baslangic zamaniyla izlenir: surec kapanir veya PID baska surece gecerse ona dokunulmaz.
+# FACEIT calisiyorsa geri yukleme de yapilmaz (anti-cheat acikken cs2'ye dokunulmaz); uyari yazilir, CS2'yi yeniden baslatin.
 # Her kosuda console.log'un yalniz komuttan once kaydedilen konumdan sonra eklenen kismi okunur. VProf satiri ancak yeni harita satirindan sonra gelirse kosunun sonucudur.
 $stopFile = Join-Path (Split-Path $Progress) 'bench_stop.txt'
 $inv = [Globalization.CultureInfo]::InvariantCulture
@@ -109,12 +110,15 @@ function SetPri([Diagnostics.ProcessPriorityClass]$pri) {
 }
 # Tum mantiksal islemciler (SMT kapaliyken 0xFF, acikken 0xFFFF). Bunun disindaki bir bit "Parametre hatali" verir.
 function FullMask { if ([Environment]::ProcessorCount -ge 64) { return [int64]-1 }; return ([int64]1 -shl [Environment]::ProcessorCount) - 1 }
-# Plan dogrulama. Her blok ad:maske:kosu[:oncelik]: ad bosluksuz, maske 0 olmayan onaltilik ve FullMask icinde, kosu en az 1, oncelik N/A/H.
+# Plan dogrulama. Her blok ad:maske:kosu[:oncelik]: alanlarin basindaki/sonundaki bosluk atilir, addaki bosluklar _ olur ('oyun ici' -> 'oyun_ici'),
+# ad bos olamaz, maske 0 olmayan onaltilik ve FullMask icinde, kosu en az 1, oncelik N/A/H. Bos bloklar (sondaki ';') atlanir.
 function ParsePlan([string]$plan) {
   $full = FullMask; $map = @{ N = 'Normal'; A = 'AboveNormal'; H = 'High' }; $out = @(); $err = @()
   foreach ($blk in ($plan -split ';')) {
-    $f = @($blk -split ':'); $m = [int64]0; $n = 0; $pri = $null
-    if ($f.Count -lt 3 -or $f.Count -gt 4 -or $f[0] -notmatch '^\S+$') { $err += "'$blk': bicim ad:maske:kosu[:oncelik] olmali, ad bosluksuz"; continue }
+    if (-not $blk.Trim()) { continue }
+    $f = @($blk -split ':' | ForEach-Object { $_.Trim() }); $m = [int64]0; $n = 0; $pri = $null
+    if ($f.Count -ge 1) { $f[0] = $f[0] -replace '\s+', '_' }
+    if ($f.Count -lt 3 -or $f.Count -gt 4 -or -not $f[0]) { $err += "'$blk': bicim ad:maske:kosu[:oncelik] olmali, ad bos olamaz"; continue }
     if (-not [int64]::TryParse(($f[1] -replace '^0[xX]', ''), 'AllowHexSpecifier', $inv, [ref]$m) -or $m -eq 0 -or ($m -band -bnot $full)) { $err += ("'{0}': maske 0 olmayan onaltilik bir deger olmali ve 0x{1:X} icinde kalmali" -f $blk, $full); continue }
     if (-not [int]::TryParse($f[2], [ref]$n) -or $n -lt 1) { $err += "'$blk': kosu sayisi en az 1 olan bir tam sayi olmali"; continue }
     if ($f.Count -eq 4 -and $f[3]) { if (-not $map.ContainsKey($f[3])) { $err += "'$blk': oncelik N, A veya H olmali"; continue }; $pri = [Diagnostics.ProcessPriorityClass]$map[$f[3]] }
@@ -122,10 +126,12 @@ function ParsePlan([string]$plan) {
   }
   return [pscustomobject]@{ Blocks = $out; Errors = $err }
 }
-# Baslangictaki affinity ve oncelige don. Guard cagrilmaz: bench_stop.txt veya FACEIT geri yuklemeyi engellemez.
+# Baslangictaki affinity ve oncelige don. Guard cagrilmaz: bench_stop.txt geri yuklemeyi engellemez.
+# FACEIT calisiyorsa cs2'ye dokunulmaz (depo kurali): geri yukleme atlanir, uyari yazilir; test maskesi/onceligi CS2 yeniden baslayinca sifirlanir.
 # Yalniz ayni surece (PID + baslangic zamani) dokunur. Biri basarisiz olursa digeri yine denenir; kayit en sonda yazilir.
 function Restore {
   if (-not ($script:affSet -or $script:priSet)) { return }
+  if (@(Get-Process | Where-Object { $_.Name -match 'faceit' }).Count -gt 0) { Say 'UYARI: FACEIT calisiyor; cs2 affinity/oncelik geri yuklenmedi (anti-cheat acikken cs2 degistirilmez). CS2 yeniden baslayinca sifirlanir.'; return }
   $p = Target
   if (-not $p) { Say 'UYARI: cs2 kapandi veya PID baska bir surece gecti; geri yukleme yapilmadi, baska surece dokunulmadi'; return }
   $msg = @()

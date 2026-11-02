@@ -1,20 +1,25 @@
 param(
   [string]$Plan = 'A=;B=-threads 9;C=-threads 9 -mainthreadpriority 2;D=',
   [string]$Tag = 'LAUNCH',
+  [string]$Mask = '',
   [string]$OutDir = (Join-Path $PSScriptRoot 'sonuc'),
   [string]$SteamExe = 'C:\Program Files (x86)\Steam\steam.exe'
 )
 # CS2 baslatma secenegi bloklu karsilastirmasi (docs/windows.md, "CS2 baslatma secenekleri").
 # -Plan 'ad=ek secenekler;...' ornek: 'A=;B=-threads 9;C=;' (bos = ek seceneksiz kontrol blogu; ortaya ve sona kontrol blogu koyun).
+# -Mask: Steam ve CS2 affinity maskesi (onaltilik). Verilmezse CPU 0 haric tum mantiksal islemciler (islemci sayisindan hesaplanir).
 # Her blok: CS2'yi kapatir -> steam -applaunch 730 <ek secenekler> (Steam'deki kayitli seceneklere eklenir, kayitli secenekler degismez)
-# -> cs2.exe komut satirini dogrular -> 40 sn bekler -> gpu\Compare-GpuProfile.ps1 ile 2 isinma + 3 kayit kosusu (Afterburner Profil 1, CPU 0 haric)
+# -> cs2.exe komut satirini dogrular -> 40 sn bekler -> gpu\Compare-GpuProfile.ps1 ile 2 isinma + 3 kayit kosusu (Afterburner Profil 1)
 # -> bench\Backup-ConsoleLog.ps1 ile console.log yedegi (CS2 her acilista dosyayi sifirlar). Sonuc: VProf satirlari console.log yedeklerinde.
-# Steam acik olmali. Yonetici gerekir (Compare-GpuProfile). FACEIT kapali olmali. Durdurmak icin bench\bench_stop.txt olusturun.
+# Steam acik olmali. Yonetici gerekir (Compare-GpuProfile). FACEIT kapali olmali.
+# Durdurmak icin <OutDir>\bench_stop.txt olusturun (varsayilan scripts\windows\sonuc\bench_stop.txt): calisan kosu da durur.
+# scripts\bench\bench_stop.txt de bloklar arasinda kontrol edilir.
+# Compare-GpuProfile'in tum satirlari gunluge yazilir; hata/durma satiri olan blok sonda HATALI olarak sayilir.
 # Yalniz ASCII.
 $scripts = Split-Path $PSScriptRoot
 $gpuAb = Join-Path $scripts 'gpu\Compare-GpuProfile.ps1'
 $backup = Join-Path $scripts 'bench\Backup-ConsoleLog.ps1'
-$stopFile = Join-Path $scripts 'bench\bench_stop.txt'
+$stopFiles = @((Join-Path $OutDir 'bench_stop.txt'), (Join-Path $scripts 'bench\bench_stop.txt'))
 New-Item -ItemType Directory -Force $OutDir | Out-Null
 $out = Join-Path $OutDir ('launch_ab_{0}_{1}.txt' -f $Tag, (Get-Date -Format 'yyyyMMdd_HHmm'))
 function Log([string]$m) { $l = '[' + (Get-Date -Format 'HH:mm:ss') + '] ' + $m; $l; Add-Content -Path $out -Value $l -Encoding UTF8 }
@@ -26,28 +31,40 @@ function CloseCs2 {
   if (-not $c.HasExited) { Stop-Process -Id $c.Id -Force; Log 'cs2 kapanmadi, sonlandirildi' }
   Start-Sleep 8
 }
+# Maske: tum mantiksal islemciler icinde, 0 olmayan. Varsayilan CPU 0 haric.
+$cpu = [Environment]::ProcessorCount
+$full = if ($cpu -ge 64) { [int64]-1 } else { ([int64]1 -shl $cpu) - 1 }
+$m = [int64]0
+if ($Mask) {
+  if (-not [int64]::TryParse(($Mask.Trim() -replace '^0[xX]', ''), 'AllowHexSpecifier', [Globalization.CultureInfo]::InvariantCulture, [ref]$m) -or $m -eq 0 -or ($m -band -bnot $full)) { throw ("-Mask gecersiz: '{0}' (0 olmayan onaltilik, 0x{1:X} icinde)" -f $Mask, $full) }
+} else { $m = $full -band -bnot [int64]1 }
+if ($m -eq 0) { throw 'Tek mantiksal islemci var, CPU 0 haric maske bos; -Mask verin' }
+$maskHex = '0x{0:X}' -f $m
 if (-not (Test-Path $SteamExe)) { throw "Steam yok: $SteamExe" }
-Log "--- Compare-LaunchOption basladi | plan $Plan"
-foreach ($b in ($Plan -split ';' | Where-Object { $_ })) {
-  $kv = $b -split '=', 2; $n = $kv[0].Trim(); $extra = if ($kv.Count -gt 1) { $kv[1].Trim() } else { '' }
-  if (Test-Path $stopFile) { Log 'bench_stop.txt var, durdu'; break }
+Log ("--- Compare-LaunchOption basladi | plan $Plan | maske $maskHex ($cpu mantiksal islemci)")
+$failed = @(); $done = 0
+foreach ($b in ($Plan -split ';' | Where-Object { $_.Trim() })) {
+  $kv = $b -split '=', 2; $n = $kv[0].Trim() -replace '\s+', '_'; $extra = if ($kv.Count -gt 1) { $kv[1].Trim() } else { '' }
+  if (@($stopFiles | Where-Object { Test-Path $_ }).Count) { Log 'bench_stop.txt var, durdu'; break }
   CloseCs2
   $st = Get-Process steam -ErrorAction SilentlyContinue
   if (-not $st) { Log 'Steam acik degil, durdu'; break }
-  $st.ProcessorAffinity = [IntPtr]0xFFFE
+  $st.ProcessorAffinity = [IntPtr]$m
   Log ("blok $n | ek secenek: '" + $extra + "'")
   Start-Process $SteamExe -ArgumentList (@('-applaunch', '730') + @($extra -split ' ' | Where-Object { $_ }))
   $c = $null; for ($i = 0; $i -lt 90 -and -not $c; $i++) { Start-Sleep 2; $c = Get-Process cs2 -ErrorAction SilentlyContinue }
-  if (-not $c) { Log 'CS2 baslamadi, durdu'; break }
+  if (-not $c) { Log 'CS2 baslamadi, durdu'; $failed += $n; break }
   Start-Sleep 3
   $cl = (Get-CimInstance Win32_Process -Filter "ProcessId=$($c.Id)").CommandLine
   Log ('cs2 PID {0} | komut: {1}' -f $c.Id, ($cl -replace '^.*cs2\.exe"?\s*', ''))
-  if ($extra -and $cl -notlike ('*' + $extra + '*')) { Log 'UYARI: ek secenek komut satirinda yok, blok atlandi'; continue }
+  if ($extra -and $cl -notlike ('*' + $extra + '*')) { Log "UYARI: ek secenek komut satirinda yok, blok $n atlandi"; $failed += $n; continue }
   Start-Sleep 40
-  $order = ('{0}W1:1:0xFFFE,{0}W2:1:0xFFFE,{0}1:1:0xFFFE,{0}2:1:0xFFFE,{0}3:1:0xFFFE' -f $n)
-  & $gpuAb -Order $order -EndProfile 1 -Tag ('LA_' + $n) -OutDir $OutDir | ForEach-Object { if ($_ -match 'GPU:|sonrasi|basladi|bitti|UYARI|EKRAN|FACEIT') { Log $_ } }
+  $order = ('{0}W1:1:{1},{0}W2:1:{1},{0}1:1:{1},{0}2:1:{1},{0}3:1:{1}' -f $n, $maskHex)
+  $bad = $false
+  & $gpuAb -Order $order -EndProfile 1 -EndMask $maskHex -Tag ('LA_' + $n) -OutDir $OutDir | ForEach-Object { Log $_; if ($_ -match 'hata|durdu|KARARSIZ|BEKLENEN|baslamadi|GECERSIZ|EKRAN YOK') { $bad = $true } }
   & $backup -Label ('LA_' + $Tag + '_' + $n) | ForEach-Object { Log $_ }
-  if (-not (Get-Process cs2 -ErrorAction SilentlyContinue)) { Log "UYARI: blok $n sonunda CS2 kapali" }
+  if (-not (Get-Process cs2 -ErrorAction SilentlyContinue)) { Log "UYARI: blok $n sonunda CS2 kapali"; $bad = $true }
+  if ($bad) { Log "UYARI: blok $n HATALI veya eksik (yukaridaki satirlara bakin)"; $failed += $n } else { $done++ }
 }
 CloseCs2
-Log '--- Compare-LaunchOption bitti'
+Log ('--- Compare-LaunchOption bitti | tamam {0} blok | hatali/eksik: {1}' -f $done, $(if ($failed.Count) { $failed -join ', ' } else { 'yok' }))
