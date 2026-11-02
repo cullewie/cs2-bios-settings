@@ -43,6 +43,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 | CS2 başlatma seçeneği `-threads 9` | Etki yok (+%0,06, kontrol bloklarına göre) | Eklemeyin ([Windows](windows.md#cs2-başlatma-seçenekleri)) |
 | `-threads 9 -mainthreadpriority 2` | Etki yok (−%0,04) | Eklemeyin |
 | `-nojoy +violence_hblood 0 +engine_low_latency_sleep_after_client_tick true` | Etki yok (+%0,12). P1 −%2,4, sapma içinde. | Gerek yok. `violence_hblood` yalnızca görseldir. |
+| Custom OS paketi (AtlasOS, ReviOS, RapidOS): 9 hizmet geçici durduruldu, Game DVR ve arka plan uygulamaları kapalı | Etki yok (−%0,05, kontrol bloklarına göre). P1 ve P99 aynı. Oyun içi arka plan yükü 0,0046 çekirdek azaldı. | Gerek yok ([Windows](windows.md#custom-os-ayarları-atlasos-revios-rapidos)) |
 | Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
 ## Toplam

@@ -34,11 +34,11 @@ function DefPL { [double]::Parse((((& nvidia-smi --query-gpu=power.default_limit
 function MaxPL { [double]::Parse((((& nvidia-smi --query-gpu=power.max_limit --format=csv,noheader,nounits) -join '').Trim()), $inv) }
 function SetProf([int]$n) { Start-Process $ab -ArgumentList "-Profile$n"; Start-Sleep -Seconds 4 }
 function RunStats([string]$csv) {
-  $rows = foreach ($r in (Get-Content $csv -ErrorAction SilentlyContinue | Select-Object -Skip 1)) { $q = $r -split ','; if ($q.Count -ge 7) { [pscustomobject]@{ U = [int]($q[1] -replace '[^\d]', ''); C = [int]($q[2] -replace '[^\d]', ''); M = [int]($q[3] -replace '[^\d]', ''); W = [double]::Parse(($q[4] -replace '[^\d\.]', ''), $inv); Tp = [int]($q[5] -replace '[^\d]', '') } } }
+  $rows = foreach ($r in (Get-Content $csv -ErrorAction SilentlyContinue | Select-Object -Skip 1)) { $q = $r -split ','; if ($q.Count -ge 7) { [pscustomobject]@{ U = [int]($q[1] -replace '[^\d]', ''); C = [int]($q[2] -replace '[^\d]', ''); M = [int]($q[3] -replace '[^\d]', ''); W = [double]::Parse(($q[4] -replace '[^\d\.]', ''), $inv); Tp = [double]::Parse(($q[5] -replace '[^\d\.]', ''), $inv) } } }
   $hi = @($rows | Where-Object { $_.U -ge 80 } | Sort-Object C)
   if (-not $hi.Count) { return 'GPU kaydi yok' }
   $u = @($hi | Sort-Object U)
-  'yukte n={0}: saat medyan {1} (min {2} maks {3}) | bellek {4} | {5:N0} W | yuk medyan %{6} | maks {7} C' -f $hi.Count, $hi[[int][Math]::Floor(($hi.Count - 1) / 2)].C, $hi[0].C, $hi[-1].C, ($hi | Group-Object M | Sort-Object Count -Descending | Select-Object -First 1).Name, ($hi | Measure-Object W -Average).Average, $u[[int][Math]::Floor(($u.Count - 1) / 2)].U, ($hi | Measure-Object Tp -Maximum).Maximum
+  'yukte n={0}: saat medyan {1} (min {2} maks {3}) | bellek {4} | {5:N0} W | yuk medyan %{6} | maks {7:0} C' -f $hi.Count, $hi[[int][Math]::Floor(($hi.Count - 1) / 2)].C, $hi[0].C, $hi[-1].C, ($hi | Group-Object M | Sort-Object Count -Descending | Select-Object -First 1).Name, ($hi | Measure-Object W -Average).Average, $u[[int][Math]::Floor(($u.Count - 1) / 2)].U, ($hi | Measure-Object Tp -Maximum).Maximum
 }
 $sig0 = DispSig
 Log "--- cs2_gpu_ab basladi | sira $Order | ekran $sig0"
