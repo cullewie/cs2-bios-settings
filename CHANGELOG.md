@@ -29,6 +29,10 @@ Bulut kod incelemesinin (PR #2) bulduğu beş sorun:
 - Aynı betik: `Compare-GpuProfile.ps1` çıktısının tamamı günlüğe yazılır. Hata veya durma satırı olan bloklar sonda hatalı olarak listelenir. Önceden bu satırlar süzülüyordu ve yarım kalan bir blok normal görünüyordu.
 - Aynı betik: Durdurma dosyası açıklaması düzeltildi. Çalışan koşuyu durdurmak için `sonuc\bench_stop.txt` gerekir. `scripts\bench\bench_stop.txt` de bloklar arasında kontrol edilir.
 
+Eski bir sorun daha düzeltildi:
+
+- [`Invoke-Cs2Benchmark.ps1`](scripts/bench/Invoke-Cs2Benchmark.ps1) çıktı satırlarını doğrudan konsola yazıyordu (`[Console]::WriteLine`). Bu yüzden onu çağıran betikler koşu satırlarını yakalayamıyordu. [`Measure-DpcLatency.ps1`](scripts/windows/Measure-DpcLatency.ps1) `-Bench` raporunda koşu sonucu boş kalıyordu. [`Compare-GpuProfile.ps1`](scripts/gpu/Compare-GpuProfile.ps1) günlüğünde koşu satırları yoktu. Satırlar artık `Write-Host` ile yazılır. Çağıran üç betik (bu ikisi ve [`Measure-GpuClockScaling.ps1`](scripts/gpu/Measure-GpuClockScaling.ps1)) satırları `6>&1` ile yakalar. Ölçüm değerleri etkilenmedi.
+
 ## 2026-10-27
 
 ### Değişti
