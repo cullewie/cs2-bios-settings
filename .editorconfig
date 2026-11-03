@@ -13,5 +13,9 @@ charset = utf-8
 [*.md]
 trim_trailing_whitespace = false
 
+# CS2 kayitlari oldugu gibi kalir
+[*.log]
+trim_trailing_whitespace = false
+
 [*.{ps1,cs}]
 end_of_line = crlf

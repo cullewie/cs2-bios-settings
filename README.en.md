@@ -135,7 +135,7 @@ Details: [docs/methodology.md](docs/methodology.md) (Turkish).
 ```text
 .
 ├── docs/           Guide pages and chart (Turkish)
-├── data/           Raw measurement data (CSV) and data dictionary
+├── data/           Raw measurement data (CSV), anonymized CS2 logs, data dictionary
 ├── config/         BIOS target settings list
 ├── scripts/        PowerShell scripts
 │   ├── bench/      CS2 benchmark automation and analysis
