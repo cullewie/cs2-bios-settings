@@ -7,7 +7,7 @@ Windows 11 Pro (derleme 26300) ve CS2 için uygulanan ayarlar. BIOS ayarlarında
 | Ayar | Değer | Not |
 |---|---|---|
 | Donanım hızlandırmalı GPU zamanlaması (HAGS) | Açık | Ayarlar → Sistem → Ekran → Grafik |
-| CS2'yi CPU 0 dışında çalıştırma | Uygulayın | Aşağıdaki adımlar. Ölçülen kazanç +%1,8 ile +%2,5. |
+| CS2'yi CPU 0 dışında çalıştırma | Uygulayın | Aşağıdaki adımlar. Ölçülen kazanç +%1,8 ile +%2,5. Akıcılık da iyileşir: kareden kareye fark −%11. |
 | İşlem önceliği | Normal | Yüksek öncelik denendi. Etkisi yok. |
 | Bellek Bütünlüğü (HVCI) | Açık | FACEIT için gerekir. |
 | Oyun Modu | Kapalı | Açıkken −%0,21 ölçüldü, sapma içinde ([Oyun Modu](#oyun-modu)). |
@@ -15,7 +15,7 @@ Windows 11 Pro (derleme 26300) ve CS2 için uygulanan ayarlar. BIOS ayarlarında
 | Win32PrioritySeparation | Varsayılan (2) | Değiştirmeyin. Ayrıntı aşağıda. |
 | Kesme yerleşimi (Interrupt Affinity) | Varsayılan | Değiştirmeyin. GPU ve USB DPC işi zaten CPU 0'da çalışır. |
 | Tam ekran iyileştirmeleri (yalnızca `cs2.exe`) | Kapalı (Legacy Flip) | Aşağıdaki adımlar. Ölçülen kazanç +%1,13. |
-| Güç planı | En az işlemci durumu %100, çekirdek park etme kapalı | Değişiklik ölçülmedi. |
+| Güç planı | Dengeli (Windows varsayılanı) yeterli. Çekirdek park etme kapalı, işlemci boşta kalma açık. | 7 plan ölçüldü: FPS, akıcılık ve saat farkı yok. Çekirdek park eden ve idle'ı kapatan planlar −%4,9 ve −%7,4 ([Güç planı](#güç-planı)). |
 
 ## CS2'yi CPU 0 dışında çalıştırma
 
@@ -73,11 +73,16 @@ Windows, GPU ve USB işini zaten CPU 0'da çalıştırır. Bu nedenle kesmeleri 
 | 4 ms'den uzun kare (koşu başına) | 14,7 | 18,0 | 17,7 |
 | Kare başlangıcından ekrana (ortalama / p99) | 1,968 / 3,528 ms | 1,983 / 3,574 ms | 1,964 / 3,539 ms |
 | PC gecikmesi (ortalama / p99) | 3,331 / 5,972 ms | 3,412 / 5,918 ms | 3,360 / 5,960 ms |
+| Kare süresi sapması | 0,444 ms | 0,463 ms | 0,455 ms |
+| Kareden kareye fark (ortalama / p99) | 0,255 / 1,93 ms | 0,291 / 2,01 ms | 0,262 / 1,96 ms |
+| Saniyenin en uzun karesi (medyan) | 3,02 ms | 3,16 ms | 3,06 ms |
+| Animasyon hatası (ortalama / p99) | 0,255 / 1,90 ms | 0,273 / 1,94 ms | 0,258 / 1,92 ms |
 
 - B, A ve C'nin ortalamasına göre: FPS −%2,3, P1 −%6,9, kare süresi p99 +%3,1, p99,9 +%3,5. B'nin üç koşusunun da p99 değeri, A ve C'nin bütün koşularından yüksektir.
+- **Akıcılık** (03.11'de aynı kayıtlardan hesaplandı, [akıcılık ölçütleri](methodology.md#akıcılık-ölçütleri)): B'de kareden kareye fark %12,5, animasyon hatası %6,6, saniyenin en uzun karesi %3,9 ve kare süresi sapması %3,0 daha yüksektir. Kareden kareye farkta ve animasyon hatasında B'nin üç koşusu, A ve C'nin bütün koşularından yüksektir.
 - P1'de koşular kısmen örtüşür. B'nin iki koşusu A ve C'nin bütün koşularından düşüktür. Üçüncü koşusu (345,0) ise A ve C'nin iki koşusundan (340,0 ve 343,8) yüksektir. P1 farkı tek oturumda ölçüldü.
 - PC gecikmesi B'de ortalama 0,07 ms (%2) daha uzundur. p99 farkı yoktur. 4 ms'den uzun kare sayısı kontrol blokları arasında da 14,7 ile 17,7 arasında oynar. Bu fark ayırt edilemez.
-- **Karar:** CPU 0 hariç tutmak FPS'in yanında kare süresi tutarlılığını da iyileştirir. P1 artışı kesin değil.
+- **Karar:** CPU 0 hariç tutmak FPS'in yanında akıcılığı da iyileştirir: kareden kareye fark %11, animasyon hatası %6 azalır. P1 artışı kesin değil.
 - PC gecikmesi, CS2'nin girdiyi okuduğu andan karenin ekrana çıktığı ana kadar geçen süredir (Reflex PCLStats işaretleri). Fare ve ekran panelinin süresi dahil değildir. Reflex bu testte kapalıydı.
 - Ham veri: [`latency-runs.csv`](../data/latency-runs.csv) ve [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G47`.
 
@@ -253,10 +258,65 @@ Bazı rehberler Process Lasso ile CS2 dışındaki uygulamaların önceliğini d
 | PC gecikmesi (ortalama / p99) | 3,43 / 6,02 ms | 3,44 / 5,90 ms | 3,48 / 6,00 ms |
 
 - FPS −%0,07, P1, takılma ve ortalama gecikme aynı.
+- **Akıcılık** (03.11'de aynı kayıtlardan hesaplandı): B'de kareden kareye fark +%1,2, animasyon hatası +%0,2, saniyenin en uzun karesi +%1,2. Etki yok.
 - PC gecikmesinin p99 değeri B'de ~0,1 ms düşüktür. Buna karşılık kare süresi p99,9 değeri 0,03 ms yüksektir.
 - Neden: CS2 öndeyken Windows zaten onun iş parçacıklarına öncelik verir. Oyun sırasında arka plan yükü 0,11–0,14 çekirdektir ve CS2 ile aynı çekirdek için yarışmaz.
 - **Karar:** Gerek yok. CS2 için gerçek kazanç CPU 0'ı hariç tutmaktır ([yukarıda](#cs2yi-cpu-0-dışında-çalıştırma)).
 - Ham veri: [`latency-runs.csv`](../data/latency-runs.csv) ve [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G48`.
+
+## Güç planı
+
+03.11'de yedi güç planı koşulu aynı CS2 oturumunda bloklar halinde ölçüldü. Her blok 3 kayıt koşusudur. Başta 2 ısınma koşusu, en sonda başlangıç planıyla bir kontrol bloğu vardır. Her kayıt koşusunda kare süreleri, gecikme ve [akıcılık ölçütleri](methodology.md#akıcılık-ölçütleri) PresentMon ile kaydedildi. İşlemci saatleri ve uyku durumları HWiNFO ile saniyede bir kaydedildi ([`Compare-PowerPlan.ps1`](../scripts/windows/Compare-PowerPlan.ps1)).
+
+**Koşullar** (AC değerleri, `powercfg /qh` ile okundu):
+
+| Blok | Plan | En düşük işlemci durumu | EPP | Çekirdek park etme | İşlemci boşta kalma |
+|---|---|---|---|---|---|
+| A, H | Bu sistemdeki özel plan (FPSHEAVEN2026, AMD sürümü), kontrol | %100 | 0 | Kapalı | Açık |
+| B | Dengeli (Windows varsayılanı) | %0 | 25 | Kapalı | Açık |
+| C | Dengeli + "En iyi performans" güç modu (Ayarlar → Sistem → Güç) | %0 | 25 | Kapalı | Açık |
+| D | Yüksek performans | %0 | 10 | Kapalı | Açık |
+| E | Atlas Power Scheme (Nihai performans kopyası + AtlasOS 0.5.0 ayarları) | %0 | 10 | Kapalı | Açık |
+| F | RapidOS 1.3 masaüstü planı (Dengeli kopyası + "En iyi performans" güç modu) | %0 | 20 | **En az %50 çekirdek** | Açık |
+| G | Özel plan + idle kapalı ("idle off" planları) | %100 | 0 | Kapalı | **Kapalı** |
+
+**Sonuçlar** (blok ortalaması, 3 koşu):
+
+| Blok | Ortalama FPS | P1 | Kare süresi p99 / p99,9 | Kareden kareye fark | Animasyon hatası | Saniyenin en uzun karesi | PC gecikmesi |
+|---|---|---|---|---|---|---|---|
+| A: özel plan (başta) | 919,8 | 337,4 | 2,69 / 3,20 ms | 0,252 ms | 0,263 ms | 3,02 ms | 3,39 ms |
+| B: Dengeli | 914,4 | 345,8 | 2,67 / 3,17 ms | 0,248 ms | 0,264 ms | 2,97 ms | 3,45 ms |
+| C: Dengeli + En iyi performans | 913,4 | 331,6 | 2,70 / 3,22 ms | 0,252 ms | 0,266 ms | 2,98 ms | 3,44 ms |
+| D: Yüksek performans | 911,6 | 350,1 | 2,70 / 3,21 ms | 0,251 ms | 0,266 ms | 3,06 ms | 3,44 ms |
+| E: Atlas | 912,3 | 336,0 | 2,71 / 3,19 ms | 0,253 ms | 0,266 ms | 2,99 ms | 3,46 ms |
+| F: RapidOS | **870,6** | 316,9 | **2,98 / 3,49 ms** | **0,291 ms** | **0,294 ms** | **3,29 ms** | 3,44 ms |
+| G: idle kapalı | **847,2** | 302,2 | **3,20 / 3,70 ms** | **0,324 ms** | **0,323 ms** | **3,48 ms** | **3,56 ms** |
+| H: özel plan (sonda) | 913,8 | 335,8 | 2,73 / 3,25 ms | 0,256 ms | 0,269 ms | 3,03 ms | 3,43 ms |
+
+**HWiNFO** (koşu penceresi ortalaması):
+
+| Blok | Çekirdek saati: ortalama (en hızlı) | C6'da geçen süre | Efektif saat | Paket gücü | Tctl en yüksek |
+|---|---|---|---|---|---|
+| A: özel plan (başta) | 5407 (5413) MHz | %0,0 | 2084 MHz | 90,8 W | 64,2 °C |
+| B: Dengeli | 5408 (5413) MHz | %0,0 | 2063 MHz | 89,9 W | 64,4 °C |
+| C: Dengeli + En iyi performans | 5405 (5414) MHz | %0,0 | 2058 MHz | 89,9 W | 64,4 °C |
+| D: Yüksek performans | 5411 (5414) MHz | %0,0 | 2063 MHz | 89,8 W | 64,5 °C |
+| E: Atlas | 5400 (5413) MHz | %0,0 | 2067 MHz | 90,8 W | 64,4 °C |
+| F: RapidOS | **4530** (5406) MHz | **%32,2** | 2067 MHz | 77,8 W | 63,8 °C |
+| G: idle kapalı | **5330** (5333) MHz | %0,0 (C0 %100) | **5297** MHz | **111,1 W** | **68,4 °C** |
+| H: özel plan (sonda) | 5411 (5416) MHz | %0,0 | 2084 MHz | 90,8 W | 64,3 °C |
+
+- **Özel planın diğer ayarları:** Otonom etkinlik penceresi 1 µs (Dengeli'de 30 ms), boşta kalma yükseltme eşiği %100 ve alçaltma eşiği %0 (çekirdekler sığ uyku durumunda kalır), performans denetim aralığı 5 saniye, boost modu 5. Bu plan fpsheaven'ın Intel ve AMD planlarını içeren paketinden gelir.
+- **Oturum içi kayma:** Özel planın iki kontrol bloğu arasında FPS %0,65 düştü (A'dan H'ye). B, C, D ve E son kontrol bloğuna göre +%0,06, −%0,04, −%0,24 ve −%0,17'dir. Doğrusal kayma düzeltmesiyle −%0,45 ile −%0,61 arasındadır. A bloğu, CS2 açıldıktan 21–28 dakika sonra ölçüldü. Bu, oturumun ilk ~40 dakikasındaki düşüşe denk gelir ([Sapma kaynakları](methodology.md#sapma-kaynakları)). Fark ayırt edilemez.
+- **Akıcılık:** B, C, D ve E'nin akıcılık ölçütleri, özel planın iki kontrol bloğunun ortalamasından en fazla %2,6 farklıdır. Dengeli her ölçütte biraz daha iyidir (−%0,4 ile −%2,6). Bu fark da sapma içindedir. Özel planın daha akıcı olduğu görülmedi.
+- **PC gecikmesi:** Özel planda ortalama 0,04 ms (40 µs) kısadır. Koşu aralıkları örtüşür (3,37–3,45 ve 3,42–3,47 ms). Bu fark hissedilmez.
+- **Saatler:** B, C, D, E ve kontrol bloklarında 8 çekirdeğin hepsi 5,40–5,41 GHz'de çalıştı. Hiçbir çekirdek C6'ya girmedi. Bu işlemci CPPC otonom kipinde çalışır: saati işlemci seçer. Plan yalnızca alt sınırı, EPP ipucunu, çekirdek park etmeyi ve idle'ı belirler. Microsoft'a göre bu kipte "Aggressive" boost modları ek bir şey yapmaz ([PERFBOOSTMODE](https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/options-for-perf-state-engine-perfboostmode)). CS2 yükünde planlar saati değiştirmedi. Özel planda efektif saat ~%1 yüksektir, yani çekirdekler biraz daha uzun süre aktif kalır. Olası neden, planın boşta kalma eşikleri ve otonom pencere ayarıdır. Bu fark iki kontrol bloğunda da görülür, ama FPS'e ve akıcılığa yansımadı.
+- **RapidOS (en az %50 çekirdek):** HWiNFO'daki Core 6 ve Core 7 zamanın %99'unda, Core 4 %59'unda park edildi. CS2'nin işi kalan çekirdeklere yığıldı. FPS −%4,9, kare süresi p99 +%10, kareden kareye fark +%15, animasyon hatası +%11. Paket gücü 13 W düştü.
+- **Idle kapalı:** Bütün iş parçacıkları sürekli aktif kaldı (C0 %100). Saat 80 MHz düştü (5,33 GHz). Güç 20 W, sıcaklık 4 °C arttı. FPS −%7,4, kare süresi p99 +%18, kareden kareye fark +%28, animasyon hatası +%22, PC gecikmesi +0,15 ms. AtlasOS'un kendi betiği de SMT açıkken idle'ın kapatılmamasını söyler.
+- **Diğer planlar:** "En iyi performans" güç modu Dengeli'den farklı sonuç vermedi. Bu mod, Dengeli'nin kopyası olan RapidOS planında da etkin oldu. Atlas planının işlemci ayarları Yüksek performansla aynıdır. Bu sistemde Yüksek performans ve Nihai performans planlarında en düşük işlemci durumu %0'dır. ReviOS'un "Ultra Performance" planı Nihai performansa eşik ayarları ekler. Bu ayarlar, ReviOS'un kendi koduna göre otonom kipte etkisizdir. Bitsum Highest Performance (Process Lasso) çekirdek park etmeyi kapatır ve işlemciyi taban frekansın altına indirmez. Bu ayarlar özel planda zaten vardır. Bu yüzden ayrıca ölçülmedi.
+- **Windows 11 26H2:** Bu sürümde güç planlarında duyurulmuş bir değişiklik yoktur. Yeni "Low Latency Profile", Başlat menüsü, arama veya bir uygulama açılırken işlemciyi 1–3 saniye en yüksek saate çıkarır. Oyun sırasındaki davranışı değiştirmez.
+- **Karar:** Windows'un varsayılan Dengeli planı yeterlidir. Özel plan zararsızdır, ama FPS'te ve akıcılıkta kazanç vermedi. Çekirdek park etmeyi kapalı tutun. Yeni kurulumdan sonra `powercfg /qh scheme_current sub_processor CPMINCORES` ile kontrol edin: AC değeri `0x00000064` (%100) olmalıdır. Çekirdek park eden ve idle'ı kapatan planları kullanmayın.
+- Ham veri: [`latency-runs.csv`](../data/latency-runs.csv), [`power-plan-cpu.csv`](../data/power-plan-cpu.csv) ve [`windows-gpu-runs.csv`](../data/windows-gpu-runs.csv), `G49`.
 
 ## FACEIT nedeniyle değiştirilmeyen ayarlar
 

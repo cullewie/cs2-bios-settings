@@ -45,6 +45,7 @@ Bu sayfa, sonuçların nasıl ölçüldüğünü ve nasıl okunacağını açık
 - 26.10'dan itibaren koşullar bloklu sırayla da ölçüldü: önce 2 ısınma koşusu, sonra her koşul art arda 3 koşu (A A A, B B B, C C C). Bu düzende sonraki bloklar oturum içi kaymadan etkilenir. Fark, blok içi eğimle düzeltilerek ve ham değerle birlikte verildi.
 - 02.11 başlatma seçeneği testinde her blok yeni bir CS2 işlemiydi (2 ısınma ve 3 kayıt koşusu). Ortaya ve sona ek seçeneksiz kontrol blokları kondu (A, D, F). Her seçenek en yakın kontrol bloğuyla karşılaştırıldı. İlk kontrol bloğu, sonraki iki kontrol bloğundan %1,0 yüksek çıktı. Bu yüzden tek bir başlangıç kontrol bloğu yeterli değildir.
 - Her koşuda `nvidia-smi` saniyede bir GPU saatini, bellek saatini, gücü ve sıcaklığı kaydetti.
+- 03.11 güç planı testinde (`G49`) HWiNFO saniyede bir işlemci çekirdek saatlerini, efektif saati, C6 ve C0 kalış oranını, paket gücünü ve sıcaklığı kaydetti ([`Export-HwinfoLog.ps1`](../scripts/hwinfo/Export-HwinfoLog.ps1)). Değerler her koşunun VProf penceresinden hesaplandı.
 - Her koşudan sonra System günlüğünde `nvlddmkm` ve Display 4101 (TDR) olayları kontrol edildi. CS2'nin açık olduğu kontrol edildi.
 - Kesme örnekleyicisi açıkken yapılan koşular karşılaştırmaya alınmadı.
 
@@ -82,14 +83,33 @@ P1 değeri tek koşuda çok değişkendir. Aynı oturumda, aynı ayarla 333 ile 
 - Sürüm 2.6.0, konsol uygulaması (Intel, GitHub). Kurulum gerekmez. [`Compare-PresentMode.ps1`](../scripts/windows/Compare-PresentMode.ps1) CS2 oturumu boyunca canlı kayıt alır ve her koşu için özet çıkarır.
 - **Canlı kayıt 02.11'den beri çalışmıyor:** PresentMon'un canlı oturumu saniyede ~7.900 ETW olayı kaybediyor ve hiç kare yazmıyor. Kaynak Win32k girdi olaylarıdır (8000 Hz fare). [`Measure-FrameLatency.ps1`](../scripts/windows/Measure-FrameLatency.ps1) bu yüzden olayları önce dosyaya yazar: WPR, [`presentmon-light.wprp`](../scripts/windows/presentmon-light.wprp) profilini kullanır. Profilde PresentMon'un kendi sağlayıcıları vardır, Win32k yoktur. Kayıp sıfırdır. Kayıt sonra `PresentMon --etl_file` ile işlenir. Bir benchmark koşusu ~1 GB tutar. Dosya işlendikten sonra silinir. Kayıt açıkken FPS değişmedi.
 - **Gecikme:** "Kare başlangıcından ekrana" = (sunum zamanı − CPU kare başlangıcı) + `MsUntilDisplayed`. "PC gecikmesi" (`MsPCLatency`) CS2'nin Reflex PCLStats işaretlerinden hesaplanır: girdinin okunmasından ekrana kadar. CS2 bu işaretleri Reflex kapalıyken de gönderir, ancak yalnızca `--track_pc_latency` ile kayda geçer. İkisinde de fare, USB ve ekran panelinin süresi dahil değildir. Tıklamadan ekrana süre için donanım gerekir (LDAT, OSLTT veya ışık sensörlü Teensy).
-- **Takılma:** 4 ms'den uzun kare sayısı kullanılır. "Medyanın iki katından uzun kare" ölçütü CS2'de anlamlı değildir: her koşuda karelerin ~%5'i bu sınırı aşar.
+- **Takılma:** 4 ms'den uzun kare sayısı kullanılır. "Medyanın iki katından uzun kare" ölçütü CS2'de anlamlı değildir: her koşuda karelerin ~%5'i bu sınırı aşar. Akıcılık için ayrıca aşağıdaki [akıcılık ölçütleri](#akıcılık-ölçütleri) kullanılır.
 - **PresentMon'un FPS değerini kullanmayın.** Bu sistemde ETW olay kaybı yüzünden kareleri eksik saydı: Independent Flip'te %3, Legacy Flip'te %10 eksik. FPS için VProf kullanıldı. Gecikme ve sunum kipi değerleri kaydedilen karelerden hesaplanır.
 - `--date_time` çıktısındaki saat bu sistemde yerel saatten 3 saat ileriydi. Betik farkı kendisi düzeltir.
+
+## Akıcılık ölçütleri
+
+Ortalama FPS ve P1 oyun hissini tek başına göstermez. 03.11'den beri her PresentMon kaydında aşağıdaki kararlılık ölçütleri de hesaplanır ([`FrameStabilityStats.cs`](../scripts/windows/FrameStabilityStats.cs)). Pencere, kare süresi ölçütleriyle aynıdır: VProf raporunun 125 ile 3 saniye öncesi arası. Hepsinde düşük değer daha akıcıdır.
+
+| Ölçüt | Tanım | Neyi gösterir |
+|---|---|---|
+| Kare süresi sapması | Kare sürelerinin standart sapması | Kare sürelerinin ne kadar dağınık olduğu |
+| Kareden kareye fark | Art arda iki karenin süre farkı (mutlak değer): ortalama ve 99. yüzdelik | Mikro takılma: kare temposunun düzensizliği |
+| Saniyenin en uzun karesi | Her 1 saniyelik aralıktaki en uzun kare: medyan ve 95. yüzdelik | Anlık takılmalar. BIOS testlerindeki `Maks1s` ölçütüyle aynıdır. |
+| 4, 6 ve 8 ms'den uzun kare | Kare sayısı | Belirgin takılmalar |
+| Animasyon hatası | PresentMon `MsAnimationError` (mutlak değer): art arda iki karede oyunun simülasyon zamanındaki ilerleme ile karenin ekrana çıkış zamanındaki ilerleme arasındaki fark. Ortalama ve 99. yüzdelik. | Hareketin ekranda düzgün akıp akmadığı. Hisse en yakın ölçüttür. |
+| Simülasyon aralığı sapması | `MsBetweenSimulationStart` değerinin standart sapması | Oyun döngüsünün ritmi |
+| PC gecikmesi sapması | `MsPCLatency` değerinin standart sapması | Girdi gecikmesinin ne kadar oynadığı |
+
+- 02.11 gecikme (`G47`) ve öncelik (`G48`) testlerinin PresentMon kayıtları bu ölçütlerle yeniden hesaplandı. Değerler [`latency-runs.csv`](../data/latency-runs.csv) dosyasındadır.
+- Kontrol: Yeniden hesaplamada kare süresi p99 değerleri, kayıtlı değerlerle 42 koşunun hepsinde aynı çıktı.
+- Oyun Modu ve custom OS testlerinde PresentMon kaydı yoktur. O testlerde akıcılık yalnızca VProf'un saniyelik en uzun karesiyle değerlendirildi.
+- Bu ölçütler 2 dakikalık çevrimdışı benchmarktan hesaplanır. Ağ, sunucu tick'i ve maçtaki ani yükler kapsanmaz.
 
 ## Ölçüm sayıları
 
 - **BIOS testleri:** 132 benchmark koşusu (86 kayıt, 44 ısınma, 2 ölçüm dışı), 2 maç, 13 CS2 oturumu ve 13 NVRAM görüntüsü. Hiçbir açılışta WHEA hatası veya Kernel-Power 41 olayı görülmedi.
-- **Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu, gecikme ve öncelik testleri:** 48 CS2 oturumunda 279 tamamlanan koşu (192 kayıt, 85 ısınma, 2 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
+- **Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu, gecikme, öncelik ve güç planı testleri:** 49 CS2 oturumunda 305 tamamlanan koşu (216 kayıt, 87 ısınma, 2 geçersiz) ve 3 yarıda kalan koşu (2 TDR, 1 ses aygıtı çökmesi). 53 Superposition koşusu (7'si çökme ile bitti). 24 kararlılık testi (12'si çökme ile bitti).
 
 Ham veri ve sütun açıklamaları: [data/README.md](../data/README.md).
 
