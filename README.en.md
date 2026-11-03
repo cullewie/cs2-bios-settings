@@ -82,10 +82,11 @@ All settings and decisions: [docs/results.md](docs/results.md) (Turkish).
 
 Apply the settings in this order:
 
+0. **[Before you start](docs/preparation.md):** Tools, benchmark map, baseline measurement and BIOS profile backup.
 1. **[BIOS](docs/bios.md):** RAM (default: the kit's EXPO/XMP profile), CPU, settings that stay on Auto, FACEIT and security.
 2. **[Windows and CS2](docs/windows.md):** CPU 0 exclusion, Legacy Flip, in-game settings.
 3. **[GPU](docs/gpu.md):** MSI Afterburner profile.
-4. **[Check](docs/verification.md):** Verify all settings with one command.
+4. **[Check](docs/verification.md):** Verify BIOS, Windows and GPU settings with one command. Run it after every boot too: the Afterburner profile and the CPU 0 setting can be lost on restart.
 
    ```powershell
    .\scripts\check\Test-Configuration.ps1
@@ -98,6 +99,7 @@ Use the same order after a BIOS update or a CMOS reset. On a different system, r
 | Page | Topic |
 |---|---|
 | [Results](docs/results.md) | Measured effect and decision for each setting |
+| [Before you start](docs/preparation.md) | Tools, benchmark map, baseline measurement (Turkish) |
 | [BIOS](docs/bios.md) | RAM timings, PBO, settings that stay on Auto, FACEIT settings |
 | [Windows and CS2](docs/windows.md) | CPU 0 exclusion, Legacy Flip, DPC measurement, power plan, in-game settings |
 | [GPU](docs/gpu.md) | Daily profile, undervolt, shadow quality, finding your own limit |

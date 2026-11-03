@@ -79,10 +79,11 @@ Tüm ayarlar ve kararlar: [docs/results.md](docs/results.md).
 
 Ayarları bu sırayla uygulayın:
 
+0. **[Başlamadan önce](docs/preparation.md):** Araçlar, benchmark haritası, taban ölçümü ve BIOS profili yedeği.
 1. **[BIOS](docs/bios.md):** RAM (varsayılan: kitin EXPO/XMP profili), işlemci, Auto kalacak ayarlar, FACEIT ve güvenlik.
 2. **[Windows ve CS2](docs/windows.md):** CPU 0 dışlama, Legacy Flip, oyun içi ayarlar.
 3. **[Ekran kartı](docs/gpu.md):** MSI Afterburner profili.
-4. **[Kontrol](docs/verification.md):** Tüm ayarları tek komutla doğrulayın.
+4. **[Kontrol](docs/verification.md):** BIOS, Windows ve ekran kartı ayarlarını tek komutla doğrulayın. Her açılıştan sonra da çalıştırın: Afterburner profili ve CPU 0 ayarı yeniden başlatmada kaybolabilir.
 
    ```powershell
    .\scripts\check\Test-Configuration.ps1
@@ -95,6 +96,7 @@ BIOS güncellemesinden veya CMOS sıfırlamasından sonra aynı sırayı izleyin
 | Sayfa | Konu |
 |---|---|
 | [Sonuçlar](docs/results.md) | Her ayarın ölçülen etkisi ve kararı |
+| [Başlamadan önce](docs/preparation.md) | Araçlar, benchmark haritası, taban ölçümü |
 | [BIOS](docs/bios.md) | RAM zamanlamaları, PBO, Auto kalacak ayarlar, FACEIT ayarları |
 | [Windows ve CS2](docs/windows.md) | CPU 0 dışlama, Legacy Flip, DPC ölçümü, güç planı, oyun içi ayarlar |
 | [Ekran kartı](docs/gpu.md) | Günlük profil, undervolt, gölge kalitesi, kendi sınırınızı bulma |
