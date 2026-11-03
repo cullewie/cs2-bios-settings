@@ -8,10 +8,11 @@ Ayarları bu sırayla uygulayın.
 
 | Sıra | Sayfa | Konu |
 |---|---|---|
+| 0 | [Başlamadan önce](preparation.md) | Araçlar, benchmark haritası, taban ölçümü, yedek |
 | 1 | [BIOS](bios.md) | RAM, işlemci, Auto kalacak ayarlar, FACEIT ve güvenlik |
 | 2 | [Windows ve CS2](windows.md) | CPU 0 dışlama, Legacy Flip, güç planı, oyun içi ayarlar |
 | 3 | [Ekran kartı](gpu.md) | MSI Afterburner profili, undervolt sonuçları, kendi sınırınızı bulma |
-| 4 | [Kontrol](verification.md) | Tüm ayarları betikle doğrulama |
+| 4 | [Kontrol](verification.md) | BIOS, Windows ve ekran kartı ayarlarını betikle doğrulama |
 | – | [Başka sistemlere uyarlama](adapting.md) | Farklı RAM, işlemci, anakart veya ekran kartı |
 
 ## Başvuru

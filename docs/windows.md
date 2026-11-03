@@ -28,8 +28,19 @@ Bu adımı her Steam açılışında tekrarlayın.
 
 CS2'yi NVIDIA App ile başlatırsanız CS2 yine `steam.exe` altında açılır ve ayarı devralır. Bu durum denendi ve doğrulandı.
 
+**PowerShell ile (Görev Yöneticisi yerine):** Steam açıkken şu komut CPU 0'ı kaldırır. Mantıksal işlemci sayısına göre maskeyi kendisi hesaplar. Yönetici gerekmez.
+
+```powershell
+Get-Process steam | ForEach-Object { $_.ProcessorAffinity = [IntPtr]((1 -shl [Environment]::ProcessorCount) - 2) }
+```
+
+CS2 zaten açıksa aynı komutu `steam` yerine `cs2` ile çalıştırın veya [`Set-Cs2Affinity.ps1`](../scripts/bench/Set-Cs2Affinity.ps1) kullanın (`-Mask 0xFFFE`, 16 mantıksal işlemci için). Bu ayar CS2 kapanınca sıfırlanır.
+
 > [!NOTE]
-> Steam, Windows açılışında kendiliğinden başlarsa CPU 0 ayarı uygulanmamış olur. Ayarı her Steam açılışında kontrol edin.
+> Steam, Windows açılışında kendiliğinden başlarsa CPU 0 ayarı uygulanmamış olur. Ayarı her Steam açılışında kontrol edin. Kontrol betiği `steam.exe` ve `cs2.exe` durumunu gösterir ([Kontrol](verification.md)).
+
+> [!IMPORTANT]
+> **FACEIT:** Ölçümler FACEIT kapalıyken yapıldı. FACEIT açıkken `cs2.exe` benzeşimini değiştirmek ve FACEIT istemcisinden açılan CS2'nin Steam ayarını devralması denenmedi. Ayarı Steam'de, CS2'yi açmadan önce yapın. Maçta `cs2.exe` satırını Görev Yöneticisi'nde kontrol edin.
 
 **Kalıcı yol (denenmedi):** Steam'i şu komutla başlatabilirsiniz:
 
@@ -125,6 +136,13 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 
 Ölçümler sırasında bu ayarlar sabit tutuldu. Tek istisna gölge kalitesidir: 26.10'da Düşük'ten Yüksek'e alındı. Kaynak: `cs2_video.txt`.
 
+> [!NOTE]
+> Bu tablo ölçüm ayarlarını gösterir, öneri değildir. Gölge kalitesi dışındaki grafik ayarlarının etkisi ölçülmedi. Kendi tercihinizi kullanın ve taban ölçümünü aynı ayarlarla yapın.
+>
+> - **NVIDIA Reflex:** Ölçümlerde kapalıydı. Gecikmeye etkisi bu depoda ölçülmedi (tıklamadan ekrana ölçüm donanımı yok).
+> - **`-condebug`:** Yalnızca ölçüm için gerekir. Oyun için gerekmez.
+> - **Anizotropik filtre:** NVIDIA genel ayarı oyun içi değeri geçersiz kılar. NVIDIA genel 3D ayarlarının birlikte etkisi ölçüldü: etki yok ([aşağıda](#nvidia-sürücüsü-ve-sürücü-ayarları)). İkisinden birini seçmeniz yeterlidir.
+
 | Ayar | Değer |
 |---|---|
 | Çözünürlük | 1280 × 960 (4:3), tam ekran |
@@ -199,7 +217,7 @@ Bu sistemde (Windows 11, derleme 26300) varsayılan değer 2'dir. Ölçüm şunu
 
 **FACEIT nedeniyle test edilmedi:** ReviOS ve RapidOS VBS/HVCI'yi varsayılan olarak kapatır. AtlasOS kurulumunda otomatik Windows Update kapatma varsayılan olarak seçilidir. Defender, Spectre ve CFG korumaları, Smart App Control ve AMD PSP aygıtı da test edilmedi.
 
-**Bu sistemde zaten uygulananlar:** Güç planı (minimum işlemci %100, EPP 0, çekirdek park etme kapalı, USB ve PCIe güç tasarrufu kapalı), Win32PrioritySeparation (2, 0x26 ile aynı davranış), fare ivmesi kapalı, MSI kesme modu, EEE kapalı, `cs2.exe` için tam ekran iyileştirmeleri kapalı.
+**Bu sistemde ölçümlerden önce zaten açık olanlar:** Özel güç planı (minimum işlemci %100, EPP 0, çekirdek park etme kapalı, USB ve PCIe güç tasarrufu kapalı), Win32PrioritySeparation (2, 0x26 ile aynı davranış), fare ivmesi kapalı, MSI kesme modu, EEE kapalı, `cs2.exe` için tam ekran iyileştirmeleri kapalı. Bu liste, custom OS paketinin neden az şey değiştirdiğini açıklamak içindir. Bir öneri listesi değildir. Ölçülen ve önerilen ayarlar sayfanın başındaki tablodadır. Güç planında Dengeli yeterlidir ([Güç planı](#güç-planı)). MSI kesme modu, USB ve PCIe güç tasarrufu ve fare ivmesi ayrıca ölçülmedi.
 
 **Bu sistemde etki mekanizması olmayanlar (salt okunur ölçüm):**
 

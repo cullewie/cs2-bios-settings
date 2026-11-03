@@ -8,7 +8,9 @@ Bu rehberdeki değerler tek bir sistemde ölçüldü. Başka bir sistemde aşağ
 | Başka X3D işlemci | PBO ve Curve Optimizer değerlerini kopyalamayın. Boost Override üst sınırı işlemciye göre değişir. Çift CCD'li X3D işlemcilerde (9900X3D, 9950X3D) Turbo Game Mode, CCD Parker ve Core Flex X3D preset anlamlı olabilir. Bu değerler burada test edilmedi. |
 | Başka ASUS AM5 anakart | Menü adları büyük ölçüde aynıdır. NVRAM ofsetleri farklıdır. Kendi BIOS dosyanızdan ayar sözlüğü çıkarın ve `-IfrFile` ile kontrol edin ([Kontrol](verification.md#yeni-bios-sürümü-kullanıyorsanız)). |
 | Başka marka anakart | Menü adları farklıdır. Ayarların anlamı aynıdır. Kontrol betiği çalışmaz. Listeyi elle uygulayın. |
-| Başka ekran kartı | Günlük değeri kopyalamayın. [Kendi sınırınızı bulma](gpu.md#kendi-sınırınızı-bulma) adımlarını izleyin. |
+| Başka ekran kartı | Günlük değeri kopyalamayın. [Kendi sınırınızı bulma](gpu.md#kendi-sınırınızı-bulma) adımlarını izleyin. Hız aşırtma kullanmıyorsanız kontrol betiğini `-NoGpu` ile çalıştırın. |
+| Farklı mantıksal işlemci sayısı | `0xFFFF` ve `0xFFFE` maskeleri 16 mantıksal işlemci içindir. Görev Yöneticisi yöntemi her işlemcide çalışır. PowerShell yöntemi maskeyi kendisi hesaplar ([Windows](windows.md#cs2yi-cpu-0-dışında-çalıştırma)). Benchmark maskeleri: [Taban ölçümü](preparation.md#4-taban-ölçümü). |
+| Intel işlemci | BIOS sayfası geçerli değildir. Windows (CPU 0 dışlama, Legacy Flip, güç planı) ve ekran kartı adımları uygulanabilir, ama Intel'de ölçülmedi. Etkiyi taban ölçümüyle kendiniz doğrulayın. |
 | Tüm durumlar | Her seferde tek ayarı değiştirin. Her değişiklikten sonra ölçün ve WHEA hatası olup olmadığına bakın. WHEA hatası olmaması kararlılığı kanıtlamaz. Bellek ve CPU için kararlılık testi yapın. |
 
 ## Kendi ayar listenizi oluşturma

@@ -7,6 +7,12 @@ Anakart: ASUS ROG STRIX X870-A GAMING WIFI, BIOS 2503. Ayarları bu sırayla uyg
 
 ## Başlamadan önce
 
+### İlk değişiklikten önce
+
+- Taban ölçümünü yapın ve araçları hazırlayın ([Başlamadan önce](preparation.md)).
+- Mevcut ayarları profile kaydedin: **Tool → ASUS User Profile → Save to Profile**. Bir ayardan sonra sistem açılmazsa bu profile dönersiniz.
+- Her seferde tek grubu değiştirin (önce RAM, sonra işlemci). Her gruptan sonra kararlılık testi yapın ve ölçün.
+
 ### BIOS güncellemesinden önce
 
 1. Mevcut ayarları profile kaydedin.
@@ -50,6 +56,8 @@ Bu bölümü ilk olarak uygulayın. Bir seçenek seçin:
 3. Kaydedin ve yeniden başlatın (**F10**). İlk açılışta bellek eğitimi birkaç dakika sürebilir.
 4. [Bellek kararlılık testi](#bellek-kararlılık-testi) yapın.
 
+- **FCLK:** Auto bırakabilirsiniz. Bu sistemde 2000'den 2200 MHz'e çıkmak +%0,23 verdi (sapma içinde). 2200 kullanacaksanız değeri iki menüde de ayarlayın ([FCLK notu](#ddr5-8000-ileri-düzey)) ve WHEA 19 olaylarını izleyin.
+- **Kontrol betiği:** Hedef liste DDR5-8000 profilini hedefler. EXPO/XMP ile RAM satırları **FARKLI** görünür. Windows RAM hızı kontrolü için kitin hızını verin: `.\scripts\check\Test-Configuration.ps1 -RamMts 6000`.
 - Profilin hızı, zamanlamaları ve voltajı kitin etiketinde ve üreticinin sayfasında yazar.
 - EXPO/XMP de belleği varsayılan (JEDEC) hızının üstünde çalıştırır. Bu sistemde kitin JEDEC hızı 5600 MT/s'dir. Kararlılık işlemciye ve anakarta göre değişir.
 - Bu profil bu depoda ölçülmedi. FPS ve kararlılık sonucu yoktur.
@@ -167,7 +175,15 @@ Elle DDR5-8000 (Gear 2) yerine elle DDR5-6000, UCLK = MEMCLK (1:1) ölçüldü. 
 
 Bu adımları her bellek profilinden sonra izleyin. Elle profillerde (DDR5-6000, DDR5-8000) zorunludur. EXPO/XMP profilinde de önerilir.
 
-1. Uzun bir bellek testi çalıştırın. Örnek araçlar: TestMem5 (TM5), Karhu RAM Test, y-cruncher (VT3) ve MemTest86. Test süresini ve geçme ölçütünü aracın belgesine göre seçin.
+1. Uzun bir bellek testi çalıştırın. Araçlar ve bağlantılar: [Başlamadan önce](preparation.md#2-araçlar). Topluluğun yaygın kullandığı ölçütler aşağıdadır. Bu ölçütler bu depoda doğrulanmadı. Aracın kendi belgesi önceliklidir.
+
+   | Araç | Yaygın ölçüt |
+   |---|---|
+   | TestMem5 | anta777 "Extreme" yapılandırması, en az 3 döngü, hatasız |
+   | Karhu RAM Test | En az %10.000 kapsama, hatasız |
+   | y-cruncher | Stres testi, VT3 bileşeni, en az 1 saat |
+   | MemTest86 | En az 4 geçiş, hatasız (Windows dışında, USB bellekten açılır) |
+
 2. Test sırasında bellek sıcaklığını izleyin (HWiNFO, SPD Hub sıcaklığı). tREFI yüksekse bellek sıcaklığa daha duyarlıdır.
 3. Testi soğuk açılıştan sonra da tekrarlayın.
 4. Hata görürseniz zamanlamaları gevşetin veya kitin EXPO/XMP profiline dönün ([Sorun giderme](troubleshooting.md)).
@@ -193,7 +209,7 @@ Bu anakartta BCLK, işlemci saatiyle birlikte PCIe saatini de değiştirir. Ayr�
 > - Bu bölümdeki değerler tek bir Ryzen 7 9800X3D ile ölçüldü. Her işlemci örneği farklıdır. Değerleri başka bir işlemciye doğrudan kopyalamayın.
 > - PBO ölçümünde üç ayar birlikte değişti: Precision Boost Overdrive Advanced, PBO Limits Motherboard ve Boost Override +200. Ortalama FPS +%3,5 arttı. Her ayarın payı ayrı ölçülmedi.
 > - Bu depoda çekirdek bazında veya düşük yükte CPU kararlılık testi sonucu yoktur. Tek CPU testi, BCLK 101 MHz ve DDR5-6000 ile yapılan 18 dakikalık OCCT CPU + RAM testidir ([BCLK](#bclk)).
-> - Ayarları uyguladıktan sonra kendi sisteminizde CPU kararlılık testi yapın. WHEA hatası olmaması tek başına kararlılık kanıtı değildir.
+> - Ayarları uyguladıktan sonra kendi sisteminizde CPU kararlılık testi yapın. WHEA hatası olmaması tek başına kararlılık kanıtı değildir. Yaygın kullanılan testler (bu depoda doğrulanmadı): OCCT CPU testi (büyük veri seti, değişken yük) ve y-cruncher stres testi, en az 1'er saat. Curve Optimizer değiştirirseniz çekirdek bazında test için CoreCycler kullanın. Düşük yükte ve boşta oluşan çökmeleri de izleyin. Araçlar: [Başlamadan önce](preparation.md#2-araçlar).
 
 **Advanced → AMD Overclocking → Precision Boost Overdrive** yolunu izleyin. Menüye girerken çıkan uyarıyı kabul edin.
 
