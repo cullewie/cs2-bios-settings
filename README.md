@@ -54,7 +54,7 @@ Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş CS2 ayarları. Ham veri, ölç�
 |---|---|---|
 | PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanılabilir. CPU kararlılığını test edin. |
 | Ekran kartı hız aşırtma (günlük profil: +425 / +3000 / %116) | **+%2,6** (gölge Düşük), **+%3,3** (gölge Yüksek) | Kullanın |
-| CS2'yi CPU 0 dışında çalıştırma | **+%1,8 ile +%2,5** (kare süresi p99 −%3, PC gecikmesi −0,07 ms) | Kullanın |
+| CS2'yi CPU 0 dışında çalıştırma | **+%1,8 ile +%2,5** (kare süresi p99 −%3, kareden kareye fark −%11, PC gecikmesi −0,07 ms) | Kullanın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** | Kullanın |
 | Elle RAM: DDR5-6000 CL28 1:1 (elle DDR5-8000 CL34 Gear 2 yerine) | +%0,2 ile +%0,4 (sapma içinde) | Güvenilir fark gösterilmedi. İkisi de bellek testi gerektirir. |
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |
@@ -64,6 +64,8 @@ Ryzen 7 9800X3D ve RTX 5070 Ti ile ölçülmüş CS2 ayarları. Ham veri, ölç�
 | Custom OS ayarları (AtlasOS, ReviOS, RapidOS; FACEIT'e dokunmayanlar) | Etki yok (−%0,05 ve +%0,11) | Gerek yok |
 | Windows Oyun Modu | Etki yok (−%0,21) | Kapalı kalabilir |
 | Arka plan uygulamalarını düşük önceliğe çekmek (Process Lasso benzeri) | Etki yok (−%0,07) | Gerek yok |
+| Windows güç planı (Dengeli, Yüksek performans, Atlas veya "En iyi performans" modu; özel plan yerine) | Etki yok (FPS, akıcılık ve çekirdek saatleri aynı) | Dengeli yeterli |
+| Çekirdek park eden veya idle'ı kapatan güç planı (RapidOS, "idle off") | **−%4,9** ve **−%7,4**, akıcılık da kötüleşir | Kullanmayın |
 
 **RAM:** Varsayılan öneri, kitin kendi EXPO/XMP profilidir. Bu profil bu depoda ölçülmedi. Elle DDR5-6000 1:1 bir alternatiftir. Elle DDR5-8000 (1,60 V, tREFI 65535) ileri düzey bir seçenektir. Karşılaştırmada 6000 için iki oturum, 8000 için yalnızca bir oturum kullanıldı. İlk 8000 oturumu, aynı ayarların tekrar ölçümünden %1,2 düşük çıktı ve karşılaştırmaya alınmadı. Mevcut ölçümler güvenilir bir performans farkı ortaya koymuyor. Veriler bir üstünlüğü veya eşdeğerliği göstermek için yetersizdir. Bu depoda 8000 profili için bellek kararlılık testi yoktur. WHEA hatası olmaması bellek kararlılığını kanıtlamaz. Ayrıntı: [BIOS: RAM](docs/bios.md#ram).
 
@@ -94,7 +96,7 @@ BIOS güncellemesinden veya CMOS sıfırlamasından sonra aynı sırayı izleyin
 |---|---|
 | [Sonuçlar](docs/results.md) | Her ayarın ölçülen etkisi ve kararı |
 | [BIOS](docs/bios.md) | RAM zamanlamaları, PBO, Auto kalacak ayarlar, FACEIT ayarları |
-| [Windows ve CS2](docs/windows.md) | CPU 0 dışlama, Legacy Flip, DPC ölçümü, oyun içi ayarlar |
+| [Windows ve CS2](docs/windows.md) | CPU 0 dışlama, Legacy Flip, DPC ölçümü, güç planı, oyun içi ayarlar |
 | [Ekran kartı](docs/gpu.md) | Günlük profil, undervolt, gölge kalitesi, kendi sınırınızı bulma |
 | [Kontrol](docs/verification.md) | Kontrol betiği, BIOS güncellemesinden sonra yapılacaklar |
 | [Başka sistemlere uyarlama](docs/adapting.md) | Farklı RAM, işlemci, anakart veya ekran kartı |
@@ -122,7 +124,8 @@ Tam liste: [Ölçüm yöntemi](docs/methodology.md#test-sistemi).
 - **Benchmark:** Steam Workshop haritası `3240880604` (de_dust2), yaklaşık 129 saniye. FPS değerleri CS2'nin VProf özetinden alındı.
 - **BIOS testleri:** Her ayar ayrı bir CS2 oturumunda ölçüldü: 6 ısınma koşusu ve 6 kayıt koşusu. Oturumlar arası sapma genelde ±%0,6'dır, bir kez %1,2 görüldü. RAM ve BCLK testleri ise 2 ısınma ve 3 kayıt koşusuyla, A-B-A sırasıyla ölçüldü. A-B-A kontrolü DDR5-6000 ve BCLK için tuttu. DDR5-8000 için tutmadı: aynı ayarın iki oturumu arasında %1,2 fark çıktı.
 - **Windows ve ekran kartı testleri:** Koşullar aynı CS2 oturumunda dönüşümlü veya bloklu sırayla ölçüldü. Her koşuda GPU saati, gücü ve sürücü hataları kaydedildi.
-- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu, gecikme ve öncelik testlerinde 282 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
+- **Akıcılık:** FPS oyun hissini tek başına göstermez. PresentMon kaydı olan testlerde kare süresi sapması, kareden kareye fark, her saniyenin en uzun karesi, animasyon hatası ve PC gecikmesi de hesaplandı ([akıcılık ölçütleri](docs/methodology.md#akıcılık-ölçütleri)).
+- **Veri:** BIOS testlerinde 132 koşu ve 2 maç. Windows, ekran kartı, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu, gecikme, öncelik ve güç planı testlerinde 308 koşu, 53 Superposition koşusu ve 24 kararlılık testi.
 
 Ayrıntı: [Ölçüm yöntemi](docs/methodology.md).
 
