@@ -20,8 +20,9 @@ Bu klasör, rehberdeki tüm sonuçların ham verisini içerir. Dosyalar CSV biç
 | [`bios-tests.csv`](bios-tests.csv) | 14 | Her BIOS testinin durumu, değişen ayar, yöntem ve sonuç |
 | [`bios-final-state.csv`](bios-final-state.csv) | 2336 | Güncel BIOS ayarlarının tam dökümü (26.10.2026) |
 | [`bios-aod-fields.csv`](bios-aod-fields.csv) | 227 | AMD Overclocking değişkeninin (AodSetupRpl) alanları |
-| [`windows-gpu-runs.csv`](windows-gpu-runs.csv) | 282 | Windows, ekran kartı, FCLK, sunum kipi, gölge, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu, gecikme ve arka plan önceliği testlerinin CS2 koşuları |
-| [`latency-runs.csv`](latency-runs.csv) | 18 | Gecikme ve arka plan önceliği testlerinin kayıt koşuları: kare süresi yüzdelikleri, kare başlangıcından ekrana süre ve PC gecikmesi |
+| [`windows-gpu-runs.csv`](windows-gpu-runs.csv) | 308 | Windows, ekran kartı, FCLK, sunum kipi, gölge, RAM, BCLK, sürücü, Curve Optimizer, başlatma seçeneği, custom OS, Oyun Modu, gecikme, arka plan önceliği ve güç planı testlerinin CS2 koşuları |
+| [`latency-runs.csv`](latency-runs.csv) | 42 | Gecikme, arka plan önceliği ve güç planı testlerinin kayıt koşuları: kare süresi yüzdelikleri, akıcılık ölçütleri, kare başlangıcından ekrana süre ve PC gecikmesi |
+| [`power-plan-cpu.csv`](power-plan-cpu.csv) | 24 | Güç planı testinin kayıt koşularında HWiNFO işlemci özeti: çekirdek saatleri, efektif saat, C6 ve C0, paket gücü, sıcaklık |
 | [`gpu-superposition.csv`](gpu-superposition.csv) | 53 | Unigine Superposition 1080p Extreme puanları |
 | [`gpu-stability.csv`](gpu-stability.csv) | 24 | Ekran kartı kararlılık testleri |
 
@@ -101,7 +102,7 @@ AMD Overclocking menüsünün ayarlarını saklayan `AodSetupRpl` değişkeninin
 
 ## windows-gpu-runs.csv
 
-Windows ve ekran kartı testlerinin (23.10–02.11.2026) her CS2 koşusu. `G21` … `G25` oturumları 26.10 RAM ve BCLK testleridir: her oturumda BIOS ayarı farklıdır, ekran kartı ayarı aynıdır. BIOS ayarı ilk satırın `Not` sütunundadır.
+Windows ve ekran kartı testlerinin (23.10–03.11.2026) her CS2 koşusu. `G21` … `G25` oturumları 26.10 RAM ve BCLK testleridir: her oturumda BIOS ayarı farklıdır, ekran kartı ayarı aynıdır. BIOS ayarı ilk satırın `Not` sütunundadır.
 
 `G26` … `G38` oturumları 26.10 ve 02.11 testleridir: NVIDIA sürücüsü 621.01 ve 621.12 (`G26`, `G28`), NVIDIA App 3D ayarları (`G27`), doku süzme kalitesi (`G29`, `G30`), Curve Optimizer −10 ve Auto (`G31`, `G32`) ve CS2 başlatma seçenekleri (`G33` … `G38`). `G33` … `G38` aynı Windows oturumunda ölçüldü. Her biri yeni bir CS2 işlemidir. `G33`, `G36` ve `G38` ek seçeneksiz kontrol bloklarıdır.
 
@@ -113,10 +114,12 @@ Windows ve ekran kartı testlerinin (23.10–02.11.2026) her CS2 koşusu. `G21` 
 
 `G48` 02.11 arka plan önceliği testidir ([Windows: Arka plan uygulamalarının önceliği](../docs/windows.md#arka-plan-uygulamalarının-önceliği-process-lasso-benzeri)). Tek bir CS2 oturumunda A (normal), B (arka plan uygulamaları Idle önceliğinde) ve C (normal) blokları ölçüldü. GPU kaydı tutulmadı.
 
+`G49` 03.11 güç planı testidir ([Windows: Güç planı](../docs/windows.md#güç-planı)). Tek bir CS2 oturumunda A ve H (özel plan, kontrol), B (Dengeli), C (Dengeli + "En iyi performans" güç modu), D (Yüksek performans), E (Atlas), F (RapidOS) ve G (özel plan + idle kapalı) blokları ölçüldü. GPU kaydı tutulmadı. İşlemci değerleri `power-plan-cpu.csv` dosyasındadır.
+
 | Sütun | Anlamı | Birim |
 |---|---|---|
 | `Tarih` | Koşunun tarihi | |
-| `Oturum` | CS2 oturumu: `G1` … `G48` | |
+| `Oturum` | CS2 oturumu: `G1` … `G49` | |
 | `Sira` | Koşunun oturumdaki sırası | |
 | `Test` | Test adı (örnek: `2x2`, `Sunum modu`, `Undervolt`, `Golge Yuksek`) | |
 | `Kosul` | Oturumdaki koşul etiketi. `W1`, `W2` = ısınma. | |
@@ -131,19 +134,43 @@ Windows ve ekran kartı testlerinin (23.10–02.11.2026) her CS2 koşusu. `G21` 
 
 ## latency-runs.csv
 
-02.11 gecikme (`G47`) ve arka plan önceliği (`G48`) testlerinin kayıt koşuları. Değerler her koşunun VProf penceresinden (raporun 125 ile 3 saniye öncesi arası) hesaplandı. Kaynak: WPR ile dosyaya alınan kayıt ve `PresentMon --etl_file` ([yöntem](../docs/methodology.md#presentmon)).
+02.11 gecikme (`G47`) ve arka plan önceliği (`G48`) testlerinin ve 03.11 güç planı testinin (`G49`) kayıt koşuları. Değerler her koşunun VProf penceresinden (raporun 125 ile 3 saniye öncesi arası) hesaplandı. Kaynak: WPR ile dosyaya alınan kayıt ve `PresentMon --etl_file` ([yöntem](../docs/methodology.md#presentmon)). Akıcılık sütunları ([tanımlar](../docs/methodology.md#akıcılık-ölçütleri)) 03.11'de üç testin kayıtlarından hesaplandı.
 
 | Sütun | Anlamı | Birim |
 |---|---|---|
-| `Tarih`, `Oturum`, `Kosu` | Tarih, CS2 oturumu ve koşu adı (`A1` … `C3`) | |
+| `Tarih`, `Oturum`, `Kosu` | Tarih, CS2 oturumu ve koşu adı (`A1` … `H3`) | |
 | `Benzesim` | CS2 affinity maskesi: `0xFFFE` CPU 0 hariç, `0xFFFF` tüm mantıksal işlemciler | |
-| `Kosul` | `CPU 0 haric`, `tum cekirdekler`, `normal` veya `arka plan Idle` (oturumdaki arka plan uygulamaları en düşük öncelikte) | |
+| `Kosul` | `G47`: `CPU 0 haric` veya `tum cekirdekler`. `G48`: `normal` veya `arka plan Idle` (oturumdaki arka plan uygulamaları en düşük öncelikte). `G49`: güç planı (`FPSHEAVEN2026`, `Dengeli`, `Dengeli + En iyi performans`, `Yuksek performans`, `Atlas`, `RapidOS`, `FPSHEAVEN2026 + idle kapali`) | |
 | `Avg_FPS`, `P1_FPS` | VProf ortalama FPS ve %1 düşük FPS | FPS |
 | `Kare` | PresentMon'un penceredeki kare sayısı | |
 | `Kare_p50_ms`, `Kare_p99_ms`, `Kare_p999_ms` | Kare süresinin medyanı, 99. ve 99,9. yüzdeliği | ms |
 | `Kare_4ms_ustu` | 4 ms'den uzun kare sayısı (takılma) | |
 | `Ekran_gecikmesi_ort_ms`, `Ekran_gecikmesi_p99_ms` | Kare başlangıcından ekrana süre: ortalama ve 99. yüzdelik | ms |
 | `PC_gecikmesi_ort_ms`, `PC_gecikmesi_p99_ms` | Girdinin okunmasından ekrana süre (Reflex PCLStats işaretleri): ortalama ve 99. yüzdelik | ms |
+| `Kare_std_ms` | Kare süresinin standart sapması | ms |
+| `Kare_farki_ort_ms`, `Kare_farki_p99_ms` | Art arda iki karenin süre farkı (mutlak değer): ortalama ve 99. yüzdelik | ms |
+| `Maks1s_P50_ms`, `Maks1s_P95_ms` | Her 1 saniyelik aralıktaki en uzun karenin medyanı ve 95. yüzdeliği | ms |
+| `Kare_6ms_ustu`, `Kare_8ms_ustu` | 6 ve 8 ms'den uzun kare sayısı | |
+| `Animasyon_hatasi_ort_ms`, `Animasyon_hatasi_p99_ms` | PresentMon `MsAnimationError` (mutlak değer): ortalama ve 99. yüzdelik | ms |
+| `Simulasyon_araligi_std_ms` | `MsBetweenSimulationStart` değerinin standart sapması | ms |
+| `PC_gecikmesi_std_ms` | PC gecikmesinin standart sapması | ms |
+| `Not` | Özel durumlar | |
+
+## power-plan-cpu.csv
+
+03.11 güç planı testinin (`G49`) kayıt koşularında HWiNFO işlemci özeti. HWiNFO sensörleri saniyede bir okundu ([`Export-HwinfoLog.ps1`](../scripts/hwinfo/Export-HwinfoLog.ps1)). Değerler her koşunun VProf penceresinden (raporun 125 ile 3 saniye öncesi arası) hesaplandı. Ham HWiNFO kaydı yayımlanmadı (donanım seri numaraları içerir).
+
+| Sütun | Anlamı | Birim |
+|---|---|---|
+| `Tarih`, `Oturum`, `Kosu` | Tarih, CS2 oturumu ve koşu adı (`A1` … `H3`) | |
+| `Kosul` | Güç planı (`latency-runs.csv` ile aynı adlar) | |
+| `Ornek` | Penceredeki HWiNFO örnek sayısı | |
+| `Cekirdek_MHz_ort`, `Cekirdek_MHz_en_hizli` | Çekirdek saati (`Core N Clock`): 8 çekirdeğin ortalaması ve her örnekteki en hızlı çekirdeğin ortalaması | MHz |
+| `Efektif_MHz_ort`, `Efektif_MHz_en_yuksek` | Efektif saat (uyku dahil ortalama saat): HWiNFO `Average Effective Clock` ve her örnekte en yüksek iş parçacığının ortalaması | MHz |
+| `Paket_W` | İşlemci paket gücünün ortalaması | W |
+| `Tctl_maks_C` | Penceredeki en yüksek Tctl/Tdie | °C |
+| `C6_ort_yuzde`, `C0_ort_yuzde` | Çekirdeklerin C6 (derin uyku, park dahil) ve C0 (aktif) durumunda geçirdiği sürenin ortalaması | % |
+| `Cekirdek_MHz_0_7`, `C6_yuzde_0_7` | Çekirdek 0 … 7 için saat ve C6 oranı, `/` ile ayrılmış | MHz, % |
 | `Not` | Özel durumlar | |
 
 ## gpu-superposition.csv
