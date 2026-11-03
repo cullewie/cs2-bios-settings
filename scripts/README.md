@@ -30,6 +30,7 @@ CS2, `-condebug` seçeneğiyle açık olmalıdır. Steam farklı bir klasördeys
 | [`Get-VProfReport.ps1`](bench/Get-VProfReport.ps1) | Belirli bir zaman aralığındaki koşuları okur. Avg, P1, P99, ortalama kare süresi, WHEA ve Kernel-Power 41 sayısını verir. |
 | [`Compare-InterleavedRun.ps1`](bench/Compare-InterleavedRun.ps1) | Dönüşümlü koşuları eşleştirilmiş t testi ile karşılaştırır. |
 | [`Backup-ConsoleLog.ps1`](bench/Backup-ConsoleLog.ps1) | `console.log` dosyasını yedekler. CS2 her açılışta bu dosyayı sıfırlar. |
+| [`Protect-ConsoleLog.ps1`](bench/Protect-ConsoleLog.ps1) | `console.log` yedeklerini paylaşmadan önce anonimleştirir: oyuncu adları, Steam kimlikleri, IP adresleri, ping konumu ve günün saati. Kaynak dosyalara dokunmaz. Ayrıntı: [`data/console-logs`](../data/console-logs/README.md#anonimleştirme). |
 | [`Set-Cs2Affinity.ps1`](bench/Set-Cs2Affinity.ps1) | `cs2.exe` affinity değerini okur veya ayarlar (`-Mask 0xFFFE`). Bu değer kalıcı değildir. |
 
 ```powershell

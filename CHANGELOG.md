@@ -2,6 +2,17 @@
 
 Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) kurallarına uyar. Bu depo sürüm numarası yerine yayın tarihini kullanır (`YYYY-AA-GG`).
 
+## 2026-11-04
+
+### Eklendi
+
+- Veri: [`data/console-logs/`](data/console-logs/README.md) klasörüne 36 anonimleştirilmiş CS2 `console.log` kaydı eklendi (19.10–03.11, `O2`–`O10` ve `G21`–`G49` oturumları). CSV dosyalarındaki FPS değerleri bu kayıtlardaki VProf satırlarından yeniden hesaplanabilir. Oyuncu adı `player1` oldu. Steam kimlikleri `***` oldu. IP adresleri sahte belgeleme adresleriyle değiştirildi. Ping konumu ve günün saati kaldırıldı.
+- Betik: [`Protect-ConsoleLog.ps1`](scripts/bench/Protect-ConsoleLog.ps1). `console.log` yedeklerini paylaşmadan önce anonimleştirir. Kayıtlar bu betikle hazırlandı.
+
+### Değişti
+
+- [Katkı rehberi](CONTRIBUTING.md): Tam `console.log` paylaşılacaksa önce `Protect-ConsoleLog.ps1` ile anonimleştirme önerisi eklendi.
+
 ## 2026-11-03
 
 ### Eklendi

@@ -24,7 +24,7 @@ Yeni bir sorun (issue) açın ve **Ölçüm sonucu** şablonunu seçin. Şu bilg
 Yöntemin ayrıntısı: [Ölçüm yöntemi](docs/methodology.md).
 
 > [!CAUTION]
-> Kişisel bilgi paylaşmayın. `console.log` dosyası oyuncu adları ve IP adresleri içerebilir. Dosyanın tamamını değil, yalnızca `[VProf]` satırlarını kopyalayın. Ekran görüntülerinde kullanıcı adı, PC adı ve seri numarası görünmemelidir.
+> Kişisel bilgi paylaşmayın. `console.log` dosyası oyuncu adları ve IP adresleri içerebilir. Dosyanın tamamını değil, yalnızca `[VProf]` satırlarını kopyalayın. Tam dosyayı paylaşmanız gerekirse önce [`Protect-ConsoleLog.ps1`](scripts/bench/Protect-ConsoleLog.ps1) ile anonimleştirin ve çıktıyı kontrol edin. Ekran görüntülerinde kullanıcı adı, PC adı ve seri numarası görünmemelidir.
 
 ## Hata bildirme ve düzeltme önerme
 

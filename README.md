@@ -134,7 +134,7 @@ Ayrıntı: [Ölçüm yöntemi](docs/methodology.md).
 ```text
 .
 ├── docs/           Rehber sayfaları ve grafik
-├── data/           Ham ölçüm verisi (CSV) ve veri sözlüğü
+├── data/           Ham ölçüm verisi (CSV), anonim CS2 logları, veri sözlüğü
 ├── config/         BIOS hedef ayar listesi
 ├── scripts/        PowerShell betikleri
 │   ├── bench/      CS2 benchmark otomasyonu ve analiz

@@ -1,6 +1,6 @@
 # Veri sözlüğü
 
-Bu klasör, rehberdeki tüm sonuçların ham verisini içerir. Dosyalar CSV biçimindedir.
+Bu klasör, rehberdeki tüm sonuçların ham verisini içerir. Ölçüm tabloları CSV biçimindedir. Anonimleştirilmiş CS2 `console.log` kayıtları [`console-logs/`](console-logs/README.md) klasöründedir.
 
 ## Genel kurallar
 
@@ -25,6 +25,7 @@ Bu klasör, rehberdeki tüm sonuçların ham verisini içerir. Dosyalar CSV biç
 | [`power-plan-cpu.csv`](power-plan-cpu.csv) | 24 | Güç planı testinin kayıt koşularında HWiNFO işlemci özeti: çekirdek saatleri, efektif saat, C6 ve C0, paket gücü, sıcaklık |
 | [`gpu-superposition.csv`](gpu-superposition.csv) | 53 | Unigine Superposition 1080p Extreme puanları |
 | [`gpu-stability.csv`](gpu-stability.csv) | 24 | Ekran kartı kararlılık testleri |
+| [`console-logs/`](console-logs/README.md) | 36 dosya | Anonimleştirilmiş CS2 `console.log` kayıtları (VProf raporları dahil). 19.10, 26.10, 02.11 ve 03.11 oturumları. |
 
 ## bios-runs.csv
 
