@@ -6,12 +6,20 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 
 ### Eklendi
 
+- [Güç planı](docs/windows.md#güç-planı) testi: yedi koşul aynı CS2 oturumunda ölçüldü (bu sistemdeki özel plan, Dengeli, Dengeli + "En iyi performans" güç modu, Yüksek performans, Atlas, RapidOS, idle kapalı). Normal planlar arasında FPS, akıcılık ve çekirdek saati farkı yok. Çekirdek park eden RapidOS planı −%4,9, idle'ı kapatan plan −%7,4. İkisinde akıcılık da kötüleşti. HWiNFO ile çekirdek bazında saat ve C6 kaydı alındı.
+- [Akıcılık ölçütleri](docs/methodology.md#akıcılık-ölçütleri): kare süresi sapması, kareden kareye fark, saniyenin en uzun karesi, animasyon hatası, simülasyon aralığı sapması ve PC gecikmesi sapması. 02.11 gecikme ve öncelik testlerinin kayıtları yeniden hesaplandı: CPU 0 dışlama kareden kareye farkı %11, animasyon hatasını %6 azaltıyor. Arka plan önceliğinin akıcılığa etkisi yok. [Sonuçlar](docs/results.md#akıcılık) sayfasına "Akıcılık" bölümü eklendi.
+- Veri: [`windows-gpu-runs.csv`](data/windows-gpu-runs.csv) dosyasına `G49` eklendi (26 koşu, toplam 308). [`latency-runs.csv`](data/latency-runs.csv) dosyasına `G49`'un 24 kayıt koşusu (toplam 42) ve 11 akıcılık sütunu eklendi. Yeni [`power-plan-cpu.csv`](data/power-plan-cpu.csv): güç planı testinin HWiNFO işlemci özeti (24 koşu).
+- Betik: [`Compare-PowerPlan.ps1`](scripts/windows/Compare-PowerPlan.ps1). Güç planlarını aynı CS2 oturumunda karşılaştırır, test planlarını geçici olarak oluşturur ve sonda siler. [`FrameStabilityStats.cs`](scripts/windows/FrameStabilityStats.cs): akıcılık ölçütleri.
 - [Arka plan uygulamalarının önceliği](docs/windows.md#arka-plan-uygulamalarının-önceliği-process-lasso-benzeri) (Process Lasso benzeri, Idle) ölçüldü: FPS −%0,07, P1, takılma ve ortalama gecikme aynı. Etki yok.
 - Veri: [`windows-gpu-runs.csv`](data/windows-gpu-runs.csv) dosyasına `G48` eklendi (11 koşu, toplam 282). [`latency-runs.csv`](data/latency-runs.csv) dosyasına `G48`'in 9 kayıt koşusu ve `Kosul` sütunu eklendi (toplam 18).
 
 ### Değişti
 
 - [`Measure-FrameLatency.ps1`](scripts/windows/Measure-FrameLatency.ps1): Plan alanı `L` ve `-BgPriority` eklendi. Koşu boyunca oturumdaki arka plan uygulamalarının önceliğini düşürür, sonra özgün öncelikleri geri yükler.
+- [`Measure-FrameLatency.ps1`](scripts/windows/Measure-FrameLatency.ps1): Akıcılık ölçütleri günlüğe ve CSV dosyasına eklendi. CSV'deki sayılar artık sistem dilinden bağımsız olarak nokta ondalıklı yazılır.
+- [Windows](docs/windows.md) sayfasındaki güç planı satırı: "Değişiklik ölçülmedi" yerine ölçüm sonucu ve öneri (Dengeli yeterli, çekirdek park etme kapalı, idle açık).
+- [Sonuçlar: Darboğaz](docs/results.md#darboğaz): P1 notu güncellendi. İdle'ı kapatan güç planı P1'i düşürdü.
+- [Sınırlar](docs/limitations.md): Akıcılık ölçütlerinin kapsamı, güç planı testinin tek oturum olması ve ölçülmeyen topluluk planları eklendi.
 
 ### Düzeltildi
 

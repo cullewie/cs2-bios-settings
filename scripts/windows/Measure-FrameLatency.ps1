@@ -16,6 +16,8 @@ param(
 # Ornek: -Tag ONCELIK -Plan 'W1:0xFFFE:0,W2:0xFFFE:0,A1:0xFFFE:1,A2:0xFFFE:1,A3:0xFFFE:1,B1:0xFFFE:1:L,B2:0xFFFE:1:L,B3:0xFFFE:1:L,C1:0xFFFE:1,C2:0xFFFE:1,C3:0xFFFE:1'
 # Kosulardan sonra her ETL PresentMon --etl_file ile islenir; VProf penceresi (rapor-125 .. rapor-3 sn) icin FrameLatencyStats.cs:
 # kare suresi p50/p99/p99.9, kare > 2x medyan (CS2'de ~%5 olagan, takilma olcutu degil), kare > 4 ms (takilma), kare baslangici->ekran ve PC gecikmesi (Reflex isaretleri) ort/p50/p99.
+# Ayni pencere icin FrameStabilityStats.cs (akicilik): kare suresi std sapma, kareden kareye fark |dt| ort/p99, her saniyenin en uzun karesi medyan/p95,
+# kare > 6/8 ms, animasyon hatasi (MsAnimationError) |x| ort/p99, simulasyon araligi std sapma, PC gecikmesi std sapma. CSV sayilari nokta ondaliklidir.
 # CS2 acik olmali (-condebug). FACEIT kapali olmali. Yonetici gerekir (WPR). PresentMon-2.6.0-x64.exe bu klasorde olmali (-PmExe ile degisir).
 # Gercek zamanli PresentMon 8000 Hz farede olay kaybeder (Win32k girdi olaylari); bu yuzden kayit dosyaya alinir. Durdurmak: <OutDir>\bench_stop.txt. Yalniz ASCII.
 $ErrorActionPreference = 'Continue'
@@ -34,11 +36,12 @@ $pre = @()
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { $pre += 'yonetici degil' }
 if (Get-Process | Where-Object { $_.Name -match 'faceit' }) { $pre += 'FACEIT calisiyor' }
 if (-not (Get-Process cs2 -ErrorAction SilentlyContinue)) { $pre += 'cs2 calismiyor' }
-foreach ($f in $bench, $backup, $prof, $PmExe, (Join-Path $PSScriptRoot 'FrameLatencyStats.cs')) { if (-not (Test-Path $f)) { $pre += "yok: $f" } }
+foreach ($f in $bench, $backup, $prof, $PmExe, (Join-Path $PSScriptRoot 'FrameLatencyStats.cs'), (Join-Path $PSScriptRoot 'FrameStabilityStats.cs')) { if (-not (Test-Path $f)) { $pre += "yok: $f" } }
 $items = @(foreach ($it in ($Plan -split ',' | Where-Object { $_.Trim() })) { $p = $it.Trim() -split ':'; [pscustomobject]@{ Name = $p[0]; Mask = $p[1]; Cap = ($p[2] -eq '1'); Low = ($p.Count -gt 3 -and $p[3] -eq 'L') } })
 Log ('--- Measure-FrameLatency basladi | {0} | plan {1}' -f $Tag, (($items | ForEach-Object { '{0}:{1}{2}' -f $_.Name, $_.Mask, $(if ($_.Cap) { '*' } else { '' }) }) -join ' '))
 if ($pre.Count) { foreach ($p in $pre) { Log "ON KOSUL: $p" }; Log 'durdu'; return }
 Add-Type -Path (Join-Path $PSScriptRoot 'FrameLatencyStats.cs') -ReferencedAssemblies System.Core
+Add-Type -Path (Join-Path $PSScriptRoot 'FrameStabilityStats.cs') -ReferencedAssemblies System.Core
 
 # ---------- arka plan onceligi (Process Lasso benzeri, calisma aninda; sonda geri) ----------
 $ExcludeNames = @('cs2','explorer','dwm','csrss','winlogon','fontdrvhost','sihost','ctfmon','TextInputHost','ShellExperienceHost','StartMenuExperienceHost','SearchHost','SearchApp','RuntimeBroker','audiodg','powershell','pwsh','claude','node','WindowsTerminal','OpenConsole','conhost','lsass','services','smss','wininit','System','Idle','Registry','Memory Compression','ApplicationFrameHost','SystemSettings','LockApp','dllhost','taskhostw','backgroundTaskHost','smartscreen','SecurityHealthSystray','wpr','PresentMon-2.6.0-x64','WmiPrvSE','cmd','UserOOBEBroker','Widgets','WidgetService','PhoneExperienceHost','CrossDeviceResume','svchost','ShellHost','DefenderSessionHelper','MsMpEng','SecurityHealthService','MpDefenderCoreService')
@@ -113,12 +116,16 @@ foreach ($r in ($runs | Where-Object { $_.Cap -and $_.Etl -and (Test-Path $_.Etl
   $rap = [datetime]::ParseExact($r.TStop.ToString('yyyy-MM-dd') + ' ' + $r.Rapor, 'yyyy-MM-dd HH:mm:ss', $inv)
   $lag = ($r.TStop - $rap).TotalSeconds
   $v = [FrameLatencyStats]::Run($csv, 'cs2.exe', $lag + 125, $lag + 3)
-  $row = [pscustomobject]@{ Name = $r.Name; Mask = $r.Mask; Avg = $r.Avg; P1 = $r.P1; Frames = $v[0]; PmFps = $v[1]; FtP50 = $v[2]; FtP99 = $v[3]; FtP999 = $v[4]; Stutter = $v[5]; Over4 = $v[6]; LatAvg = $v[7]; LatP50 = $v[8]; LatP99 = $v[9]; PclN = $v[10]; PclAvg = $v[11]; PclP50 = $v[12]; PclP99 = $v[13] }
+  $s = [FrameStabilityStats]::Run($csv, 'cs2.exe', $lag + 125, $lag + 3)
+  $row = [pscustomobject]@{ Name = $r.Name; Mask = $r.Mask; Avg = $r.Avg; P1 = $r.P1; Frames = $v[0]; PmFps = $v[1]; FtP50 = $v[2]; FtP99 = $v[3]; FtP999 = $v[4]; Stutter = $v[5]; Over4 = $v[6]; LatAvg = $v[7]; LatP50 = $v[8]; LatP99 = $v[9]; PclN = $v[10]; PclAvg = $v[11]; PclP50 = $v[12]; PclP99 = $v[13]
+    FtSd = $s[2]; DiffAvg = $s[7]; DiffP99 = $s[8]; Max1sP50 = $s[10]; Max1sP95 = $s[11]; Over6 = $s[14]; Over8 = $s[15]; AnimAvg = $s[16]; AnimP99 = $s[17]; SimSd = $s[20]; PclSd = $s[23] }
   $rows.Add($row)
   Log ('{0} {1}: kare {2} | VProf {3:N1} | kare suresi p50 {4:N3} p99 {5:N3} p99.9 {6:N3} | takilma {7} | >4ms {8} | kare->ekran ort {9:N3} p99 {10:N3} | PC gecikmesi ort {11:N3} p99 {12:N3} (n {13})' -f $row.Name, $row.Mask, $row.Frames, $row.Avg, $row.FtP50, $row.FtP99, $row.FtP999, $row.Stutter, $row.Over4, $row.LatAvg, $row.LatP99, $row.PclAvg, $row.PclP99, $row.PclN)
+  Log ('{0} akicilik: kare std {1:N3} | kareden kareye fark ort {2:N3} p99 {3:N3} | saniyelik en uzun kare medyan {4:N2} p95 {5:N2} | >6ms {6} >8ms {7} | animasyon hatasi ort {8:N3} p99 {9:N3} | simulasyon araligi std {10:N3} | PC gecikmesi std {11:N3}' -f $row.Name, $row.FtSd, $row.DiffAvg, $row.DiffP99, $row.Max1sP50, $row.Max1sP95, $row.Over6, $row.Over8, $row.AnimAvg, $row.AnimP99, $row.SimSd, $row.PclSd)
   if (-not $KeepEtl) { Remove-Item $r.Etl -Force -ErrorAction SilentlyContinue }
 }
-$rows | Export-Csv -Path (Join-Path $OutDir ('frame_latency_{0}_{1}.csv' -f $Tag, $stamp)) -NoTypeInformation -Encoding UTF8
+# Sayilar nokta ondalikli yazilir (Export-Csv kultur ayiricisini kullanirdi)
+$rows | ForEach-Object { $o = $_; $h = [ordered]@{}; foreach ($n in $o.PSObject.Properties.Name) { $x = $o.$n; $h[$n] = if ($x -is [double]) { $x.ToString('0.####', $inv) } else { "$x" } }; [pscustomobject]$h } | Export-Csv -Path (Join-Path $OutDir ('frame_latency_{0}_{1}.csv' -f $Tag, $stamp)) -NoTypeInformation -Encoding UTF8
 
 # ---------- ozet ----------
 Log '--- OZET (blok ortalamalari)'
@@ -126,5 +133,6 @@ $grp = $rows | Group-Object { $_.Name.Substring(0, 1) }
 foreach ($g in $grp) {
   $x = $g.Group
   Log ('{0} ({1}) n={2} | VProf Avg {3:N2} P1 {4:N1} | kare suresi p99 {5:N3} p99.9 {6:N3} | takilma {7:N1} | >4ms {8:N1} | kare->ekran ort {9:N3} p99 {10:N3} | PC gecikmesi ort {11:N3} p99 {12:N3}' -f $g.Name, $x[0].Mask, $x.Count, ($x | Measure-Object Avg -Average).Average, ($x | Measure-Object P1 -Average).Average, ($x | Measure-Object FtP99 -Average).Average, ($x | Measure-Object FtP999 -Average).Average, ($x | Measure-Object Stutter -Average).Average, ($x | Measure-Object Over4 -Average).Average, ($x | Measure-Object LatAvg -Average).Average, ($x | Measure-Object LatP99 -Average).Average, ($x | Measure-Object PclAvg -Average).Average, ($x | Measure-Object PclP99 -Average).Average)
+  Log ('{0} akicilik | kare std {1:N3} | kareden kareye fark ort {2:N3} p99 {3:N3} | saniyelik en uzun kare medyan {4:N2} p95 {5:N2} | animasyon hatasi ort {6:N3} p99 {7:N3} | PC gecikmesi std {8:N3}' -f $g.Name, ($x | Measure-Object FtSd -Average).Average, ($x | Measure-Object DiffAvg -Average).Average, ($x | Measure-Object DiffP99 -Average).Average, ($x | Measure-Object Max1sP50 -Average).Average, ($x | Measure-Object Max1sP95 -Average).Average, ($x | Measure-Object AnimAvg -Average).Average, ($x | Measure-Object AnimP99 -Average).Average, ($x | Measure-Object PclSd -Average).Average)
 }
 Log '--- Measure-FrameLatency bitti'

@@ -12,7 +12,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 |---|---|---|
 | RAM 8000 (BIOS 2402'den 2503'e geçişle birlikte) | +%1,2. Sonuç kesin değil. P1 +%4,3 ve P99 −%4,0 kesin. | Varsayılan değildir. İleri düzey seçenek. Bellek kararlılık testi gerektirir ([BIOS](bios.md#ddr5-8000-ileri-düzey)). |
 | PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+%3,5** | Kullanılabilir. Tek sistemde ölçüldü. Üç ayar birlikte değişti. Çekirdek bazında CPU kararlılık testi yok. Kendi sisteminizde test edin. |
-| CS2'yi CPU 0 dışında çalıştırma (Windows affinity) | **+%1,8 ile +%2,5**. Aynı oturumda tüm çekirdeklere göre kare süresi p99 −%3, PC gecikmesi −0,07 ms. P1 +%7, ama kesin değil. | Kullanın ([Windows](windows.md#cs2yi-cpu-0-dışında-çalıştırma), [gecikme](windows.md#gecikme-ve-akıcılık)) |
+| CS2'yi CPU 0 dışında çalıştırma (Windows affinity) | **+%1,8 ile +%2,5**. Aynı oturumda tüm çekirdeklere göre kare süresi p99 −%3, kareden kareye fark −%11, animasyon hatası −%6 (koşular ayrışık), PC gecikmesi −0,07 ms. P1 +%7, ama kesin değil. | Kullanın ([Windows](windows.md#cs2yi-cpu-0-dışında-çalıştırma), [gecikme](windows.md#gecikme-ve-akıcılık)) |
 | Curve Optimizer All Cores −10 | −%0,3. Etki yok. 02.11'de Auto ile taze oturumlarda: −10 %0,33 yüksek, aynı gün sapma %0,32. Ağır tüm çekirdek yükte saat +%2,6. | Auto bırakın ([BIOS, İşlemci](bios.md)). Çekirdek bazında kararlılık testi yapılmadı. |
 | Core Tuning Config for Gaming Level 2 | Doğrulanmadı | Auto bırakın. Çekirdek bazında kararlılık testi yapılmadı. |
 | DDR5 Nitro Mode 1-3-1 | **−%1,4** | Auto bırakın |
@@ -45,7 +45,10 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 | `-nojoy +violence_hblood 0 +engine_low_latency_sleep_after_client_tick true` | Etki yok (+%0,12). P1 −%2,4, sapma içinde. | Gerek yok. `violence_hblood` yalnızca görseldir. |
 | Custom OS paketi (AtlasOS, ReviOS, RapidOS): 9 hizmet geçici durduruldu, Game DVR ve arka plan uygulamaları kapalı | Etki yok (iki ölçüm: −%0,05 ve +%0,11, kontrol bloklarına göre). P1 ve P99 aynı. Oyun içi arka plan yükü 0,0046 çekirdek azaldı. | Gerek yok ([Windows](windows.md#custom-os-ayarları-atlasos-revios-rapidos)) |
 | Oyun Modu açık | Etki yok (−%0,21, P1 −%1,4; sapma içinde) | Kapalı kalabilir ([Windows](windows.md#oyun-modu)) |
-| Arka plan uygulamaları en düşük öncelikte (Process Lasso benzeri) | Etki yok (−%0,07). P1, takılma ve ortalama gecikme aynı. | Gerek yok ([Windows](windows.md#arka-plan-uygulamalarının-önceliği-process-lasso-benzeri)) |
+| Arka plan uygulamaları en düşük öncelikte (Process Lasso benzeri) | Etki yok (−%0,07). P1, takılma, akıcılık ve ortalama gecikme aynı. | Gerek yok ([Windows](windows.md#arka-plan-uygulamalarının-önceliği-process-lasso-benzeri)) |
+| Güç planı: Dengeli, Dengeli + "En iyi performans" güç modu, Yüksek performans veya Atlas (en düşük işlemci durumu %100 ve EPP 0 olan özel plan yerine) | Etki yok: FPS 0 ile −%0,6 (oturum kayması içinde), akıcılık ölçütleri en fazla %2,6 farklı, PC gecikmesi +0,04 ms. Çekirdek saatleri aynı (5,41 GHz). | Dengeli yeterli ([Windows](windows.md#güç-planı)) |
+| Çekirdek park etmeye izin veren plan (RapidOS: en az %50 çekirdek) | **−%4,9**. Kare süresi p99 +%10, kareden kareye fark +%15. İki çekirdek zamanın %99'unda park edildi. | Kullanmayın |
+| İşlemci boşta kalma kapalı ("idle off" planları) | **−%7,4**. Kare süresi p99 +%18, kareden kareye fark +%28. Saat −80 MHz, güç +20 W. | Kullanmayın |
 | Ethernet Energy Efficient Ethernet kapalı | Ölçülmedi | İsteğe bağlı |
 
 ## Toplam
@@ -59,11 +62,26 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 >
 > Her iki toplamda RAM elle DDR5-8000 profilindeydi. BIOS toplamı Curve Optimizer −10 ve Core Tuning Level 2 adımlarını da içerir. Bu ayarlar artık varsayılan öneri değildir ([BIOS](bios.md#ram)).
 
+## Akıcılık
+
+Ortalama FPS oyun hissini tek başına göstermez. 03.11'den beri her PresentMon kaydında [akıcılık ölçütleri](methodology.md#akıcılık-ölçütleri) de hesaplanır. 02.11 ve 03.11 kayıtlarına göre, karşılaştırılan koşula göre fark (düşük değer daha akıcıdır):
+
+| Ayar | Kareden kareye fark | Animasyon hatası | Saniyenin en uzun karesi |
+|---|---|---|---|
+| CPU 0 dışlama (tüm çekirdeklere göre) | **−%11** | **−%6** | −%4 |
+| Arka plan uygulamaları Idle önceliğinde | +%1 | 0 | +%1 |
+| Dengeli, Yüksek performans, Atlas veya "En iyi performans" güç modu (özel plan yerine) | −%2 ile 0 | −%1 ile 0 | −%2 ile +%1 |
+| Çekirdek park eden plan (RapidOS) | **+%15** | **+%11** | +%9 |
+| İşlemci boşta kalma kapalı | **+%28** | **+%22** | +%15 |
+
+- Akıcılığı ölçülebilir şekilde iyileştiren tek Windows ayarı CPU 0 dışlamadır. Kareden kareye farkta ve animasyon hatasında koşular ayrışır.
+- Oyun Modu ve custom OS testlerinde PresentMon kaydı yoktur. O testlerde akıcılık yalnızca VProf'un saniyelik en uzun karesiyle değerlendirildi. İkisinde de iyileşme görülmedi.
+
 ## Darboğaz
 
 - **İşlemci:** CS2 sırasında tüm çekirdekler 5425 MHz'de çalıştı. Güç sınırının yalnızca %7,5'ini kullandı. Sıcaklık en fazla 60 °C oldu. Bu nedenle Curve Optimizer, PBO limitleri ve sıcaklık ayarları ek kazanç sağlamadı.
 - **Ekran kartı:** PresentMon'a göre kare süresinin (~1,07 ms) ~0,98 ms'inde GPU meşguldür. CPU, kare başına ~0,37 ms GPU'yu bekler. Ama GPU süresinin yalnızca ~%20'si çekirdek saatiyle ölçeklenir: GPU saati %12 düşünce FPS %2,8 düştü, 3170 MHz'in üstünde kazanç ölçülemez. Bellek saati, Core Voltage, Resizable BAR ve Vulkan da bu sabit kısmı küçültmedi.
-- **P1:** CPU 0 dışlaması dışında hiçbir Windows veya ekran kartı ayarı P1 değerini ölçülebilir şekilde değiştirmedi. CPU 0 dışlamasında 02.11'deki oturumda P1 %7 yüksek çıktı, ama koşular örtüşüyor ve sonuç tek oturuma dayanıyor. P1 değerinin koşudan koşuya sapması ±%5'tir.
+- **P1:** CPU 0 dışlaması dışında hiçbir Windows veya ekran kartı ayarı P1 değerini ölçülebilir şekilde artırmadı. İşlemci boşta kalmayı kapatan güç planı P1'i düşürdü (−%10, üç koşunun hepsi kontrol koşularından düşük). CPU 0 dışlamasında 02.11'deki oturumda P1 %7 yüksek çıktı, ama koşular örtüşüyor ve sonuç tek oturuma dayanıyor. P1 değerinin koşudan koşuya sapması ±%5'tir.
 
 ## Günler arasındaki farklar
 
@@ -75,6 +93,7 @@ Aynı ayarlarla ölçülen ortalama FPS günden güne değişti. Nedenler ölç�
 | 25.10 | 950–966 | Arka planda bir uygulama yaklaşık 1 çekirdek kullandı (~−%3, P1 ~−%8) |
 | 26.10 | 935–949 | Gölge kalitesi Yüksek (−%4,7). Aynı ayarlarla gece oturumu 935, öğleden sonra 946 ölçüldü (%1,2). Bu farkın nedeni bulunamadı. |
 | 02.11 | 927–939 (kayıt) | NVIDIA 621.12, yeni CS2 ve Windows sürümü (26.10'a göre −%0,8). Aynı Windows oturumunda ilk ~40 dakikada %1'e varan düşüş. |
+| 03.11 | 913–921 (kayıt, özel plan) | 02.11 ile aynı ayarlar. CS2 açıldıktan sonraki ilk ~30 dakikada %0,6 düşüş. |
 
 BIOS, sürücü, RAM ve CS2 sürümü 24–26.10 arasında değişmedi (26.10'daki RAM testleri hariç). Ayrıntı: [Sapma kaynakları](methodology.md#sapma-kaynakları).
 

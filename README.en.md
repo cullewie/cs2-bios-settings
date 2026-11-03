@@ -57,7 +57,7 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 |---|---|---|
 | PBO Advanced, PBO Limits Motherboard, Boost Override +200 | **+3.5%** | Can be used. Test CPU stability. |
 | GPU overclock (daily profile: +425 / +3000 / 116%) | **+2.6%** (shadows Low), **+3.3%** (shadows High) | Use |
-| Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** (frame time p99 −3%, PC latency −0.07 ms) | Use |
+| Run CS2 without CPU 0 (process affinity) | **+1.8% to +2.5%** (frame time p99 −3%, frame-to-frame variation −11%, PC latency −0.07 ms) | Use |
 | Fullscreen optimizations off for `cs2.exe` (Legacy Flip) | **+1.13%** | Use |
 | Manual RAM: DDR5-6000 CL28 1:1 (instead of manual DDR5-8000 CL34 Gear 2) | +0.2% to +0.4% (within variation) | No reliable difference shown. Both need a memory test. |
 | DDR5 Nitro Mode 1-3-1 | **−1.4%** | Leave on Auto |
@@ -67,6 +67,8 @@ Measured Counter-Strike 2 settings for a Ryzen 7 9800X3D and an RTX 5070 Ti. Inc
 | Custom OS settings (AtlasOS, ReviOS, RapidOS; only those that do not affect FACEIT) | No effect (−0.05% and +0.11%) | Not needed |
 | Windows Game Mode | No effect (−0.21%) | Can stay off |
 | Background apps at lowest priority (Process Lasso style) | No effect (−0.07%) | Not needed |
+| Windows power plan (Balanced, High performance, Atlas or "Best performance" power mode; instead of the custom plan) | No effect (same FPS, smoothness and core clocks) | Balanced is enough |
+| Power plan that parks cores or disables idle (RapidOS, "idle off") | **−4.9%** and **−7.4%**, smoothness also worse | Do not use |
 
 **RAM:** The default recommendation is the kit's own EXPO/XMP profile. This profile was not measured in this repository. Manual DDR5-6000 1:1 is an alternative. Manual DDR5-8000 (1.60 V, tREFI 65535) is an advanced option. The comparison used two sessions for 6000 and only one session for 8000. The first 8000 session was 1.2% lower than the repeat with the same settings and was not used in the comparison. The current measurements do not show a reliable performance difference. The data is not sufficient to show that one profile is better or that the two are equivalent. This repository has no memory stability test for the 8000 profile. The absence of WHEA errors does not prove memory stability. Details: [BIOS: RAM](docs/bios.md#ram) (Turkish).
 
@@ -97,7 +99,7 @@ Use the same order after a BIOS update or a CMOS reset. On a different system, r
 |---|---|
 | [Results](docs/results.md) | Measured effect and decision for each setting |
 | [BIOS](docs/bios.md) | RAM timings, PBO, settings that stay on Auto, FACEIT settings |
-| [Windows and CS2](docs/windows.md) | CPU 0 exclusion, Legacy Flip, DPC measurement, in-game settings |
+| [Windows and CS2](docs/windows.md) | CPU 0 exclusion, Legacy Flip, DPC measurement, power plan, in-game settings |
 | [GPU](docs/gpu.md) | Daily profile, undervolt, shadow quality, finding your own limit |
 | [Check](docs/verification.md) | Check script, steps after a BIOS update |
 | [Adapting to other systems](docs/adapting.md) | Different RAM, CPU, motherboard or GPU |
@@ -123,7 +125,8 @@ Use the same order after a BIOS update or a CMOS reset. On a different system, r
 - **Benchmark:** Steam Workshop map `3240880604` (de_dust2), about 129 seconds. FPS values come from the CS2 VProf summary.
 - **BIOS tests:** Each setting was measured in a separate CS2 session: 6 warm-up runs and 6 recorded runs. Session-to-session variation is usually ±0.6%; once it was 1.2%. The RAM and BCLK tests used 2 warm-up runs and 3 recorded runs, in A-B-A order. The A-B-A check held for DDR5-6000 and BCLK. It did not hold for DDR5-8000: two sessions with the same setting differed by 1.2%.
 - **Windows and GPU tests:** Conditions were measured in the same CS2 session, in alternating or blocked order. Each run logged the GPU clock, power and driver errors.
-- **Data:** 132 runs and 2 matches in the BIOS tests. 282 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM, BCLK, driver, Curve Optimizer, launch option, custom OS, Game Mode, latency and priority tests.
+- **Smoothness:** FPS alone does not show how the game feels. Tests with a PresentMon recording also report frame time deviation, frame-to-frame variation, the longest frame in each second, animation error and PC latency ([smoothness metrics](docs/methodology.md#akıcılık-ölçütleri), Turkish).
+- **Data:** 132 runs and 2 matches in the BIOS tests. 308 runs, 53 Superposition runs and 24 stability tests in the Windows, GPU, RAM, BCLK, driver, Curve Optimizer, launch option, custom OS, Game Mode, latency, priority and power plan tests.
 
 Details: [docs/methodology.md](docs/methodology.md) (Turkish).
 
