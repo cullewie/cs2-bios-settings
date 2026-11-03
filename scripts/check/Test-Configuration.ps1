@@ -2,14 +2,18 @@ param(
   [string]$Hedef = (Join-Path $PSScriptRoot '..\..\config\bios-target-2503.csv'),
   [string]$IfrFile = '',
   [switch]$Fan,
-  [string]$CsvOut = ''
+  [string]$CsvOut = '',
+  [int]$RamMts = -1,
+  [switch]$NoGpu
 )
-# Canli BIOS ayarlarini (UEFI NVRAM) ve ilgili Windows durumunu hedef listeyle karsilastirir.
+# Canli BIOS ayarlarini (UEFI NVRAM), Windows ve ekran karti durumunu hedeflerle karsilastirir.
 # SALT OKUNUR: NVRAM'e, kayit defterine, hicbir yere yazmaz. Yonetici PowerShell gerekir.
 # Kullanim:  .\scripts\check\Test-Configuration.ps1            (BIOS 2503 ofsetleriyle)
 #            .\scripts\check\Test-Configuration.ps1 -Fan       (fan/pompa egrileri dahil)
 #            .\scripts\check\Test-Configuration.ps1 -IfrFile .\yeni_bios\ifr_all.tsv   (BIOS guncellemesinden sonra: ofsetleri yeni sozlukten ada gore bulur)
-# Cikis kodu: farkli bulunan ayar sayisi (0 = her sey hedefte).
+#            .\scripts\check\Test-Configuration.ps1 -RamMts 6000   (RAM hizi hedefi; varsayilan hedef listedeki Memory Frequency, 0 = kontrol etme)
+#            .\scripts\check\Test-Configuration.ps1 -NoGpu         (ekran karti hiz asirtmasi kullanmiyorsaniz guc siniri kontrolunu atlar)
+# Cikis kodu: farkli bulunan ayar sayisi (0 = her sey hedefte). BILGI satirlari sayilmaz.
 
 $ErrorActionPreference = 'Stop'
 $id = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -56,7 +60,7 @@ $bios = Get-CimInstance Win32_BIOS; $board = Get-CimInstance Win32_BaseBoard
 Write-Host ("Anakart: {0}   BIOS: {1}" -f $board.Product, $bios.SMBIOSBIOSVersion)
 $sameBios = ($board.Product -eq 'ROG STRIX X870-A GAMING WIFI' -and $bios.SMBIOSBIOSVersion -eq '2503')
 if (-not $sameBios -and -not $IfrFile) {
-  Write-Host 'UYARI: Hedef liste ROG STRIX X870-A GAMING WIFI + BIOS 2503 ofsetleriyle yazildi. Farkli kart/surumde -IfrFile ile yeni sozluk ver (bkz. REHBER.md) ya da REHBER.md ile menuden elle kontrol et.' -ForegroundColor Yellow
+  Write-Host 'UYARI: Hedef liste ROG STRIX X870-A GAMING WIFI + BIOS 2503 ofsetleriyle yazildi. Farkli kart/surumde -IfrFile ile yeni sozluk ver (docs\verification.md) ya da docs\bios.md ile menuden elle kontrol et.' -ForegroundColor Yellow
 }
 $data = @{}; $layout = @{}
 foreach ($k in $vars.Keys) {
@@ -98,10 +102,14 @@ foreach ($h in $rows) {
 # Windows tarafi (salt okunur)
 $win = New-Object System.Collections.Generic.List[object]
 function W($ad, $hedef, $su, $ok, $nasil) { $win.Add([pscustomobject]@{ Durum = $(if ($ok -eq $null) { 'BILGI' } elseif ($ok) { 'TAMAM' } else { 'FARKLI' }); Kontrol = $ad; Hedef = $hedef; Su_an = $su; Duzeltme = $nasil }) }
-$lp = (Get-CimInstance Win32_Processor | Measure-Object NumberOfLogicalProcessors -Sum).Sum
-W 'Mantiksal islemci (SMT)' '16 (SMT acik)' $lp ($lp -eq 16) 'Advanced > AMD CBS > SMT Control = Auto, sonra tam kapat-ac'
+$cpu = @(Get-CimInstance Win32_Processor)
+$lp = ($cpu | Measure-Object NumberOfLogicalProcessors -Sum).Sum; $nc = ($cpu | Measure-Object NumberOfCores -Sum).Sum
+W 'Mantiksal islemci (SMT)' ("{0} (SMT acik, {1} cekirdek)" -f (2 * $nc), $nc) $lp ($lp -eq 2 * $nc) 'Advanced > AMD CBS > SMT Control = Auto, sonra tam kapat-ac'
+# RAM hizi hedefi: -RamMts, yoksa hedef listedeki Memory Frequency satiri. EXPO/XMP kullaniyorsaniz kitin hizini -RamMts ile verin.
+if ($RamMts -lt 0) { $mf = @(Import-Csv $Hedef | Where-Object { $_.Ayar -eq 'Memory Frequency' -and $_.Hedef_ham -match '^\d{4,5}$' }); $RamMts = if ($mf.Count) { [int]$mf[0].Hedef_ham } else { 0 } }
 $ram = @(Get-CimInstance Win32_PhysicalMemory | ForEach-Object ConfiguredClockSpeed)
-W 'RAM hizi (MT/s)' '8000' ($ram -join ', ') (@($ram | Where-Object { $_ -ne 8000 }).Count -eq 0 -and $ram.Count -gt 0) 'RAM ayarlari (1-RAM grubu) uygulanmamis'
+if ($RamMts -gt 0) { W 'RAM hizi (MT/s)' $RamMts ($ram -join ', ') (@($ram | Where-Object { $_ -ne $RamMts }).Count -eq 0 -and $ram.Count -gt 0) "RAM ayarlari (1-RAM grubu) uygulanmamis. EXPO/XMP kullaniyorsaniz -RamMts <kitin hizi> verin." }
+else { W 'RAM hizi (MT/s)' '-' ($ram -join ', ') $null '' }
 $sb = $null; try { $sb = Confirm-SecureBootUEFI } catch { $sb = $null }
 W 'Secure Boot' 'Acik' $sb ($sb -eq $true) 'Boot > Secure Boot > OS Type = Windows UEFI mode; anahtar yoksa Key Management > Install Default Secure Boot Keys'
 $tpm = $null; try { $tpm = Get-Tpm } catch { }
@@ -121,6 +129,41 @@ foreach ($pn in 'steam', 'cs2') {
 $boot = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
 $whea = @(Get-WinEvent -FilterHashtable @{ LogName = 'System'; ProviderName = 'Microsoft-Windows-WHEA-Logger'; StartTime = $boot } -ErrorAction SilentlyContinue).Count
 W 'WHEA hatasi (acilistan beri)' '0' $whea ($whea -eq 0) 'RAM/FCLK kararsiz olabilir: once RAM ayarlarini kontrol et'
+# cs2.exe tam ekran iyilestirmeleri kapali (Legacy Flip): Uyumluluk sekmesindeki kutu bu kayit degerini yazar
+$lay = Get-ItemProperty 'HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers' -ErrorAction SilentlyContinue
+$fso = @(if ($lay) { $lay.PSObject.Properties | Where-Object { $_.Name -like '*\cs2.exe' -and "$($_.Value)" -match 'DISABLEDXMAXIMIZEDWINDOWEDMODE' } })
+W 'cs2.exe tam ekran iyilestirmeleri' 'Kapali (Legacy Flip)' $(if ($fso.Count) { 'kapali' } else { 'acik (kayit yok)' }) ($fso.Count -gt 0) 'cs2.exe > Ozellikler > Uyumluluk > Tam ekran iyilestirmelerini devre disi birak (docs\windows.md)'
+# Guc plani: cekirdek park etme ve islemci bosta kalma. powercfg ciktisinda son iki onaltilik deger AC ve DC indeksidir (dil ayarindan bagimsiz).
+function PowerAc([string]$alias) {
+  $o = powercfg /qh scheme_current sub_processor $alias 2>$null
+  if ($LASTEXITCODE -ne 0) { return $null }
+  $hx = @([regex]::Matches(($o -join "`n"), '0x[0-9a-fA-F]{8}') | ForEach-Object Value)
+  if ($hx.Count -lt 2) { return $null }
+  [Convert]::ToInt32($hx[$hx.Count - 2], 16)
+}
+$cpMin = PowerAc 'CPMINCORES'
+W 'Guc plani: cekirdek park etme' 'Kapali (en az %100 cekirdek)' $(if ($null -eq $cpMin) { 'okunamadi' } else { "en az %$cpMin cekirdek" }) $(if ($null -eq $cpMin) { $null } else { $cpMin -eq 100 }) 'Dengeli plana donun (powercfg /setactive SCHEME_BALANCED) veya plan ayarinda CPMINCORES AC = 100 yapin. Cekirdek park eden plan -%4,9 (docs\windows.md, Guc plani)'
+$idleOff = PowerAc 'IDLEDISABLE'
+W 'Guc plani: islemci bosta kalma' 'Acik' $(if ($null -eq $idleOff) { 'okunamadi' } elseif ($idleOff -eq 0) { 'acik' } else { 'kapali' }) $(if ($null -eq $idleOff) { $null } else { $idleOff -eq 0 }) 'Idle kapali plan -%7,4: Dengeli plana donun veya plan ayarinda IDLEDISABLE AC = 0 yapin (docs\windows.md, Guc plani)'
+# Oyun Modu ve EEE: etkisi olculmedi veya sapma icinde, yalnizca bilgi
+$gm = (Get-ItemProperty 'HKCU:\Software\Microsoft\GameBar' -Name AutoGameModeEnabled -ErrorAction SilentlyContinue).AutoGameModeEnabled
+W 'Oyun Modu' 'Kapali veya acik (etki yok)' $(if ($null -eq $gm) { 'kayit yok (Windows varsayilani: acik)' } elseif ($gm -eq 0) { 'kapali' } else { 'acik' }) $null ''
+$eee = @(Get-NetAdapterAdvancedProperty -RegistryKeyword '*EEE' -ErrorAction SilentlyContinue)
+if ($eee.Count) { W 'Ethernet EEE' 'Kapali (olculmedi)' (($eee | ForEach-Object { "$($_.Name): $($_.DisplayValue)" }) -join ', ') $null '' }
+# Ekran karti: Afterburner profili guc sinirini en yuksek degere ceker. Yeniden baslatma ve surucu hatasi (TDR) profili sifirlar.
+# Saat ofseti NVML ile okunamaz (Afterburner'in yazdigi ofset NVML'de 0 gorunur); bu yuzden guc siniri gosterge olarak kullanilir.
+if (-not $NoGpu) {
+  $smi = Join-Path $env:SystemRoot 'System32\nvidia-smi.exe'
+  if (Test-Path $smi) {
+    $q = @(& $smi --query-gpu=power.limit,power.max_limit --format=csv,noheader,nounits 2>$null)
+    $pl = $null; $pm = $null
+    if ($q.Count -and $q[0] -match '^\s*([\d.]+)\s*,\s*([\d.]+)') { $pl = [double]::Parse($Matches[1], [Globalization.CultureInfo]::InvariantCulture); $pm = [double]::Parse($Matches[2], [Globalization.CultureInfo]::InvariantCulture) }
+    W 'Ekran karti guc siniri (Afterburner profili)' $(if ($pm) { "$pm W (en yuksek)" } else { 'en yuksek' }) $(if ($null -eq $pl) { 'okunamadi' } else { "$pl W" }) $(if ($null -eq $pl) { $null } else { $pl -ge $pm - 0.5 }) 'Afterburner profili uygulanmamis: Afterburner''i acin ve Profil 1''i yukleyin (MSIAfterburner.exe -Profile1). Yeniden baslatma ve TDR sonrasi tekrarlayin (docs\gpu.md). Hiz asirtmasi kullanmiyorsaniz -NoGpu verin.'
+  } else { W 'Ekran karti guc siniri (Afterburner profili)' 'en yuksek' 'nvidia-smi yok' $null '' }
+  $tdr = @(Get-WinEvent -FilterHashtable @{ LogName = 'System'; ProviderName = 'nvlddmkm'; StartTime = $boot } -ErrorAction SilentlyContinue | Where-Object { $_.Id -in 13, 14, 153 }).Count
+  $tdr += @(Get-WinEvent -FilterHashtable @{ LogName = 'System'; ProviderName = 'Display'; Id = 4101; StartTime = $boot } -ErrorAction SilentlyContinue).Count
+  W 'Ekran karti surucu hatasi (TDR, acilistan beri)' '0' $tdr ($tdr -eq 0) 'Hiz asirtmasi kararsiz: cekirdegi 25 MHz dusurun. TDR guc sinirini ve ofsetleri sifirlar, profili yeniden yukleyin (docs\troubleshooting.md).'
+}
 
 # Rapor
 Write-Host ''
