@@ -32,7 +32,7 @@ Her ayarın CS2 benchmarkındaki ölçülen etkisi ve kararı. Ölçüm yöntemi
 | Ekran kartı Core Voltage %100 (Afterburner) | Etki yok. Saat aynı kalırken +8 W. | Voltajı 0 bırakın |
 | Ekran kartı undervolt: VF eğrisi 3245 MHz @ 990 mV | FPS aynı (iki oturum ortalaması −%0,05). Voltaj −25 mV, güç −6 W. | Kullanmayın. Uzun CS2 oturumunda sürücü hatası verdi. Gölge Yüksek ile de FPS kazancı yok ([Undervolt](gpu.md#undervolt-vf-eğrisi)). |
 | Aynı voltajda (990 mV) daha düşük saat: 3195 veya 3145 MHz | −%0,4 ile −%0,6. Güç değişmez. | Kullanmayın |
-| Resizable BAR, CS2 sürücü profilinde açık | Etki yok (−%0,04) | Sürücü varsayılanı (kapalı) kalsın |
+| Resizable BAR, CS2 sürücü profilinde açık | Etki yok (−%0,04) | Sürücü varsayılanı (kapalı) kalsın. BIOS'taki Resize BAR ayrı bir ayardır ve açık kalır ([BIOS](bios.md#faceit-ve-güvenlik)). |
 | CS2'yi Vulkan ile çalıştırma (`-vulkan`) | **−%6** | DX11 (varsayılan) kalsın |
 | `cs2.exe` için tam ekran iyileştirmeleri kapalı (Legacy Flip) | **+%1,13** (A-B-A ile doğrulandı). P1 ve gecikme aynı. | Kullanın ([Windows](windows.md#tam-ekran-iyileştirmelerini-kapatma-legacy-flip)) |
 | CS2 gölge kalitesi Yüksek (Düşük yerine) | **−%4,7** (24.10'daki aynı ayarlı oturuma göre, 5 sıranın hepsinde −%4,4 ile −%5,0). P1 aynı. İlk ölçüm −%5,8 vermişti, ama o oturum %1,2 düşük çıktı. | Oyun tercihi ([Gölge Yüksek](gpu.md#gölge-kalitesi-yüksek-ile-2610)) |

@@ -8,10 +8,23 @@ Bu dosya, depodaki önemli değişiklikleri listeler. Biçim [Keep a Changelog](
 
 - Veri: [`data/console-logs/`](data/console-logs/README.md) klasörüne 36 anonimleştirilmiş CS2 `console.log` kaydı eklendi (19.10–03.11, `O2`–`O10` ve `G21`–`G49` oturumları). CSV dosyalarındaki FPS değerleri bu kayıtlardaki VProf satırlarından yeniden hesaplanabilir. Oyuncu adı `player1` oldu. Steam kimlikleri `***` oldu. IP adresleri sahte belgeleme adresleriyle değiştirildi. Ping konumu ve günün saati kaldırıldı.
 - Betik: [`Protect-ConsoleLog.ps1`](scripts/bench/Protect-ConsoleLog.ps1). `console.log` yedeklerini paylaşmadan önce anonimleştirir. Kayıtlar bu betikle hazırlandı.
+- [Başlamadan önce](docs/preparation.md) sayfası: depoyu indirme, araçlar ve resmi bağlantıları, benchmark haritası (Workshop aboneliği, geliştirici konsolu, `-condebug`), taban ölçümü komutları ve BIOS profili yedeği. README'deki hızlı başlangıca 0. adım olarak eklendi.
+- [`Test-Configuration.ps1`](scripts/check/Test-Configuration.ps1): `cs2.exe` için tam ekran iyileştirmeleri (Legacy Flip), güç planında çekirdek park etme ve işlemci boşta kalma, ekran kartı güç sınırı (Afterburner profili uygulanmış mı) ve açılıştan beri TDR kontrolleri. Oyun Modu ve Ethernet EEE bilgi olarak gösterilir. Yeni seçenekler: `-RamMts` (RAM hızı hedefi) ve `-NoGpu`.
+- [Ekran kartı](docs/gpu.md): Afterburner profilini oturum açılışında Görev Zamanlayıcı ile uygulama yöntemi (bu sistemde denenmedi).
+- [Windows](docs/windows.md): CPU 0 dışlaması için maskeyi işlemci sayısına göre hesaplayan PowerShell komutu ve FACEIT notu.
 
 ### Değişti
 
 - [Katkı rehberi](CONTRIBUTING.md): Tam `console.log` paylaşılacaksa önce `Protect-ConsoleLog.ps1` ile anonimleştirme önerisi eklendi.
+- [BIOS](docs/bios.md): İlk değişiklikten önce yapılacaklar (taban ölçümü, profil yedeği). EXPO/XMP için FCLK notu. Bellek ve işlemci kararlılık testleri için yaygın ölçütler (bu depoda doğrulanmadı).
+- [Windows](docs/windows.md): "Bu sistemde zaten uygulananlar" listesinin bir öneri listesi olmadığı belirtildi. Oyun içi ayarlar tablosuna Reflex, `-condebug` ve anizotropik filtre notları eklendi.
+- [Kontrol](docs/verification.md), [Başka sistemlere uyarlama](docs/adapting.md) (farklı işlemci sayısı, Intel) ve [Sorun giderme](docs/troubleshooting.md) yeni kontrollere göre güncellendi. [Sonuçlar](docs/results.md): CS2 sürücü profilindeki Resize BAR ile BIOS'taki Resize BAR ayrımı.
+
+### Düzeltildi
+
+- [`Test-Configuration.ps1`](scripts/check/Test-Configuration.ps1): SMT kontrolü 16 mantıksal işlemciye sabitti, artık çekirdek sayısının iki katıyla karşılaştırır. Farklı anakart uyarısı artık depoda olmayan `REHBER.md` dosyasını gösteriyordu. RAM hızı 8000'e sabitti.
+- [Kontrol](docs/verification.md) sayfasındaki örnek çıktı güncel değildi (72/72 yerine 70/70).
+- [Betikler](scripts/README.md): Boş bir satır Windows betikleri tablosunu bölüyordu. `Compare-PowerPlan.ps1` satırı tablo dışında görünüyordu.
 
 ## 2026-11-03
 

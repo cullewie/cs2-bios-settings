@@ -29,8 +29,18 @@ CS2 yükünde çekirdek yaklaşık 3195 MHz'de çalışır (stok 2775 MHz). Bell
 2. MSI Afterburner'ı MSI'nin resmi sitesinden kurun. Kurulumda Norton seçeneğinin işaretini kaldırın. RivaTuner Statistics Server gerekmez.
 3. Power Limit, Core Clock ve Memory Clock değerlerini girin ve **Apply** seçin.
 4. **Save** seçin ve **1** yuvasına kaydedin. Kilit simgesiyle profilleri kilitleyin. Kilit yalnızca kaydetmeyi engeller. Profili yüklemeyi engellemez.
-5. Her Windows açılışında Afterburner'ı açın ve **1** seçin. Afterburner'ın kendi açılışta uygulama ayarı bu sistemde yeniden başlatmadan sonra değerleri uygulamadı. `MSIAfterburner.exe -Profile1` komutu çalışır.
-6. Kontrol: Afterburner'da +425, +3000 ve 116 görünmelidir. `nvidia-smi` güç sınırını 350 W göstermelidir.
+5. Her Windows açılışında Afterburner'ı açın ve **1** seçin. Afterburner'ın kendi açılışta uygulama ayarı bu sistemde yeniden başlatmadan sonra değerleri uygulamadı: Afterburner açılışta arka planda başladı, ama kart stok saatte ve 300 W'ta kaldı. `MSIAfterburner.exe -Profile1` komutu çalışır.
+6. Kontrol: Afterburner'da +425, +3000 ve 116 görünmelidir. `nvidia-smi` güç sınırını 350 W göstermelidir. Kontrol betiği güç sınırını da denetler ([Kontrol](verification.md)). Saat ofseti `nvidia-smi` ile görünmez. CS2'de çekirdek saati ~3195 MHz olmalıdır (stok 2775 MHz).
+
+**Açılışta otomatik uygulama (bu sistemde denenmedi):** Görev Zamanlayıcı ile oturum açıldığında profili yükleyen bir görev oluşturabilirsiniz. Yönetici PowerShell'de:
+
+```powershell
+$a = New-ScheduledTaskAction -Execute 'C:\Program Files (x86)\MSI Afterburner\MSIAfterburner.exe' -Argument '-Profile1'
+$t = New-ScheduledTaskTrigger -AtLogOn; $t.Delay = 'PT30S'
+Register-ScheduledTask -TaskName 'Afterburner Profil 1' -Action $a -Trigger $t -RunLevel Highest
+```
+
+Görevi silmek için: `Unregister-ScheduledTask -TaskName 'Afterburner Profil 1' -Confirm:$false`. Açılıştan sonra kontrol betiğiyle güç sınırını doğrulayın. Sürücü hatasından (TDR) sonra profil yine sıfırlanır. O durumda profili elle yükleyin.
 
 Afterburner'ın RTCore64 sürücüsü, Bellek Bütünlüğü (HVCI) açıkken yüklendi. Secure Boot, TPM ve HVCI ayarları değişmedi.
 
@@ -123,7 +133,7 @@ Gölge kalitesi Düşük'ten Yüksek'e alındıktan sonra üç profil aynı CS2 
 
 ## Kendi sınırınızı bulma
 
-Yöntem, fpsheaven GPU hız aşırtma rehberinin akışını izler. Ölçüm aracı: Unigine Superposition 1.1, 1080p Extreme.
+Yöntem, fpsheaven GPU hız aşırtma rehberinin akışını izler. Ölçüm aracı: Unigine Superposition 1.1, 1080p Extreme. Araçların bağlantıları: [Başlamadan önce](preparation.md#2-araçlar).
 
 1. Stok puanı 2 veya 3 koşu ile ölçün.
 2. **Çekirdek:** Bellek 0 ve Power Limit en yüksek değerde olsun. +200'den başlayın. 25 MHz adımlarla artırın.
